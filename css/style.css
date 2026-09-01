@@ -297,3 +297,1514 @@ body {
     }
 
 }
+
+/* ------------------------------
+   OVER DE OPVANG
+------------------------------ */
+
+.about {
+    padding: 100px 30px;
+
+    background-color: var(--white);
+}
+
+
+.about-content {
+    max-width: 1200px;
+
+    margin: 0 auto;
+}
+
+
+.section-label {
+    margin: 0 0 16px;
+
+    color: var(--green);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+}
+
+
+.about h2 {
+    max-width: 650px;
+
+    margin: 0;
+
+    font-size: 38px;
+    line-height: 1.2;
+
+    color: var(--text);
+}
+
+
+.about-text {
+    max-width: 700px;
+
+    margin: 24px 0 0;
+
+    font-size: 17px;
+    line-height: 1.7;
+
+    color: var(--text-light);
+}
+
+
+/* Kleine blokken */
+
+.about-features {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 24px;
+
+    margin-top: 55px;
+}
+
+
+.about-feature {
+    padding: 28px;
+
+    background-color: var(--background);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+}
+
+
+.about-feature h3 {
+    margin: 0 0 12px;
+
+    font-size: 19px;
+
+    color: var(--text);
+}
+
+
+.about-feature p {
+    margin: 0;
+
+    font-size: 15px;
+    line-height: 1.6;
+
+    color: var(--text-light);
+}
+
+
+/* Smartphone */
+
+@media (max-width: 800px) {
+
+    .about {
+        padding: 70px 20px;
+    }
+
+
+    .about h2 {
+        font-size: 32px;
+    }
+
+
+    .about-features {
+        grid-template-columns: 1fr;
+
+        margin-top: 40px;
+    }
+
+}
+
+/* ------------------------------
+   DIENSTEN & PRIJZEN
+------------------------------ */
+
+.services {
+    padding: 100px 30px;
+
+    background-color: var(--background);
+}
+
+
+.services-content {
+    max-width: 1200px;
+
+    margin: 0 auto;
+}
+
+
+.services h2 {
+    max-width: 650px;
+
+    margin: 0;
+
+    font-size: 38px;
+    line-height: 1.2;
+
+    color: var(--text);
+}
+
+
+.services-intro {
+    max-width: 600px;
+
+    margin: 22px 0 0;
+
+    font-size: 17px;
+    line-height: 1.7;
+
+    color: var(--text-light);
+}
+
+
+/* Kaarten */
+
+.services-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 24px;
+
+    margin-top: 55px;
+}
+
+
+.service-card {
+    padding: 20px;
+
+    background-color: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+}
+
+
+/* Voorlopige plaats voor foto */
+
+.service-image-placeholder {
+    width: 100%;
+    height: 180px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 24px;
+
+    background-color: #eeebe4;
+
+    border-radius: 6px;
+
+    color: var(--text-light);
+
+    font-size: 14px;
+}
+
+
+.service-card h3 {
+    margin: 0 0 12px;
+
+    font-size: 20px;
+
+    color: var(--text);
+}
+
+
+.service-card p {
+    min-height: 72px;
+
+    margin: 0;
+
+    font-size: 15px;
+    line-height: 1.6;
+
+    color: var(--text-light);
+}
+
+
+.service-price {
+    margin-top: 24px;
+    padding-top: 18px;
+
+    border-top: 1px solid var(--border);
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: var(--green);
+}
+
+
+/* Smartphone */
+
+@media (max-width: 800px) {
+
+    .services {
+        padding: 70px 20px;
+    }
+
+
+    .services h2 {
+        font-size: 32px;
+    }
+
+
+    .services-grid {
+        grid-template-columns: 1fr;
+
+        margin-top: 40px;
+    }
+
+
+    .service-card p {
+        min-height: auto;
+    }
+
+}
+
+/* ------------------------------
+   BESCHIKBAARHEID / KALENDER
+------------------------------ */
+
+.availability {
+    padding: 100px 30px;
+
+    background-color: var(--white);
+}
+
+
+.availability-content {
+    max-width: 1200px;
+
+    margin: 0 auto;
+}
+
+
+.availability h2 {
+    max-width: 650px;
+
+    margin: 0;
+
+    font-size: 38px;
+    line-height: 1.2;
+
+    color: var(--text);
+}
+
+
+.availability-intro {
+    margin: 22px 0 0;
+
+    font-size: 17px;
+    line-height: 1.7;
+
+    color: var(--text-light);
+}
+
+/* ------------------------------
+   BESCHIKBAARHEID
+------------------------------ */
+
+.availability {
+    padding: 100px 30px;
+    background-color: var(--white);
+}
+
+.availability-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.availability h2 {
+    margin: 0;
+
+    font-size: 38px;
+    line-height: 1.2;
+
+    color: var(--text);
+}
+
+.availability-intro {
+    margin: 18px 0 0;
+
+    font-size: 17px;
+    color: var(--text-light);
+}
+
+
+/* ------------------------------
+   KALENDER + DETAILPANEEL
+------------------------------ */
+
+.calendar-layout {
+    display: grid;
+    grid-template-columns: 1.6fr 0.9fr;
+
+    gap: 24px;
+
+    margin-top: 45px;
+}
+
+
+/* Beide panelen */
+
+.calendar,
+.day-details {
+    background-color: #fbfaf7;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow: 0 8px 28px rgba(40, 45, 38, 0.06);
+}
+
+
+/* ------------------------------
+   KALENDER
+------------------------------ */
+
+.calendar {
+    padding: 28px 30px;
+}
+
+
+/* Bovenkant */
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 22px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.calendar-header h3 {
+    margin: 0;
+
+    font-size: 23px;
+    font-weight: 700;
+
+    color: var(--text);
+}
+
+
+.calendar-navigation {
+    display: flex;
+    gap: 8px;
+}
+
+
+.calendar-arrow {
+    width: 40px;
+    height: 40px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: var(--green);
+    color: white;
+
+    font-size: 24px;
+
+    cursor: pointer;
+}
+
+
+.calendar-arrow:hover {
+    background-color: var(--green-dark);
+}
+
+
+/* Weekdagen */
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+
+    margin-top: 22px;
+    margin-bottom: 8px;
+}
+
+
+.calendar-weekdays div {
+    text-align: center;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: var(--text-light);
+}
+
+
+/* Dagen */
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+
+    gap: 0;
+}
+
+
+.calendar-day,
+.calendar-empty {
+    height: 54px;
+}
+
+.calendar-day {
+    position: relative;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    background-color: transparent;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: var(--text);
+
+    cursor: pointer;
+
+    /* groter klikgebied zonder visueel groter te lijken */
+    padding: 4px;
+
+    /* achtergrond blijft binnen de visuele inhoud */
+    background-clip: content-box;
+}
+
+.calendar-day:focus,
+.calendar-day:focus-visible {
+    outline: none;
+    border-color: transparent;
+}
+
+
+
+/* Klein bolletje onder de datum */
+
+.calendar-day::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: 7px;
+    left: 50%;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    transform: translateX(-50%);
+}
+
+
+/* Beschikbaar */
+
+.calendar-day.available::after {
+    background-color: #68a875;
+}
+
+
+/* Beperkt */
+
+.calendar-day.limited::after {
+    background-color: #e3a642;
+}
+
+
+/* Vol */
+
+.calendar-day.full {
+    color: #aaa9a4;
+
+    cursor: not-allowed;
+}
+
+
+.calendar-day.full::after {
+    background-color: #bebdb8;
+}
+
+
+/* Hover */
+
+.calendar-day.available:hover,
+.calendar-day.limited:hover {
+    background-color: #eef3ec;
+
+    border-color: #cbd8c9;
+}
+
+
+/* Geselecteerde datum */
+
+.calendar-day.selected {
+    background-color: var(--green-dark);
+    color: white;
+    border-color: var(--green-dark);
+}
+
+.calendar-day.selected:hover {
+    background-color: var(--green-dark);
+    border-color: var(--green-dark);
+}
+
+
+.calendar-day.selected::after {
+    background-color: white;
+}
+
+
+/* Legende */
+
+.calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 22px;
+
+    margin-top: 24px;
+    padding-top: 20px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+.legend-item {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 13px;
+
+    color: var(--text-light);
+}
+
+
+.legend-color {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+}
+
+
+.legend-available {
+    background-color: #68a875;
+}
+
+
+.legend-limited {
+    background-color: #e3a642;
+}
+
+
+.legend-full {
+    background-color: #bebdb8;
+}
+
+
+/* ------------------------------
+   DETAILPANEEL
+------------------------------ */
+
+.day-details {
+    padding: 30px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+.day-details-label {
+    margin: 0 0 10px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    color: var(--green);
+}
+
+
+.day-details h3 {
+    margin: 0;
+
+    font-size: 23px;
+    line-height: 1.3;
+
+    color: var(--text);
+}
+
+
+/* Status */
+
+.day-status {
+    display: inline-flex;
+
+    align-self: flex-start;
+
+    margin: 14px 0 26px;
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.limited-status {
+    background-color: #f6e8ca;
+
+    color: #8b641e;
+}
+
+
+/* Beschikbare uren */
+.available-status {
+    background-color: #dcecdc;
+    color: #4e7c57;
+}
+
+.full-status {
+    background-color: #e7e6e2;
+    color: #85847f;
+}
+
+.time-slots {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.time-slot {
+    padding: 15px 16px;
+
+    border-radius: 8px;
+    border: 1px solid var(--border);
+
+    background-color: white;
+}
+
+
+.time-slot div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.time-slot strong {
+    font-size: 14px;
+
+    color: var(--text);
+}
+
+
+.time-slot span {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* Beschikbaar uur */
+
+.available-time {
+    border-left: 4px solid #68a875;
+}
+
+
+.available-time span {
+    color: #53875d;
+}
+
+
+/* Niet beschikbaar */
+
+.unavailable-time {
+    border-left: 4px solid #c3c2bd;
+
+    background-color: #f2f1ee;
+}
+
+
+.unavailable-time span {
+    color: #999892;
+}
+
+
+/* Kies deze dag */
+
+.day-select-button {
+    margin-top: auto;
+    padding-top: 14px;
+    padding-bottom: 14px;
+
+    text-align: center;
+}
+
+
+/* ------------------------------
+   SMARTPHONE
+------------------------------ */
+
+@media (max-width: 900px) {
+
+    .calendar-layout {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .availability {
+        padding: 70px 20px;
+    }
+
+
+    .availability h2 {
+        font-size: 32px;
+    }
+
+
+    .calendar {
+        padding: 22px 14px;
+    }
+
+
+    .calendar-day,
+    .calendar-empty {
+        height: 45px;
+    }
+
+
+    .calendar-day {
+        font-size: 13px;
+    }
+
+
+    .day-details {
+        padding: 24px;
+    }
+
+}
+
+/* ------------------------------
+   AFSPRAAK MAKEN
+------------------------------ */
+
+.booking {
+    padding: 100px 30px;
+
+    background-color: var(--background);
+}
+
+
+.booking-content {
+    max-width: 1200px;
+
+    margin: 0 auto;
+}
+
+
+.booking h2 {
+    margin: 0;
+
+    font-size: 38px;
+    line-height: 1.2;
+
+    color: var(--text);
+}
+
+
+.booking-intro {
+    max-width: 650px;
+
+    margin: 18px 0 0;
+
+    font-size: 17px;
+    line-height: 1.6;
+
+    color: var(--text-light);
+}
+
+
+/* Layout */
+
+.booking-layout {
+    display: grid;
+
+    grid-template-columns: 1.6fr 0.8fr;
+
+    gap: 24px;
+
+    margin-top: 45px;
+}
+
+
+.booking-card,
+.booking-summary {
+    padding: 30px;
+
+    background-color: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow: 0 8px 28px rgba(40, 45, 38, 0.05);
+}
+
+
+.booking-card h3 {
+    margin: 0 0 28px;
+
+    font-size: 22px;
+
+    color: var(--text);
+}
+
+
+/* Datum en uren */
+
+.booking-form-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 20px;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 700;
+
+    color: var(--text);
+}
+
+
+.form-group input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    background-color: #fbfaf7;
+
+    font: inherit;
+
+    color: var(--text);
+}
+
+
+.form-group input:focus {
+    outline: none;
+
+    border-color: var(--green);
+}
+
+
+/* Type opvang */
+
+.booking-type {
+    margin-top: 30px;
+}
+
+
+.booking-type>p {
+    margin: 0 0 12px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: var(--text);
+}
+
+
+.booking-option {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 10px;
+    padding: 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+
+.booking-option:hover {
+    border-color: var(--green);
+}
+
+
+.booking-option input {
+    accent-color: var(--green);
+}
+
+
+.booking-option span {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.booking-option strong {
+    font-size: 14px;
+
+    color: var(--text);
+}
+
+
+.booking-option small {
+    font-size: 12px;
+
+    color: var(--text-light);
+}
+
+
+/* Prijs knop */
+
+.calculate-button {
+    width: 100%;
+
+    margin-top: 28px;
+    padding: 14px 20px;
+
+    border: none;
+    border-radius: 7px;
+
+    background-color: var(--green);
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.calculate-button:hover {
+    background-color: var(--green-dark);
+}
+
+
+/* Samenvatting */
+
+.booking-summary {
+    align-self: start;
+}
+
+
+.booking-summary-label {
+    margin: 0 0 10px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    color: var(--green);
+}
+
+
+.booking-summary h3 {
+    margin: 0;
+
+    font-size: 21px;
+    line-height: 1.3;
+
+    color: var(--text);
+}
+
+
+.booking-summary-text {
+    margin: 14px 0 0;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    color: var(--text-light);
+}
+
+
+/* Prijs verschijnt later */
+
+.price-result {
+    margin-top: 28px;
+    padding-top: 22px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+.price-result span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 13px;
+
+    color: var(--text-light);
+}
+
+
+.price-result strong {
+    font-size: 30px;
+
+    color: var(--green-dark);
+}
+
+
+/* Smartphone */
+
+@media (max-width: 850px) {
+
+    .booking-layout {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .booking {
+        padding: 70px 20px;
+    }
+
+
+    .booking h2 {
+        font-size: 32px;
+    }
+
+
+    .booking-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .booking-card,
+    .booking-summary {
+        padding: 22px;
+    }
+
+}
+
+/* ------------------------------
+   AFSPRAAK ONDER KALENDER
+------------------------------ */
+
+.booking-controls {
+    margin-top: 24px;
+    padding: 32px;
+
+    background-color: #fbfaf7;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow: 0 8px 28px rgba(40, 45, 38, 0.05);
+}
+
+
+.booking-controls-header {
+    padding-bottom: 25px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.booking-step {
+    margin: 0 0 8px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    color: var(--green);
+}
+
+
+.booking-controls-header h3 {
+    margin: 0;
+
+    font-size: 24px;
+
+    color: var(--text);
+}
+
+
+.booking-controls-header p:last-child {
+    margin: 9px 0 0;
+
+    font-size: 14px;
+
+    color: var(--text-light);
+}
+
+
+/* Datum + uren */
+
+.booking-period-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 16px;
+
+    margin-top: 25px;
+}
+
+
+.booking-field {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.booking-field label {
+    font-size: 12px;
+    font-weight: 700;
+
+    color: var(--text);
+}
+
+
+.booking-field input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    background-color: white;
+
+    font: inherit;
+
+    color: var(--text);
+}
+
+
+.booking-field input:focus {
+    outline: none;
+
+    border-color: var(--green);
+}
+
+
+/* Type opvang */
+
+.booking-type-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 14px;
+
+    margin-top: 22px;
+}
+
+
+.booking-choice {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 15px;
+
+    background-color: white;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+
+.booking-choice:hover {
+    border-color: var(--green);
+}
+
+
+.booking-choice input {
+    accent-color: var(--green);
+}
+
+
+.booking-choice span {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.booking-choice strong {
+    font-size: 14px;
+
+    color: var(--text);
+}
+
+
+.booking-choice small {
+    font-size: 12px;
+
+    color: var(--text-light);
+}
+
+
+/* Onderste rij */
+
+.booking-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-top: 25px;
+    padding-top: 22px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+.booking-selection {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.booking-selection span {
+    font-size: 12px;
+
+    color: var(--text-light);
+}
+
+
+.booking-selection strong {
+    font-size: 16px;
+
+    color: var(--text);
+}
+
+
+.calculate-button {
+    padding: 14px 22px;
+
+    border: none;
+    border-radius: 7px;
+
+    background-color: var(--green);
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.calculate-button:hover {
+    background-color: var(--green-dark);
+}
+
+
+/* Responsive */
+
+@media (max-width: 900px) {
+
+    .booking-period-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .booking-controls {
+        padding: 22px;
+    }
+
+
+    .booking-period-grid,
+    .booking-type-row {
+        grid-template-columns: 1fr;
+    }
+
+
+    .booking-action {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .calculate-button {
+        width: 100%;
+    }
+
+}
+
+/* ------------------------------
+   PERIODE SELECTEREN
+------------------------------ */
+.calendar-day.in-range {
+    background-color: var(--green-dark);
+    color: white;
+    border-color: transparent;
+
+    border-radius: 12px;
+}
+
+.calendar-day.in-range:hover {
+    background-color: var(--green-dark);
+    color: white;
+}
+
+.calendar-day.in-range::after {
+    background-color: white;
+}
+
+
+.calendar-day.range-start,
+.calendar-day.range-end,
+.calendar-day.selected {
+    background-color: var(--green-dark);
+    color: white;
+    border-color: transparent;
+
+    border-radius: 12px;
+}
+
+.calendar-day.range-start:hover,
+.calendar-day.range-end:hover,
+.calendar-day.selected:hover {
+    background-color: var(--green-dark);
+    color: white;
+}
+
+
+
+
+
+.calendar-day.range-start::after,
+.calendar-day.range-end::after {
+    background-color: white;
+}
+
+
+/* ------------------------------
+   MELDING & PRIJS
+------------------------------ */
+
+.booking-message {
+    min-height: 20px;
+
+    margin-top: 18px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #8b641e;
+}
+
+
+.price-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 14px;
+    padding: 20px;
+
+    background-color: #eef3ec;
+
+    border: 1px solid #d6e1d3;
+    border-radius: 8px;
+}
+
+
+.price-result[hidden] {
+    display: none;
+}
+
+
+.price-result span {
+    font-size: 14px;
+
+    color: var(--text-light);
+}
+
+
+.price-result strong {
+    font-size: 28px;
+
+    color: var(--green-dark);
+}
+
+.booking-field select {
+    width: 100%;
+    padding: 13px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    background-color: white;
+
+    font: inherit;
+    color: var(--text);
+
+    cursor: pointer;
+}
+
+.booking-field select:focus {
+    outline: none;
+    border-color: var(--green);
+}
