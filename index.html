@@ -12,45 +12,58 @@
 
 <body>
 
-    <header>
-        <nav>
-            <h1>TeckelWeb</h1>
+    <header class="site-header">
+        <nav class="navbar">
 
-            <a href="#over">Over</a>
-            <a href="#prijzen">Prijzen</a>
-            <a href="#kalender">Kalender</a>
-            <a href="#afspraak">Afspraak maken</a>
+            <a href="#home" class="logo">
+                TeckelWeb
+            </a>
+
+            <div class="nav-links">
+                <a href="#over">Over de opvang</a>
+                <a href="#prijzen">Diensten & prijzen</a>
+                <a href="#kalender">Beschikbaarheid</a>
+            </div>
+
+            <a href="#afspraak" class="nav-button">
+                Afspraak maken
+            </a>
+
         </nav>
     </header>
 
     <main>
 
-        <section id="home">
-            <h2>Een fijne plek voor uw hond</h2>
-            <p>Dagopvang en overnachting in een rustige omgeving.</p>
+        <section id="home" class="hero">
 
-            <a href="#afspraak">Afspraak maken</a>
-            <a href="#kalender">Bekijk beschikbaarheid</a>
-        </section>
+            <div class="hero-content">
 
-        <section id="over">
-            <h2>Over de opvang</h2>
-        </section>
+                <p class="hero-label">
+                    Hondenopvang met persoonlijke zorg
+                </p>
 
-        <section id="prijzen">
-            <h2>Diensten & prijzen</h2>
-        </section>
+                <h2>
+                    Een rustige en vertrouwde plek voor uw hond
+                </h2>
 
-        <section id="kalender">
-            <h2>Beschikbaarheid</h2>
-        </section>
+                <p class="hero-text">
+                    Dagopvang en overnachting in een veilige, huiselijke omgeving.
+                </p>
 
-        <section id="afspraak">
-            <h2>Afspraak maken</h2>
-        </section>
+                <div class="hero-buttons">
 
-        <section id="reviews">
-            <h2>Reviews</h2>
+                    <a href="#afspraak" class="button-primary">
+                        Afspraak maken
+                    </a>
+
+                    <a href="#kalender" class="button-secondary">
+                        Bekijk beschikbaarheid
+                    </a>
+
+                </div>
+
+            </div>
+
         </section>
 
     </main>
@@ -62,4 +75,5 @@
     <script src="js/script.js"></script>
 
 </body>
+
 </html>
