@@ -1221,7 +1221,9 @@ if (submitBookingButton) {
                 customerNameInput.value.trim();
 
             const email =
-                customerEmailInput.value.trim();
+                customerEmailInput.value
+                    .trim()
+                    .toLowerCase();
 
             const phone =
                 customerPhoneInput.value.trim();
