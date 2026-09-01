@@ -1,10 +1,16 @@
+import {
+    saveReservation
+} from "./firebase.js";
 /* =========================================
-   TECKELWEB - KALENDER & RESERVATIE
+   TECKELWEB
+   KALENDER + RESERVATIE
 ========================================= */
 
 
 /* -----------------------------------------
-   VOORBEELD BESCHIKBAARHEID
+   BESCHIKBAARHEID
+
+   Later komt dit uit Firebase.
 ----------------------------------------- */
 
 const dayData = {
@@ -17,6 +23,18 @@ const dayData = {
             ["12:00 – 14:00", false],
             ["14:00 – 18:00", true]
         ]
+    },
+
+    "2026-09-05": {
+        status: "Volzet",
+        type: "full",
+        times: []
+    },
+
+    "2026-09-06": {
+        status: "Volzet",
+        type: "full",
+        times: []
     },
 
     "2026-09-11": {
@@ -39,6 +57,18 @@ const dayData = {
         ]
     },
 
+    "2026-09-19": {
+        status: "Volzet",
+        type: "full",
+        times: []
+    },
+
+    "2026-09-20": {
+        status: "Volzet",
+        type: "full",
+        times: []
+    },
+
     "2026-09-23": {
         status: "Beperkt beschikbaar",
         type: "limited",
@@ -48,6 +78,7 @@ const dayData = {
             ["15:00 – 18:00", true]
         ]
     }
+
 };
 
 
@@ -60,12 +91,25 @@ const defaultAvailableTimes = [
 
 
 /* -----------------------------------------
-   ELEMENTEN
+   HTML-ELEMENTEN
 ----------------------------------------- */
 
-const calendarDays = Array.from(
-    document.querySelectorAll(".calendar-day")
-);
+/* Kalender */
+
+const calendarGrid =
+    document.getElementById("calendar-grid");
+
+const calendarMonthTitle =
+    document.getElementById("calendar-month-title");
+
+const previousMonthButton =
+    document.getElementById("calendar-prev");
+
+const nextMonthButton =
+    document.getElementById("calendar-next");
+
+
+/* Detailpaneel */
 
 const selectedDateTitle =
     document.getElementById("selected-date");
@@ -75,6 +119,9 @@ const dayStatus =
 
 const timeSlots =
     document.querySelector(".time-slots");
+
+
+/* Reservatie */
 
 const startDateInput =
     document.getElementById("start-date");
@@ -91,6 +138,9 @@ const departureTimeInput =
 const selectedPeriod =
     document.getElementById("selected-period");
 
+
+/* Prijs */
+
 const calculateButton =
     document.getElementById("calculate-price");
 
@@ -104,9 +154,47 @@ const priceValue =
     document.getElementById("price-value");
 
 
+/* Nieuwe klantgegevens */
+
+const bookingDetails =
+    document.getElementById("booking-details");
+
+const submitBookingButton =
+    document.getElementById("submit-booking");
+
+const customerNameInput =
+    document.getElementById("customer-name");
+
+const customerEmailInput =
+    document.getElementById("customer-email");
+
+const customerPhoneInput =
+    document.getElementById("customer-phone");
+
+const dogNameInput =
+    document.getElementById("dog-name");
+
+const bookingNotesInput =
+    document.getElementById("booking-notes");
+
+
 
 /* -----------------------------------------
-   SELECTIESTATUS
+   HUIDIGE MAAND
+----------------------------------------- */
+
+const today = new Date();
+
+let displayedMonth = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    1
+);
+
+
+
+/* -----------------------------------------
+   GESELECTEERDE PERIODE
 ----------------------------------------- */
 
 let rangeStart = null;
@@ -114,76 +202,281 @@ let rangeEnd = null;
 
 let isDragging = false;
 
+let calendarDays = [];
+
 
 
 /* -----------------------------------------
-   DATUMFUNCTIES
+   DATUM HULPFUNCTIES
 ----------------------------------------- */
 
 function parseDate(dateString) {
 
-    const [year, month, day] = dateString
-        .split("-")
-        .map(Number);
+    const [year, month, day] =
+        dateString.split("-").map(Number);
 
-    return new Date(year, month - 1, day);
+    return new Date(
+        year,
+        month - 1,
+        day
+    );
 }
+
+
+
+function makeDateString(year, month, day) {
+
+    const formattedMonth =
+        String(month + 1).padStart(2, "0");
+
+    const formattedDay =
+        String(day).padStart(2, "0");
+
+
+    return `${year}-${formattedMonth}-${formattedDay}`;
+}
+
 
 
 function formatDate(dateString) {
 
-    const date = parseDate(dateString);
+    const date =
+        parseDate(dateString);
 
-    return new Intl.DateTimeFormat("nl-BE", {
-        weekday: "long",
-        day: "numeric",
-        month: "long"
-    }).format(date);
+
+    return new Intl.DateTimeFormat(
+        "nl-BE",
+        {
+            weekday: "long",
+            day: "numeric",
+            month: "long"
+        }
+    ).format(date);
 }
+
 
 
 function formatShortDate(dateString) {
 
-    const date = parseDate(dateString);
-
-    return new Intl.DateTimeFormat("nl-BE", {
-        day: "numeric",
-        month: "short"
-    }).format(date);
+    return new Intl.DateTimeFormat(
+        "nl-BE",
+        {
+            day: "numeric",
+            month: "short"
+        }
+    ).format(
+        parseDate(dateString)
+    );
 }
 
 
 
 /* -----------------------------------------
-   DETAILS VAN ÉÉN DAG
+   STATUS VAN EEN DAG
+----------------------------------------- */
+
+function getDayData(dateString) {
+
+    if (dayData[dateString]) {
+        return dayData[dateString];
+    }
+
+
+    return {
+        status: "Beschikbaar",
+        type: "available",
+        times: defaultAvailableTimes
+    };
+}
+
+
+
+/* -----------------------------------------
+   KALENDER GENEREREN
+----------------------------------------- */
+
+function renderCalendar() {
+
+    const year =
+        displayedMonth.getFullYear();
+
+    const month =
+        displayedMonth.getMonth();
+
+
+    /* Titel */
+
+    let monthTitle =
+        new Intl.DateTimeFormat(
+            "nl-BE",
+            {
+                month: "long",
+                year: "numeric"
+            }
+        ).format(displayedMonth);
+
+
+    monthTitle =
+        monthTitle.charAt(0).toUpperCase()
+        + monthTitle.slice(1);
+
+
+    calendarMonthTitle.textContent =
+        monthTitle;
+
+
+    /* Oude kalender leegmaken */
+
+    calendarGrid.innerHTML = "";
+
+
+    /*
+        JavaScript:
+        zondag = 0
+        maandag = 1
+
+        Onze kalender:
+        maandag = eerste kolom
+    */
+
+    const firstDay =
+        new Date(year, month, 1).getDay();
+
+    const emptyCells =
+        (firstDay + 6) % 7;
+
+
+    /* Lege vakken vóór dag 1 */
+
+    for (
+        let i = 0;
+        i < emptyCells;
+        i++
+    ) {
+
+        const empty =
+            document.createElement("div");
+
+        empty.className =
+            "calendar-empty";
+
+        calendarGrid.appendChild(empty);
+    }
+
+
+    /* Aantal dagen */
+
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    /* Kalenderdagen maken */
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
+
+        const dateString =
+            makeDateString(
+                year,
+                month,
+                day
+            );
+
+
+        const data =
+            getDayData(dateString);
+
+
+        const button =
+            document.createElement("button");
+
+
+        button.type = "button";
+
+        button.className =
+            `calendar-day ${data.type}`;
+
+        button.dataset.date =
+            dateString;
+
+        button.textContent =
+            day;
+
+
+        if (data.type === "full") {
+            button.disabled = true;
+        }
+
+
+        calendarGrid.appendChild(button);
+    }
+
+
+    /* Nieuwe kalenderdagen ophalen */
+
+    calendarDays =
+        Array.from(
+            calendarGrid.querySelectorAll(
+                ".calendar-day"
+            )
+        );
+
+
+    addCalendarEvents();
+
+    drawRange();
+}
+
+
+
+/* -----------------------------------------
+   DETAILPANEEL
 ----------------------------------------- */
 
 function showTimeSlots(times) {
 
     timeSlots.innerHTML = "";
 
-    times.forEach(([time, available]) => {
 
-        const slot = document.createElement("div");
+    times.forEach(
+        ([time, available]) => {
 
-        slot.className = available
-            ? "time-slot available-time"
-            : "time-slot unavailable-time";
+            const slot =
+                document.createElement("div");
 
-        slot.innerHTML = `
-            <div>
-                <strong>${time}</strong>
-                <span>
-                    ${available
-                ? "Beschikbaar"
-                : "Niet beschikbaar"}
-                </span>
-            </div>
-        `;
 
-        timeSlots.appendChild(slot);
-    });
+            slot.className =
+                available
+                    ? "time-slot available-time"
+                    : "time-slot unavailable-time";
+
+
+            slot.innerHTML = `
+                <div>
+                    <strong>${time}</strong>
+
+                    <span>
+                        ${available
+                    ? "Beschikbaar"
+                    : "Niet beschikbaar"
+                }
+                    </span>
+                </div>
+            `;
+
+
+            timeSlots.appendChild(slot);
+        }
+    );
 }
+
 
 
 function updateStatus(type, text) {
@@ -194,50 +487,57 @@ function updateStatus(type, text) {
         "full-status"
     );
 
+
     dayStatus.classList.add(
         `${type}-status`
     );
 
-    dayStatus.textContent = text;
+
+    dayStatus.textContent =
+        text;
 }
 
 
-function showDayDetails(date) {
+
+function showDayDetails(dateString) {
+
+    const data =
+        getDayData(dateString);
+
 
     selectedDateTitle.textContent =
-        formatDate(date);
+        formatDate(dateString);
 
 
-    if (dayData[date]) {
+    updateStatus(
+        data.type,
+        data.status
+    );
 
-        const data = dayData[date];
 
-        updateStatus(
-            data.type,
-            data.status
-        );
+    if (data.type === "full") {
 
-        showTimeSlots(
-            data.times
-        );
+        timeSlots.innerHTML = `
+            <div class="time-slot unavailable-time">
+                <div>
+                    <strong>
+                        Deze dag is volzet
+                    </strong>
+                </div>
+            </div>
+        `;
 
-    } else {
-
-        updateStatus(
-            "available",
-            "Beschikbaar"
-        );
-
-        showTimeSlots(
-            defaultAvailableTimes
-        );
+        return;
     }
+
+
+    showTimeSlots(data.times);
 }
 
 
 
 /* -----------------------------------------
-   RANGE OP KALENDER TONEN
+   RANGE TONEN
 ----------------------------------------- */
 
 function clearRangeClasses() {
@@ -254,9 +554,11 @@ function clearRangeClasses() {
 }
 
 
+
 function drawRange() {
 
     clearRangeClasses();
+
 
     if (!rangeStart) {
         return;
@@ -267,20 +569,28 @@ function drawRange() {
         parseDate(rangeStart);
 
     const end =
-        parseDate(rangeEnd || rangeStart);
+        parseDate(
+            rangeEnd || rangeStart
+        );
 
 
     const first =
-        start <= end ? start : end;
+        start <= end
+            ? start
+            : end;
 
     const last =
-        start <= end ? end : start;
+        start <= end
+            ? end
+            : start;
 
 
     calendarDays.forEach(day => {
 
         const current =
-            parseDate(day.dataset.date);
+            parseDate(
+                day.dataset.date
+            );
 
 
         if (
@@ -288,56 +598,53 @@ function drawRange() {
             current <= last
         ) {
 
-            day.classList.add("in-range");
+            day.classList.add(
+                "in-range"
+            );
         }
     });
 
 
-    function dateToLocalString(date) {
-
-        const year = date.getFullYear();
-
-        const month = String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-        const day = String(
-            date.getDate()
-        ).padStart(2, "0");
-
-
-        return `${year}-${month}-${day}`;
-    }
-
-
-    const startString =
-        dateToLocalString(first);
-
-    const endString =
-        dateToLocalString(last);
-
-
-    const startElement =
-        document.querySelector(
-            `.calendar-day[data-date="${startString}"]`
-        );
-
-    const endElement =
-        document.querySelector(
-            `.calendar-day[data-date="${endString}"]`
+    const firstString =
+        makeDateString(
+            first.getFullYear(),
+            first.getMonth(),
+            first.getDate()
         );
 
 
-    if (startElement) {
-        startElement.classList.add(
+    const lastString =
+        makeDateString(
+            last.getFullYear(),
+            last.getMonth(),
+            last.getDate()
+        );
+
+
+    const firstElement =
+        calendarGrid.querySelector(
+            `[data-date="${firstString}"]`
+        );
+
+
+    const lastElement =
+        calendarGrid.querySelector(
+            `[data-date="${lastString}"]`
+        );
+
+
+    if (firstElement) {
+
+        firstElement.classList.add(
             "range-start",
             "selected"
         );
     }
 
 
-    if (endElement) {
-        endElement.classList.add(
+    if (lastElement) {
+
+        lastElement.classList.add(
             "range-end",
             "selected"
         );
@@ -347,35 +654,80 @@ function drawRange() {
 
 
 /* -----------------------------------------
-   CHECK OP VOLLE DAGEN
+   VOLLE DAG IN PERIODE?
 ----------------------------------------- */
 
-function rangeContainsFullDay(startString, endString) {
+function rangeContainsFullDay(
+    startString,
+    endString
+) {
 
-    const start = parseDate(startString);
-    const end = parseDate(endString);
+    let current =
+        parseDate(startString);
+
+    const end =
+        parseDate(endString);
+
 
     const first =
-        start <= end ? start : end;
+        current <= end
+            ? current
+            : end;
 
     const last =
-        start <= end ? end : start;
+        current <= end
+            ? end
+            : current;
 
 
-    return calendarDays.some(day => {
+    current =
+        new Date(first);
 
-        if (!day.classList.contains("full")) {
-            return false;
+
+    while (current <= last) {
+
+        const dateString =
+            makeDateString(
+                current.getFullYear(),
+                current.getMonth(),
+                current.getDate()
+            );
+
+
+        if (
+            getDayData(dateString).type
+            === "full"
+        ) {
+
+            return true;
         }
 
-        const date =
-            parseDate(day.dataset.date);
 
-        return (
-            date >= first &&
-            date <= last
+        current.setDate(
+            current.getDate() + 1
         );
-    });
+    }
+
+
+    return false;
+}
+
+
+
+/* -----------------------------------------
+   BEREKENDE GEGEVENS OPNIEUW VERBERGEN
+----------------------------------------- */
+
+function resetCalculatedBooking() {
+
+    priceResult.hidden = true;
+
+    if (bookingDetails) {
+        bookingDetails.hidden = true;
+    }
+
+
+    bookingMessage.textContent = "";
 }
 
 
@@ -391,8 +743,11 @@ function updateBookingFields() {
     }
 
 
-    let first = rangeStart;
-    let last = rangeEnd || rangeStart;
+    let first =
+        rangeStart;
+
+    let last =
+        rangeEnd || rangeStart;
 
 
     if (
@@ -405,32 +760,37 @@ function updateBookingFields() {
     }
 
 
-    startDateInput.value = first;
-    endDateInput.value = last;
+    startDateInput.value =
+        first;
+
+    endDateInput.value =
+        last;
 
 
     selectedPeriod.textContent =
         `${formatShortDate(first)} → ${formatShortDate(last)}`;
 
 
-    priceResult.hidden = true;
-    bookingMessage.textContent = "";
+    resetCalculatedBooking();
 }
 
 
 
 /* -----------------------------------------
-   START VAN SELECTIE
+   SELECTIE STARTEN
 ----------------------------------------- */
 
 function startSelection(day) {
 
-    if (day.classList.contains("full")) {
+    if (
+        day.classList.contains("full")
+    ) {
         return;
     }
 
 
     isDragging = true;
+
 
     rangeStart =
         day.dataset.date;
@@ -442,6 +802,7 @@ function startSelection(day) {
     showDayDetails(
         day.dataset.date
     );
+
 
     drawRange();
 
@@ -460,7 +821,10 @@ function extendSelection(day) {
         return;
     }
 
-    if (day.classList.contains("full")) {
+
+    if (
+        day.classList.contains("full")
+    ) {
         return;
     }
 
@@ -475,6 +839,7 @@ function extendSelection(day) {
             candidateEnd
         )
     ) {
+
         return;
     }
 
@@ -491,49 +856,52 @@ function extendSelection(day) {
 
 
 /* -----------------------------------------
-   MUISINTERACTIE
+   EVENTS OP KALENDER
 ----------------------------------------- */
 
-calendarDays.forEach(day => {
+function addCalendarEvents() {
 
-    if (day.classList.contains("full")) {
+    calendarDays.forEach(day => {
 
-        day.disabled = true;
-
-        return;
-    }
-
-
-    day.addEventListener(
-        "mousedown",
-        event => {
-
-            event.preventDefault();
-
-            startSelection(day);
+        if (
+            day.classList.contains("full")
+        ) {
+            return;
         }
-    );
 
 
-    day.addEventListener(
-        "mouseenter",
-        () => {
+        day.addEventListener(
+            "mousedown",
+            event => {
 
-            extendSelection(day);
-        }
-    );
+                event.preventDefault();
+
+                startSelection(day);
+            }
+        );
 
 
-    day.addEventListener(
-        "click",
-        () => {
+        day.addEventListener(
+            "mouseenter",
+            () => {
 
-            showDayDetails(
-                day.dataset.date
-            );
-        }
-    );
-});
+                extendSelection(day);
+            }
+        );
+
+
+        day.addEventListener(
+            "click",
+            () => {
+
+                showDayDetails(
+                    day.dataset.date
+                );
+            }
+        );
+    });
+}
+
 
 
 document.addEventListener(
@@ -547,7 +915,51 @@ document.addEventListener(
 
 
 /* -----------------------------------------
-   DATUM INPUT → KALENDER
+   VORIGE MAAND
+----------------------------------------- */
+
+previousMonthButton.addEventListener(
+    "click",
+    () => {
+
+        displayedMonth =
+            new Date(
+                displayedMonth.getFullYear(),
+                displayedMonth.getMonth() - 1,
+                1
+            );
+
+
+        renderCalendar();
+    }
+);
+
+
+
+/* -----------------------------------------
+   VOLGENDE MAAND
+----------------------------------------- */
+
+nextMonthButton.addEventListener(
+    "click",
+    () => {
+
+        displayedMonth =
+            new Date(
+                displayedMonth.getFullYear(),
+                displayedMonth.getMonth() + 1,
+                1
+            );
+
+
+        renderCalendar();
+    }
+);
+
+
+
+/* -----------------------------------------
+   DATUMVELDEN → KALENDER
 ----------------------------------------- */
 
 function syncInputsToCalendar() {
@@ -564,8 +976,11 @@ function syncInputsToCalendar() {
     }
 
 
-    rangeStart = start;
-    rangeEnd = end || start;
+    rangeStart =
+        start;
+
+    rangeEnd =
+        end || start;
 
 
     if (
@@ -582,12 +997,23 @@ function syncInputsToCalendar() {
     }
 
 
-    bookingMessage.textContent = "";
+    const startDate =
+        parseDate(start);
 
-    drawRange();
+
+    displayedMonth =
+        new Date(
+            startDate.getFullYear(),
+            startDate.getMonth(),
+            1
+        );
+
+
+    renderCalendar();
 
     updateBookingFields();
 }
+
 
 
 startDateInput.addEventListener(
@@ -604,6 +1030,37 @@ endDateInput.addEventListener(
 
 
 /* -----------------------------------------
+   ALS UREN OF TYPE WIJZIGEN:
+   PRIJS OPNIEUW LATEN CONTROLEREN
+----------------------------------------- */
+
+arrivalTimeInput.addEventListener(
+    "change",
+    resetCalculatedBooking
+);
+
+
+departureTimeInput.addEventListener(
+    "change",
+    resetCalculatedBooking
+);
+
+
+document
+    .querySelectorAll(
+        'input[name="booking-type"]'
+    )
+    .forEach(radio => {
+
+        radio.addEventListener(
+            "change",
+            resetCalculatedBooking
+        );
+    });
+
+
+
+/* -----------------------------------------
    PRIJS BEREKENEN
 ----------------------------------------- */
 
@@ -614,6 +1071,10 @@ calculateButton.addEventListener(
         bookingMessage.textContent = "";
 
         priceResult.hidden = true;
+
+        if (bookingDetails) {
+            bookingDetails.hidden = true;
+        }
 
 
         const start =
@@ -634,6 +1095,8 @@ calculateButton.addEventListener(
             );
 
 
+        /* Alles ingevuld? */
+
         if (
             !start ||
             !end ||
@@ -649,6 +1112,8 @@ calculateButton.addEventListener(
         }
 
 
+        /* Einddatum geldig? */
+
         if (
             parseDate(end) <
             parseDate(start)
@@ -660,6 +1125,8 @@ calculateButton.addEventListener(
             return;
         }
 
+
+        /* Volle dagen? */
 
         if (
             rangeContainsFullDay(
@@ -675,9 +1142,11 @@ calculateButton.addEventListener(
         }
 
 
+        /* Aantal dagen */
+
         const difference =
-            parseDate(end) -
-            parseDate(start);
+            parseDate(end)
+            - parseDate(start);
 
 
         const days =
@@ -690,8 +1159,11 @@ calculateButton.addEventListener(
         let price;
 
 
+        /* Voorlopige testprijzen */
+
         if (
-            bookingType.value === "daycare"
+            bookingType.value
+            === "daycare"
         ) {
 
             price =
@@ -707,6 +1179,8 @@ calculateButton.addEventListener(
         }
 
 
+        /* Prijs tonen */
+
         priceValue.textContent =
             `€${price}`;
 
@@ -714,7 +1188,187 @@ calculateButton.addEventListener(
         priceResult.hidden = false;
 
 
+        /* Stap 2 tonen */
+
+        if (bookingDetails) {
+            bookingDetails.hidden = false;
+        }
+
+
         bookingMessage.textContent =
             "De geselecteerde periode is geldig.";
     }
 );
+
+
+
+/* -----------------------------------------
+   RESERVATIEGEGEVENS CONTROLEREN
+
+   Nog GEEN Firebase.
+----------------------------------------- */
+
+if (submitBookingButton) {
+
+    submitBookingButton.addEventListener(
+        "click",
+        async () => {
+
+            bookingMessage.textContent = "";
+
+
+            const name =
+                customerNameInput.value.trim();
+
+            const email =
+                customerEmailInput.value.trim();
+
+            const phone =
+                customerPhoneInput.value.trim();
+
+            const dogName =
+                dogNameInput.value.trim();
+
+            const notes =
+                bookingNotesInput.value.trim();
+
+
+            /* Verplichte velden */
+
+            if (
+                !name ||
+                !email ||
+                !phone ||
+                !dogName
+            ) {
+
+                bookingMessage.textContent =
+                    "Vul eerst alle verplichte gegevens in.";
+
+                return;
+            }
+
+
+            /* E-mail controleren */
+
+            if (
+                !email.includes("@") ||
+                !email.includes(".")
+            ) {
+
+                bookingMessage.textContent =
+                    "Vul een geldig e-mailadres in.";
+
+                return;
+            }
+
+
+            /* Reservatie maken */
+
+            const reservation = {
+
+                customer: {
+                    name: name,
+                    email: email,
+                    phone: phone
+                },
+
+                dog: {
+                    name: dogName
+                },
+
+                booking: {
+                    startDate:
+                        startDateInput.value,
+
+                    endDate:
+                        endDateInput.value,
+
+                    arrivalTime:
+                        arrivalTimeInput.value,
+
+                    departureTime:
+                        departureTimeInput.value,
+
+                    type:
+                        document.querySelector(
+                            'input[name="booking-type"]:checked'
+                        )?.value || ""
+                },
+
+                notes: notes,
+
+                price:
+                    priceValue.textContent
+
+            };
+
+
+            /* Knop tijdelijk blokkeren */
+
+            submitBookingButton.disabled = true;
+
+            submitBookingButton.textContent =
+                "Reservatie versturen...";
+
+
+            try {
+
+                const reservationId =
+                    await saveReservation(
+                        reservation
+                    );
+
+
+                console.log(
+                    "Reservatie opgeslagen:",
+                    reservationId
+                );
+
+
+                bookingMessage.textContent =
+                    "Uw reservatieaanvraag werd succesvol verstuurd.";
+
+                submitBookingButton.textContent =
+                    "Reservatie verstuurd";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Fout bij opslaan:",
+                    error
+                );
+
+
+                bookingMessage.textContent =
+                    "Er ging iets mis. Probeer opnieuw.";
+
+
+                submitBookingButton.disabled = false;
+
+                submitBookingButton.textContent =
+                    "Reservatie aanvragen";
+            }
+
+        }
+    );
+}
+
+
+/* -----------------------------------------
+   WEBSITE STARTEN
+----------------------------------------- */
+
+renderCalendar();
+
+
+const todayString =
+    makeDateString(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+    );
+
+
+showDayDetails(todayString);

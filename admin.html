@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TeckelWeb | Beheer</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <main class="admin-page">
+
+        <section class="admin-login">
+
+            <div class="admin-login-card">
+
+                <p class="section-label">
+                    Beheer
+                </p>
+
+                <h1>
+                    TeckelWeb beheer
+                </h1>
+
+                <p>
+                    Log in om reservaties en beschikbaarheid te beheren.
+                </p>
+
+
+                <button type="button" id="google-login" class="admin-login-button">
+                    Inloggen met Google
+                </button>
+
+
+                <p id="admin-message" class="admin-message"></p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Later komt hier het echte dashboard -->
+
+        <section id="admin-dashboard" class="admin-dashboard" hidden>
+
+            <div class="admin-dashboard-header">
+
+                <div>
+
+                    <p class="section-label">
+                        Dashboard
+                    </p>
+
+                    <h1>
+                        Reservaties
+                    </h1>
+
+                    <p id="admin-user"></p>
+
+                </div>
+
+
+                <button type="button" id="logout-button" class="admin-logout-button">
+                    Uitloggen
+                </button>
+
+            </div>
+
+
+            <div class="admin-reservations">
+
+                <div class="admin-reservations-header">
+
+                    <div>
+                        <h2>
+                            Reservatieaanvragen
+                        </h2>
+
+                        <p>
+                            Bekijk hier de aanvragen van klanten.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div id="reservations-list" class="reservations-list">
+
+                    <p class="reservations-loading">
+                        Reservaties laden...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script type="module" src="js/admin.js"></script>
+
+</body>
+
+</html>
