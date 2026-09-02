@@ -18,12 +18,13 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
     signOut,
-    onAuthStateChanged,
-    sendSignInLinkToEmail,
-    isSignInWithEmailLink,
-    signInWithEmailLink
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
+
+/* =========================================
+   FIREBASE CONFIG
+========================================= */
 
 const firebaseConfig = {
     apiKey: "AIzaSyBIvAp40mYiAi9mB2P7CQG8Lw5xQ8m85hE",
@@ -35,41 +36,58 @@ const firebaseConfig = {
 };
 
 
-/* Firebase starten */
+/* =========================================
+   FIREBASE STARTEN
+========================================= */
 
 const app =
     initializeApp(firebaseConfig);
 
-
-/* Firestore */
-
 const db =
     getFirestore(app);
 
-
-/* Authentication */
-
 const auth =
     getAuth(app);
+
+
+/* =========================================
+   GOOGLE AUTHENTICATION
+========================================= */
 
 const googleProvider =
     new GoogleAuthProvider();
 
 
+/*
+    Laat bij een nieuwe login altijd toe
+    om een Google-account te kiezen.
+*/
 
-/* -----------------------------------------
+googleProvider.setCustomParameters({
+    prompt: "select_account"
+});
+
+
+
+/* =========================================
    RESERVATIE OPSLAAN
------------------------------------------ */
+========================================= */
 
-export async function saveReservation(reservation) {
+export async function saveReservation(
+    reservation
+) {
 
     const docRef =
         await addDoc(
-            collection(db, "reservations"),
+            collection(
+                db,
+                "reservations"
+            ),
             {
                 ...reservation,
 
-                status: "pending",
+                status:
+                    "pending",
 
                 createdAt:
                     serverTimestamp()
@@ -80,46 +98,73 @@ export async function saveReservation(reservation) {
     return docRef.id;
 }
 
-/* -----------------------------------------
-   RESERVATIES OPHALEN
------------------------------------------ */
+
+
+/* =========================================
+   ADMIN: ALLE RESERVATIES OPHALEN
+========================================= */
 
 export async function getReservations() {
 
     const reservationsQuery =
         query(
-            collection(db, "reservations"),
-            orderBy("createdAt", "desc")
+            collection(
+                db,
+                "reservations"
+            ),
+            orderBy(
+                "createdAt",
+                "desc"
+            )
         );
 
 
     const snapshot =
-        await getDocs(reservationsQuery);
+        await getDocs(
+            reservationsQuery
+        );
 
 
-    return snapshot.docs.map(doc => {
+    return snapshot.docs.map(
+        document => {
 
-        return {
-            id: doc.id,
-            ...doc.data()
-        };
+            return {
+                id:
+                    document.id,
 
-    });
+                ...document.data()
+            };
+        }
+    );
 }
-/* -----------------------------------------
-   RESERVATIES VAN ÉÉN KLANT OPHALEN
------------------------------------------ */
 
-export async function getCustomerReservations(email) {
+
+
+/* =========================================
+   KLANT: EIGEN RESERVATIES OPHALEN
+========================================= */
+
+export async function getCustomerReservations(
+    email
+) {
+
+    const normalizedEmail =
+        email
+            .trim()
+            .toLowerCase();
+
 
     const reservationsQuery =
         query(
-            collection(db, "reservations"),
+            collection(
+                db,
+                "reservations"
+            ),
 
             where(
                 "customer.email",
                 "==",
-                email
+                normalizedEmail
             )
         );
 
@@ -131,33 +176,51 @@ export async function getCustomerReservations(email) {
 
 
     const reservations =
-        snapshot.docs.map(doc => {
+        snapshot.docs.map(
+            document => {
 
-            return {
-                id: doc.id,
-                ...doc.data()
-            };
+                return {
+                    id:
+                        document.id,
 
-        });
+                    ...document.data()
+                };
+            }
+        );
 
 
-    reservations.sort((a, b) => {
+    /*
+        Nieuwste eerst.
+    */
 
-        const dateA =
-            a.createdAt?.toMillis?.() || 0;
+    reservations.sort(
+        (a, b) => {
 
-        const dateB =
-            b.createdAt?.toMillis?.() || 0;
+            const dateA =
+                a.createdAt
+                    ?.toMillis?.() || 0;
 
-        return dateB - dateA;
-    });
+            const dateB =
+                b.createdAt
+                    ?.toMillis?.() || 0;
+
+
+            return (
+                dateB -
+                dateA
+            );
+        }
+    );
 
 
     return reservations;
 }
-/* -----------------------------------------
+
+
+
+/* =========================================
    KLANT: RESERVATIE ANNULEREN
------------------------------------------ */
+========================================= */
 
 export async function cancelCustomerReservation(
     reservationId
@@ -174,13 +237,68 @@ export async function cancelCustomerReservation(
     await updateDoc(
         reservationRef,
         {
-            status: "cancelled"
+            status:
+                "cancelled"
         }
     );
 }
-/* -----------------------------------------
+
+
+
+/* =========================================
+   ADMIN: STATUS AANPASSEN
+========================================= */
+
+export async function updateReservationStatus(
+    reservationId,
+    newStatus
+) {
+
+    const allowedStatuses = [
+        "pending",
+        "accepted",
+        "rejected",
+        "cancelled"
+    ];
+
+
+    if (
+        !allowedStatuses.includes(
+            newStatus
+        )
+    ) {
+
+        throw new Error(
+            "Ongeldige reservatiestatus."
+        );
+    }
+
+
+    const reservationRef =
+        doc(
+            db,
+            "reservations",
+            reservationId
+        );
+
+
+    await updateDoc(
+        reservationRef,
+        {
+            status:
+                newStatus,
+
+            statusUpdatedAt:
+                serverTimestamp()
+        }
+    );
+}
+
+
+
+/* =========================================
    GOOGLE LOGIN
------------------------------------------ */
+========================================= */
 
 export async function loginWithGoogle() {
 
@@ -196,74 +314,9 @@ export async function loginWithGoogle() {
 
 
 
-/* -----------------------------------------
-   KLANT: EMAIL INLOGLINK STUREN
------------------------------------------ */
-
-export async function sendCustomerLoginLink(email) {
-
-    const actionCodeSettings = {
-        url: "http://localhost:5500/mijn-reservaties.html",
-        handleCodeInApp: true
-    };
-
-
-    await sendSignInLinkToEmail(
-        auth,
-        email,
-        actionCodeSettings
-    );
-
-
-    localStorage.setItem(
-        "emailForSignIn",
-        email
-    );
-}
-
-
-
-/* -----------------------------------------
-   CONTROLEREN OF URL EEN LOGINLINK IS
------------------------------------------ */
-
-export function isCustomerLoginLink() {
-
-    return isSignInWithEmailLink(
-        auth,
-        window.location.href
-    );
-}
-
-
-
-/* -----------------------------------------
-   KLANT INLOGGEN VIA EMAIL LINK
------------------------------------------ */
-
-export async function completeCustomerLogin(email) {
-
-    const result =
-        await signInWithEmailLink(
-            auth,
-            email,
-            window.location.href
-        );
-
-
-    localStorage.removeItem(
-        "emailForSignIn"
-    );
-
-
-    return result.user;
-}
-
-
-
-/* -----------------------------------------
+/* =========================================
    UITLOGGEN
------------------------------------------ */
+========================================= */
 
 export async function logout() {
 
@@ -272,11 +325,13 @@ export async function logout() {
 
 
 
-/* -----------------------------------------
-   CONTROLEREN OF IEMAND INGELOGD IS
------------------------------------------ */
+/* =========================================
+   LOGINSTATUS VOLGEN
+========================================= */
 
-export function watchAuthState(callback) {
+export function watchAuthState(
+    callback
+) {
 
     return onAuthStateChanged(
         auth,

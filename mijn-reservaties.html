@@ -7,7 +7,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>TeckelWeb | Mijn reservaties</title>
+    <title>
+        TeckelWeb | Mijn reservaties
+    </title>
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -18,7 +20,11 @@
 
     <main class="customer-page">
 
-        <!-- LOGIN -->
+
+        <!-- =================================
+             LOGIN
+        ================================== -->
+
         <section id="customer-login" class="customer-login">
 
             <div class="customer-login-card">
@@ -27,38 +33,55 @@
                     Mijn reservaties
                 </p>
 
+
                 <h1>
                     Bekijk uw reservaties
                 </h1>
 
+
                 <p>
-                    Vul uw e-mailadres in. We sturen u een veilige inloglink.
+                    Log in met het Google-account waarvan
+                    u het e-mailadres bij uw reservatie hebt gebruikt.
                 </p>
 
 
-                <div class="customer-login-form">
+                <button type="button" id="customer-google-login" class="customer-google-button">
 
-                    <label for="customer-login-email">
-                        E-mailadres
-                    </label>
+                    <span class="google-mark">
+                        G
+                    </span>
 
-                    <input type="email" id="customer-login-email" placeholder="naam@email.be">
+                    Doorgaan met Google
 
-                    <button type="button" id="send-login-link" class="customer-login-button">
-                        Stuur mij een inloglink
-                    </button>
-
-                </div>
+                </button>
 
 
-                <p id="customer-login-message" class="customer-login-message"></p>
+                <p class="customer-login-help">
+
+                    Heeft u meerdere Google-accounts?
+                    U kunt bij het inloggen het juiste account kiezen.
+
+                </p>
+
+
+                <p id="customer-login-message" class="customer-login-message">
+                </p>
+
+
+                <a href="index.html" class="customer-back-link">
+                    ← Terug naar de website
+                </a>
 
             </div>
 
         </section>
 
 
-        <!-- DASHBOARD -->
+
+        <!-- =================================
+             KLANTDASHBOARD
+        ================================== -->
+
         <section id="customer-dashboard" class="customer-dashboard" hidden>
 
             <div class="customer-dashboard-header">
@@ -69,27 +92,63 @@
                         Mijn reservaties
                     </p>
 
+
                     <h1>
                         Uw reservaties
                     </h1>
 
-                    <p id="customer-user"></p>
+
+                    <div class="customer-account-info">
+
+                        <span>
+                            Ingelogd als
+                        </span>
+
+                        <strong id="customer-user">
+                        </strong>
+
+                    </div>
 
                 </div>
 
 
-                <button type="button" id="customer-logout" class="customer-logout-button">
-                    Uitloggen
-                </button>
+                <div class="customer-account-actions">
+
+                    <button type="button" id="customer-switch-account" class="customer-switch-button">
+                        Ander Google-account
+                    </button>
+
+
+                    <button type="button" id="customer-logout" class="customer-logout-button">
+                        Uitloggen
+                    </button>
+
+                </div>
 
             </div>
 
 
+
+            <!-- RESERVATIES -->
+
             <div id="customer-reservations-list" class="customer-reservations-list">
 
-                <p>
+                <p class="customer-reservations-loading">
                     Reservaties laden...
                 </p>
+
+            </div>
+
+
+            <div class="customer-dashboard-footer">
+
+                <a href="index.html#afspraak" class="button-primary">
+                    Nieuwe reservatie
+                </a>
+
+                <a href="index.html" class="customer-dashboard-back">
+                    Terug naar website
+                </a>
 
             </div>
 

@@ -1329,7 +1329,9 @@ if (submitBookingButton) {
 
 
                 bookingMessage.textContent =
-                    "Uw reservatieaanvraag werd succesvol verstuurd.";
+                    `Uw reservatieaanvraag werd succesvol verstuurd. 
+                    U kunt ze later bekijken via "Mijn reservaties" 
+                    met het Google-account van ${email}.`;
 
                 submitBookingButton.textContent =
                     "Reservatie verstuurd";

@@ -3012,3 +3012,320 @@ body {
 
     cursor: default;
 }
+
+/* =========================================
+   ADMIN - RESERVATIE ACTIES
+========================================= */
+
+.reservation-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 22px;
+    padding-top: 20px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* Goedkeuren */
+
+.reservation-accept-button {
+    padding: 11px 18px;
+
+    border: none;
+    border-radius: 7px;
+
+    background-color: var(--green-dark);
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.reservation-accept-button:hover {
+    background-color: var(--green);
+}
+
+
+/* Weigeren */
+
+.reservation-reject-button {
+    padding: 11px 18px;
+
+    border: 1px solid #c98b7d;
+    border-radius: 7px;
+
+    background-color: transparent;
+
+    color: #9a5748;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.reservation-reject-button:hover {
+    background-color: #f5e9e5;
+}
+
+
+/* Disabled */
+
+.reservation-accept-button:disabled,
+.reservation-reject-button:disabled {
+    opacity: 0.55;
+
+    cursor: default;
+}
+
+
+/* Geannuleerde status */
+
+.reservation-status.cancelled {
+    background-color: #e7e6e2;
+
+    color: #77756f;
+}
+
+
+/* Geannuleerde / geweigerde kaarten iets rustiger */
+
+.reservation-card.reservation-cancelled,
+.reservation-card.reservation-rejected {
+    opacity: 0.72;
+}
+
+
+/* Smartphone */
+
+@media (max-width: 600px) {
+
+    .reservation-actions {
+        flex-direction: column;
+    }
+
+
+    .reservation-accept-button,
+    .reservation-reject-button {
+        width: 100%;
+    }
+
+}
+
+/* =========================================
+   GOOGLE LOGIN KLANT
+========================================= */
+
+.customer-google-button {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 30px;
+    padding: 14px 20px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background-color: white;
+
+    color: var(--text);
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.customer-google-button:hover {
+    border-color: var(--green);
+
+    background-color: #fbfaf7;
+}
+
+
+.customer-google-button:disabled {
+    opacity: 0.6;
+
+    cursor: default;
+}
+
+
+.google-mark {
+    width: 28px;
+    height: 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+    border-radius: 50%;
+
+    background-color: white;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #4285f4;
+}
+
+
+.customer-login-help {
+    margin: 18px 0 0;
+
+    font-size: 13px;
+    line-height: 1.6;
+
+    color: var(--text-light);
+}
+
+
+.customer-back-link {
+    display: inline-block;
+
+    margin-top: 24px;
+
+    font-size: 13px;
+
+    color: var(--green-dark);
+
+    text-decoration: none;
+}
+
+
+.customer-back-link:hover {
+    text-decoration: underline;
+}
+
+
+/* Account info */
+
+.customer-account-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+
+    margin-top: 12px;
+}
+
+
+.customer-account-info span {
+    font-size: 12px;
+
+    color: var(--text-light);
+}
+
+
+.customer-account-info strong {
+    font-size: 14px;
+
+    color: var(--green-dark);
+}
+
+
+/* Accountknoppen */
+
+.customer-account-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.customer-switch-button {
+    padding: 11px 18px;
+
+    border: 1px solid var(--green);
+    border-radius: 7px;
+
+    background-color: transparent;
+
+    color: var(--green-dark);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.customer-switch-button:hover {
+    background-color: #eef3ec;
+}
+
+
+/* Dashboard footer */
+
+.customer-dashboard-footer {
+    display: flex;
+    align-items: center;
+
+    gap: 20px;
+
+    margin-top: 35px;
+}
+
+
+.customer-dashboard-back {
+    font-size: 14px;
+
+    color: var(--text-light);
+
+    text-decoration: none;
+}
+
+
+.customer-dashboard-back:hover {
+    color: var(--green);
+}
+
+
+@media (max-width: 650px) {
+
+    .customer-account-actions {
+        width: 100%;
+
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .customer-switch-button,
+    .customer-logout-button {
+        width: 100%;
+    }
+
+
+    .customer-dashboard-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .customer-dashboard-footer .button-primary {
+        text-align: center;
+    }
+
+
+    .customer-dashboard-back {
+        text-align: center;
+    }
+
+}

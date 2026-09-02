@@ -1,7 +1,5 @@
 import {
-    sendCustomerLoginLink,
-    isCustomerLoginLink,
-    completeCustomerLogin,
+    loginWithGoogle,
     getCustomerReservations,
     cancelCustomerReservation,
     logout,
@@ -9,30 +7,44 @@ import {
 } from "./firebase.js";
 
 
-/* -----------------------------------------
+/* =========================================
    HTML-ELEMENTEN
------------------------------------------ */
+========================================= */
 
 const loginSection =
-    document.getElementById("customer-login");
+    document.getElementById(
+        "customer-login"
+    );
 
 const dashboard =
-    document.getElementById("customer-dashboard");
+    document.getElementById(
+        "customer-dashboard"
+    );
 
-const emailInput =
-    document.getElementById("customer-login-email");
-
-const sendLinkButton =
-    document.getElementById("send-login-link");
+const googleLoginButton =
+    document.getElementById(
+        "customer-google-login"
+    );
 
 const loginMessage =
-    document.getElementById("customer-login-message");
+    document.getElementById(
+        "customer-login-message"
+    );
 
 const customerUser =
-    document.getElementById("customer-user");
+    document.getElementById(
+        "customer-user"
+    );
 
 const logoutButton =
-    document.getElementById("customer-logout");
+    document.getElementById(
+        "customer-logout"
+    );
+
+const switchAccountButton =
+    document.getElementById(
+        "customer-switch-account"
+    );
 
 const reservationsList =
     document.getElementById(
@@ -41,91 +53,65 @@ const reservationsList =
 
 
 
-/* -----------------------------------------
-   EMAIL INLOGLINK VERSTUREN
------------------------------------------ */
+/* =========================================
+   GOOGLE LOGIN
+========================================= */
 
-sendLinkButton.addEventListener(
+googleLoginButton.addEventListener(
     "click",
     async () => {
 
-        loginMessage.textContent = "";
-
-        const email =
-            emailInput.value
-                .trim()
-                .toLowerCase();
+        loginMessage.textContent =
+            "";
 
 
-        if (!email) {
-
-            loginMessage.textContent =
-                "Vul eerst uw e-mailadres in.";
-
-            return;
-        }
+        googleLoginButton.disabled =
+            true;
 
 
-        if (
-            !email.includes("@") ||
-            !email.includes(".")
-        ) {
-
-            loginMessage.textContent =
-                "Vul een geldig e-mailadres in.";
-
-            return;
-        }
-
-
-        /*
-            Als klant al via de Firebase-link
-            op deze pagina terechtgekomen is,
-            voltooien we de login.
-        */
-
-        if (isCustomerLoginLink()) {
-
-            await finishEmailLogin(email);
-
-            return;
-        }
-
-
-        sendLinkButton.disabled = true;
-
-        sendLinkButton.textContent =
-            "Link versturen...";
+        googleLoginButton.textContent =
+            "Google openen...";
 
 
         try {
 
-            await sendCustomerLoginLink(email);
+            await loginWithGoogle();
 
-
-            loginMessage.textContent =
-                "De inloglink werd verstuurd. Controleer uw e-mail.";
-
-
-            sendLinkButton.textContent =
-                "Inloglink verstuurd";
 
         } catch (error) {
 
             console.error(
-                "Fout bij versturen loginlink:",
+                "Google login mislukt:",
                 error
             );
 
 
-            loginMessage.textContent =
-                "De inloglink kon niet verstuurd worden. Probeer opnieuw.";
+            /*
+                auth/popup-closed-by-user betekent
+                simpelweg dat gebruiker popup sloot.
+            */
+
+            if (
+                error.code ===
+                "auth/popup-closed-by-user"
+            ) {
+
+                loginMessage.textContent =
+                    "Het inloggen werd geannuleerd.";
+
+            } else {
+
+                loginMessage.textContent =
+                    "Inloggen met Google is mislukt.";
+            }
 
 
-            sendLinkButton.disabled = false;
+            googleLoginButton.disabled =
+                false;
 
-            sendLinkButton.textContent =
-                "Stuur mij een inloglink";
+
+            googleLoginButton.textContent =
+                "Doorgaan met Google";
         }
 
     }
@@ -133,108 +119,13 @@ sendLinkButton.addEventListener(
 
 
 
-/* -----------------------------------------
-   EMAIL LOGIN AFWERKEN
------------------------------------------ */
+/* =========================================
+   RESERVATIES LADEN
+========================================= */
 
-async function finishEmailLogin(email) {
-
-    loginMessage.textContent =
-        "Bezig met inloggen...";
-
-    sendLinkButton.disabled = true;
-
-
-    try {
-
-        await completeCustomerLogin(email);
-
-
-        /*
-            Firebase parameters uit URL verwijderen.
-        */
-
-        window.history.replaceState(
-            {},
-            document.title,
-            window.location.pathname
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Fout bij email login:",
-            error
-        );
-
-
-        loginMessage.textContent =
-            "De inloglink is ongeldig of verlopen.";
-
-
-        sendLinkButton.disabled = false;
-
-        sendLinkButton.textContent =
-            "Verdergaan";
-    }
-}
-
-
-
-/* -----------------------------------------
-   CONTROLEREN OF PAGINA VIA EMAIL LINK
-   GEOPEND WERD
------------------------------------------ */
-
-async function checkEmailLoginLink() {
-
-    if (!isCustomerLoginLink()) {
-        return;
-    }
-
-
-    const savedEmail =
-        localStorage.getItem(
-            "emailForSignIn"
-        );
-
-
-    /*
-        Zelfde browser:
-        Firebase kent e-mailadres nog.
-    */
-
-    if (savedEmail) {
-
-        await finishEmailLogin(
-            savedEmail
-        );
-
-        return;
-    }
-
-
-    /*
-        Andere browser / toestel:
-        klant moet hetzelfde e-mailadres
-        opnieuw invullen.
-    */
-
-    loginMessage.textContent =
-        "Vul hetzelfde e-mailadres in waarmee u de inloglink hebt aangevraagd.";
-
-    sendLinkButton.textContent =
-        "Verdergaan";
-}
-
-
-
-/* -----------------------------------------
-   RESERVATIES VAN KLANT LADEN
------------------------------------------ */
-
-async function loadCustomerReservations(email) {
+async function loadCustomerReservations(
+    email
+) {
 
     reservationsList.innerHTML = `
         <p class="customer-reservations-loading">
@@ -247,45 +138,57 @@ async function loadCustomerReservations(email) {
 
         const reservations =
             await getCustomerReservations(
-                email.toLowerCase()
+                email
             );
 
 
-        if (reservations.length === 0) {
+        if (
+            reservations.length === 0
+        ) {
 
             reservationsList.innerHTML = `
                 <div class="customer-empty-state">
 
                     <h2>
-                        Nog geen reservaties
+                        Geen reservaties gevonden
                     </h2>
 
                     <p>
-                        Er zijn nog geen reservaties gekoppeld aan dit e-mailadres.
+                        Er zijn geen reservaties gekoppeld aan
+                        <strong>${escapeHtml(email)}</strong>.
+                    </p>
+
+                    <p>
+                        Heeft u uw reservatie met een ander
+                        e-mailadres gemaakt? Kies dan bovenaan
+                        een ander Google-account.
                     </p>
 
                     <a
                         href="index.html#afspraak"
                         class="button-primary"
                     >
-                        Maak een reservatie
+                        Nieuwe reservatie maken
                     </a>
 
                 </div>
             `;
 
+
             return;
         }
 
 
-        reservationsList.innerHTML = "";
+        reservationsList.innerHTML =
+            "";
 
 
         reservations.forEach(
             reservation => {
 
                 createCustomerReservationCard(
-                    reservation
+                    reservation,
+                    email
                 );
 
             }
@@ -295,7 +198,7 @@ async function loadCustomerReservations(email) {
     } catch (error) {
 
         console.error(
-            "Fout bij ophalen reservaties:",
+            "Reservaties ophalen mislukt:",
             error
         );
 
@@ -310,50 +213,70 @@ async function loadCustomerReservations(email) {
 
 
 
-/* -----------------------------------------
-   RESERVATIEKAART MAKEN
------------------------------------------ */
+/* =========================================
+   RESERVATIEKAART
+========================================= */
 
 function createCustomerReservationCard(
-    reservation
+    reservation,
+    currentEmail
 ) {
 
     const card =
-        document.createElement("article");
+        document.createElement(
+            "article"
+        );
+
 
     card.className =
         "customer-reservation-card";
 
 
-    /* Bovenkant */
+
+    /* -------------------------------------
+       HEADER
+    ------------------------------------- */
 
     const header =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     header.className =
         "customer-reservation-header";
 
 
     const titleContainer =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     const dogName =
-        document.createElement("h2");
+        document.createElement(
+            "h2"
+        );
+
 
     dogName.textContent =
         reservation.dog?.name
-            ? reservation.dog.name
-            : "Reservatie";
+        || "Reservatie";
 
 
     const period =
-        document.createElement("p");
+        document.createElement(
+            "p"
+        );
+
 
     period.textContent =
         formatReservationPeriod(
-            reservation.booking?.startDate,
-            reservation.booking?.endDate
+            reservation.booking
+                ?.startDate,
+
+            reservation.booking
+                ?.endDate
         );
 
 
@@ -361,22 +284,29 @@ function createCustomerReservationCard(
         dogName
     );
 
+
     titleContainer.appendChild(
         period
     );
 
 
-    /* Status */
 
-    const status =
-        document.createElement("span");
+    /* STATUS */
 
     const reservationStatus =
-        reservation.status || "pending";
+        reservation.status
+        || "pending";
+
+
+    const status =
+        document.createElement(
+            "span"
+        );
 
 
     status.className =
         `customer-reservation-status ${reservationStatus}`;
+
 
     status.textContent =
         getStatusText(
@@ -388,15 +318,22 @@ function createCustomerReservationCard(
         titleContainer
     );
 
+
     header.appendChild(
         status
     );
 
 
-    /* Details */
+
+    /* -------------------------------------
+       DETAILS
+    ------------------------------------- */
 
     const details =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     details.className =
         "customer-reservation-details";
@@ -406,7 +343,8 @@ function createCustomerReservationCard(
         makeDetail(
             "Type opvang",
             formatBookingType(
-                reservation.booking?.type
+                reservation.booking
+                    ?.type
             )
         )
     );
@@ -415,7 +353,8 @@ function createCustomerReservationCard(
     details.appendChild(
         makeDetail(
             "Aankomst",
-            reservation.booking?.arrivalTime
+            reservation.booking
+                ?.arrivalTime
         )
     );
 
@@ -423,7 +362,8 @@ function createCustomerReservationCard(
     details.appendChild(
         makeDetail(
             "Vertrek",
-            reservation.booking?.departureTime
+            reservation.booking
+                ?.departureTime
         )
     );
 
@@ -440,31 +380,46 @@ function createCustomerReservationCard(
         header
     );
 
+
     card.appendChild(
         details
     );
 
 
-    /* Opmerkingen */
 
-    if (reservation.notes) {
+    /* -------------------------------------
+       OPMERKINGEN
+    ------------------------------------- */
+
+    if (
+        reservation.notes
+    ) {
 
         const notes =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         notes.className =
             "customer-reservation-notes";
 
 
         const notesTitle =
-            document.createElement("strong");
+            document.createElement(
+                "strong"
+            );
+
 
         notesTitle.textContent =
             "Opmerkingen";
 
 
         const notesText =
-            document.createElement("p");
+            document.createElement(
+                "p"
+            );
+
 
         notesText.textContent =
             reservation.notes;
@@ -473,6 +428,7 @@ function createCustomerReservationCard(
         notes.appendChild(
             notesTitle
         );
+
 
         notes.appendChild(
             notesText
@@ -485,9 +441,12 @@ function createCustomerReservationCard(
     }
 
 
-    /* -----------------------------------------
+
+    /* -------------------------------------
        ANNULEREN
-    ----------------------------------------- */
+
+       Alleen pending / accepted.
+    ------------------------------------- */
 
     if (
         reservationStatus === "pending" ||
@@ -495,20 +454,28 @@ function createCustomerReservationCard(
     ) {
 
         const actions =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         actions.className =
             "customer-reservation-actions";
 
 
         const cancelButton =
-            document.createElement("button");
+            document.createElement(
+                "button"
+            );
+
 
         cancelButton.type =
             "button";
 
+
         cancelButton.className =
             "customer-cancel-button";
+
 
         cancelButton.textContent =
             "Reservatie annuleren";
@@ -529,7 +496,9 @@ function createCustomerReservationCard(
                 }
 
 
-                cancelButton.disabled = true;
+                cancelButton.disabled =
+                    true;
+
 
                 cancelButton.textContent =
                     "Annuleren...";
@@ -543,16 +512,11 @@ function createCustomerReservationCard(
 
 
                     /*
-                        Lijst opnieuw laden zodat
-                        de nieuwe status zichtbaar wordt.
+                        Reservaties opnieuw laden.
                     */
 
-                    const currentUserEmail =
-                        customerUser.textContent.trim();
-
-
                     await loadCustomerReservations(
-                        currentUserEmail
+                        currentEmail
                     );
 
 
@@ -569,12 +533,13 @@ function createCustomerReservationCard(
                     );
 
 
-                    cancelButton.disabled = false;
+                    cancelButton.disabled =
+                        false;
+
 
                     cancelButton.textContent =
                         "Reservatie annuleren";
                 }
-
             }
         );
 
@@ -597,28 +562,40 @@ function createCustomerReservationCard(
 
 
 
-/* -----------------------------------------
+/* =========================================
    DETAILVELD
------------------------------------------ */
+========================================= */
 
-function makeDetail(label, value) {
+function makeDetail(
+    label,
+    value
+) {
 
     const item =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     item.className =
         "customer-reservation-detail";
 
 
     const labelElement =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
+
 
     labelElement.textContent =
         label;
 
 
     const valueElement =
-        document.createElement("strong");
+        document.createElement(
+            "strong"
+        );
+
 
     valueElement.textContent =
         value || "-";
@@ -627,6 +604,7 @@ function makeDetail(label, value) {
     item.appendChild(
         labelElement
     );
+
 
     item.appendChild(
         valueElement
@@ -638,51 +616,75 @@ function makeDetail(label, value) {
 
 
 
-/* -----------------------------------------
-   STATUS TEKST
------------------------------------------ */
+/* =========================================
+   STATUS
+========================================= */
 
-function getStatusText(status) {
+function getStatusText(
+    status
+) {
 
-    if (status === "accepted") {
+    if (
+        status === "accepted"
+    ) {
+
         return "Bevestigd";
     }
 
-    if (status === "rejected") {
+
+    if (
+        status === "rejected"
+    ) {
+
         return "Geweigerd";
     }
 
-    if (status === "cancelled") {
+
+    if (
+        status === "cancelled"
+    ) {
+
         return "Geannuleerd";
     }
+
 
     return "In aanvraag";
 }
 
 
 
-/* -----------------------------------------
+/* =========================================
    TYPE OPVANG
------------------------------------------ */
+========================================= */
 
-function formatBookingType(type) {
+function formatBookingType(
+    type
+) {
 
-    if (type === "daycare") {
+    if (
+        type === "daycare"
+    ) {
+
         return "Dagopvang";
     }
 
-    if (type === "overnight") {
+
+    if (
+        type === "overnight"
+    ) {
+
         return "Overnachting";
     }
+
 
     return "-";
 }
 
 
 
-/* -----------------------------------------
-   PERIODE MOOI TONEN
------------------------------------------ */
+/* =========================================
+   DATUM
+========================================= */
 
 function formatReservationPeriod(
     startDate,
@@ -720,9 +722,15 @@ function formatReservationPeriod(
 
 
 
-function formatCustomerDate(dateString) {
+function formatCustomerDate(
+    dateString
+) {
 
-    const [year, month, day] =
+    const [
+        year,
+        month,
+        day
+    ] =
         dateString
             .split("-")
             .map(Number);
@@ -739,58 +747,133 @@ function formatCustomerDate(dateString) {
     return new Intl.DateTimeFormat(
         "nl-BE",
         {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
+            day:
+                "numeric",
+
+            month:
+                "long",
+
+            year:
+                "numeric"
         }
     ).format(date);
 }
 
 
 
-/* -----------------------------------------
+/* =========================================
+   KLEINE HTML ESCAPE
+========================================= */
+
+function escapeHtml(
+    value
+) {
+
+    const element =
+        document.createElement(
+            "div"
+        );
+
+
+    element.textContent =
+        value;
+
+
+    return element.innerHTML;
+}
+
+
+
+/* =========================================
    LOGINSTATUS
------------------------------------------ */
+========================================= */
 
 watchAuthState(
     async user => {
 
-        if (user) {
+        /*
+            NIET INGELOGD
+        */
 
-            loginSection.hidden = true;
+        if (!user) {
 
-            dashboard.hidden = false;
+            loginSection.hidden =
+                false;
+
+
+            dashboard.hidden =
+                true;
 
 
             customerUser.textContent =
-                user.email || "";
+                "";
 
 
-            if (user.email) {
-
-                await loadCustomerReservations(
-                    user.email
-                );
-            }
+            googleLoginButton.disabled =
+                false;
 
 
-        } else {
+            googleLoginButton.innerHTML = `
+                <span class="google-mark">
+                    G
+                </span>
 
-            loginSection.hidden = false;
+                Doorgaan met Google
+            `;
 
-            dashboard.hidden = true;
 
-            customerUser.textContent = "";
+            return;
         }
 
+
+        /*
+            WEL INGELOGD
+        */
+
+        loginSection.hidden =
+            true;
+
+
+        dashboard.hidden =
+            false;
+
+
+        const email =
+            (
+                user.email || ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        customerUser.textContent =
+            email;
+
+
+        if (!email) {
+
+            reservationsList.innerHTML = `
+                <p class="customer-reservations-error">
+                    Dit Google-account heeft geen bruikbaar e-mailadres.
+                </p>
+            `;
+
+
+            return;
+        }
+
+
+        await loadCustomerReservations(
+            email
+        );
     }
 );
 
 
 
-/* -----------------------------------------
+/* =========================================
    UITLOGGEN
------------------------------------------ */
+========================================= */
 
 logoutButton.addEventListener(
     "click",
@@ -807,14 +890,40 @@ logoutButton.addEventListener(
                 error
             );
         }
-
     }
 );
 
 
 
-/* -----------------------------------------
-   PAGINA STARTEN
------------------------------------------ */
+/* =========================================
+   ANDER GOOGLE-ACCOUNT
+========================================= */
 
-checkEmailLoginLink();
+switchAccountButton.addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            /*
+                Eerst uitloggen.
+
+                Daarna verschijnt automatisch
+                opnieuw de loginpagina.
+
+                De gebruiker klikt daar opnieuw
+                op "Doorgaan met Google".
+            */
+
+            await logout();
+
+
+        } catch (error) {
+
+            console.error(
+                "Account wisselen mislukt:",
+                error
+            );
+        }
+    }
+);
