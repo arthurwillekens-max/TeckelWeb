@@ -10,6 +10,8 @@ import {
     orderBy,
     doc,
     updateDoc,
+    setDoc,
+    deleteDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
@@ -301,7 +303,235 @@ export async function updateReservationStatus(
         }
     );
 }
+/* =========================================
+   BESCHIKBAARHEID
+========================================= */
 
+/*
+    In Firestore bewaren we alleen uitzonderingen.
+
+    Geen document:
+        → beschikbaar
+
+    Document met:
+        status = "limited"
+        → beperkt beschikbaar
+
+    Document met:
+        status = "full"
+        → volzet
+
+    Als admin een dag opnieuw op
+    "available" zet, verwijderen we
+    het Firestore-document opnieuw.
+*/
+
+
+/* -----------------------------------------
+   BESCHIKBAARHEID VAN EEN MAAND
+----------------------------------------- */
+
+export async function getAvailabilityForMonth(
+    year,
+    month
+) {
+
+    /*
+        month:
+        JavaScript gebruikt 0 = januari,
+        1 = februari, ...
+    */
+
+    const monthNumber =
+        String(
+            month + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const startDate =
+        `${year}-${monthNumber}-01`;
+
+
+    const lastDay =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    const endDate =
+        `${year}-${monthNumber}-${String(lastDay).padStart(2, "0")}`;
+
+
+    return getAvailabilityBetween(
+        startDate,
+        endDate
+    );
+}
+
+
+
+/* -----------------------------------------
+   BESCHIKBAARHEID TUSSEN TWEE DATUMS
+----------------------------------------- */
+
+export async function getAvailabilityBetween(
+    startDate,
+    endDate
+) {
+
+    const availabilityQuery =
+        query(
+            collection(
+                db,
+                "availability"
+            ),
+
+            where(
+                "date",
+                ">=",
+                startDate
+            ),
+
+            where(
+                "date",
+                "<=",
+                endDate
+            ),
+
+            orderBy(
+                "date",
+                "asc"
+            )
+        );
+
+
+    const snapshot =
+        await getDocs(
+            availabilityQuery
+        );
+
+
+    const availability =
+        {};
+
+
+    snapshot.docs.forEach(
+        document => {
+
+            const data =
+                document.data();
+
+
+            availability[
+                document.id
+            ] = {
+
+                date:
+                    data.date,
+
+                status:
+                    data.status
+            };
+        }
+    );
+
+
+    return availability;
+}
+
+
+
+/* -----------------------------------------
+   ADMIN: STATUS VAN DAG OPSLAAN
+----------------------------------------- */
+
+export async function saveAvailability(
+    date,
+    status
+) {
+
+    const allowedStatuses = [
+        "available",
+        "limited",
+        "full"
+    ];
+
+
+    if (
+        !allowedStatuses.includes(
+            status
+        )
+    ) {
+
+        throw new Error(
+            "Ongeldige beschikbaarheidsstatus."
+        );
+    }
+
+
+    /*
+        Document-ID is gewoon:
+        2026-09-15
+    */
+
+    const availabilityRef =
+        doc(
+            db,
+            "availability",
+            date
+        );
+
+
+    /*
+        Beschikbaar is de standaard.
+
+        Daarvoor hoeven we niets in
+        Firestore te bewaren.
+    */
+
+    if (
+        status ===
+        "available"
+    ) {
+
+        await deleteDoc(
+            availabilityRef
+        );
+
+
+        return;
+    }
+
+
+    /*
+        Alleen limited en full worden
+        echt opgeslagen.
+    */
+
+    await setDoc(
+        availabilityRef,
+        {
+            date:
+                date,
+
+            status:
+                status,
+
+            updatedAt:
+                serverTimestamp(),
+
+            updatedBy:
+                auth.currentUser
+                    ?.uid
+                || null
+        }
+    );
+}
 /* =========================================
    RESERVATIEMAIL VERSTUREN
 ========================================= */

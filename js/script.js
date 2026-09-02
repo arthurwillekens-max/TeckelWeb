@@ -2,7 +2,9 @@ import {
     saveReservation,
     loginWithGoogle,
     watchAuthState,
-    sendReservationEmail
+    sendReservationEmail,
+    getAvailabilityForMonth,
+    getAvailabilityBetween
 } from "./firebase.js";
 /* =========================================
    TECKELWEB
@@ -16,73 +18,17 @@ import {
    Later komt dit uit Firebase.
 ----------------------------------------- */
 
-const dayData = {
+/*
+    Beschikbaarheidsdata uit Firestore.
 
-    "2026-09-03": {
-        status: "Beperkt beschikbaar",
-        type: "limited",
-        times: [
-            ["08:00 – 12:00", true],
-            ["12:00 – 14:00", false],
-            ["14:00 – 18:00", true]
-        ]
-    },
+    Alleen uitzonderingen worden opgeslagen:
+    limited / full.
 
-    "2026-09-05": {
-        status: "Volzet",
-        type: "full",
-        times: []
-    },
+    Geen document = beschikbaar.
+*/
 
-    "2026-09-06": {
-        status: "Volzet",
-        type: "full",
-        times: []
-    },
-
-    "2026-09-11": {
-        status: "Beperkt beschikbaar",
-        type: "limited",
-        times: [
-            ["08:00 – 10:30", true],
-            ["10:30 – 13:30", false],
-            ["13:30 – 18:00", true]
-        ]
-    },
-
-    "2026-09-15": {
-        status: "Beperkt beschikbaar",
-        type: "limited",
-        times: [
-            ["08:00 – 12:00", true],
-            ["12:00 – 14:00", false],
-            ["14:00 – 18:00", true]
-        ]
-    },
-
-    "2026-09-19": {
-        status: "Volzet",
-        type: "full",
-        times: []
-    },
-
-    "2026-09-20": {
-        status: "Volzet",
-        type: "full",
-        times: []
-    },
-
-    "2026-09-23": {
-        status: "Beperkt beschikbaar",
-        type: "limited",
-        times: [
-            ["08:00 – 11:00", true],
-            ["11:00 – 15:00", false],
-            ["15:00 – 18:00", true]
-        ]
-    }
-
-};
+let dayData =
+    {};
 
 
 const defaultAvailableTimes = [
@@ -410,6 +356,118 @@ let displayedMonth = new Date(
     today.getMonth(),
     1
 );
+/* -----------------------------------------
+   BESCHIKBAARHEID VAN FIRESTORE LADEN
+----------------------------------------- */
+
+async function loadAvailabilityForDisplayedMonth() {
+
+    const year =
+        displayedMonth.getFullYear();
+
+    const month =
+        displayedMonth.getMonth();
+
+
+    try {
+
+        const monthData =
+            await getAvailabilityForMonth(
+                year,
+                month
+            );
+
+
+        /*
+            Eerst oude data van deze maand
+            verwijderen.
+
+            Dit is belangrijk wanneer admin
+            bijvoorbeeld FULL terug naar
+            AVAILABLE heeft veranderd.
+        */
+
+        const monthPrefix =
+            `${year}-${String(month + 1).padStart(2, "0")}-`;
+
+
+        Object.keys(
+            dayData
+        ).forEach(
+            dateString => {
+
+                if (
+                    dateString.startsWith(
+                        monthPrefix
+                    )
+                ) {
+
+                    delete dayData[
+                        dateString
+                    ];
+                }
+            }
+        );
+
+
+        Object.assign(
+            dayData,
+            monthData
+        );
+
+
+        return true;
+
+
+    } catch (error) {
+
+        console.error(
+            "Beschikbaarheid laden mislukt:",
+            error
+        );
+
+
+        calendarGrid.innerHTML = `
+            <p class="calendar-load-error">
+                Beschikbaarheid kon niet geladen worden.
+            </p>
+        `;
+
+
+        return false;
+    }
+}
+
+
+
+/*
+    Extra servercontrole.
+
+    Dit gebruiken we vlak voor prijsberekening
+    en reservatie zodat we niet alleen vertrouwen
+    op wat momenteel visueel in de kalender staat.
+*/
+
+async function serverRangeContainsFullDay(
+    startDate,
+    endDate
+) {
+
+    const availability =
+        await getAvailabilityBetween(
+            startDate,
+            endDate
+        );
+
+
+    return Object.values(
+        availability
+    ).some(
+        day =>
+            day.status ===
+            "full"
+    );
+}
 
 
 
@@ -495,17 +553,93 @@ function formatShortDate(dateString) {
    STATUS VAN EEN DAG
 ----------------------------------------- */
 
-function getDayData(dateString) {
+function getDayData(
+    dateString
+) {
 
-    if (dayData[dateString]) {
-        return dayData[dateString];
+    const firebaseData =
+        dayData[
+        dateString
+        ];
+
+
+    /*
+        Geen Firestore-document:
+        standaard beschikbaar.
+    */
+
+    if (!firebaseData) {
+
+        return {
+            status:
+                "Beschikbaar",
+
+            type:
+                "available",
+
+            times:
+                defaultAvailableTimes
+        };
     }
 
 
+    /*
+        VOLZET
+    */
+
+    if (
+        firebaseData.status ===
+        "full"
+    ) {
+
+        return {
+            status:
+                "Volzet",
+
+            type:
+                "full",
+
+            times:
+                []
+        };
+    }
+
+
+    /*
+        BEPERKT
+    */
+
+    if (
+        firebaseData.status ===
+        "limited"
+    ) {
+
+        return {
+            status:
+                "Beperkt beschikbaar",
+
+            type:
+                "limited",
+
+            times:
+                []
+        };
+    }
+
+
+    /*
+        Fallback
+    */
+
     return {
-        status: "Beschikbaar",
-        type: "available",
-        times: defaultAvailableTimes
+        status:
+            "Beschikbaar",
+
+        type:
+            "available",
+
+        times:
+            defaultAvailableTimes
     };
 }
 
