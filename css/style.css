@@ -3329,3 +3329,130 @@ body {
     }
 
 }
+
+/* =========================================
+   GOOGLE-ACCOUNT BIJ RESERVATIE
+========================================= */
+
+.booking-google-account {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-top: 25px;
+    padding: 20px;
+
+    background-color: #eef3ec;
+
+    border: 1px solid #d6e1d3;
+    border-radius: 10px;
+}
+
+
+.booking-google-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.booking-google-label {
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+
+    color: var(--green);
+}
+
+
+.booking-google-info strong {
+    font-size: 15px;
+
+    color: var(--text);
+}
+
+
+.booking-google-info small {
+    max-width: 480px;
+
+    font-size: 12px;
+    line-height: 1.5;
+
+    color: var(--text-light);
+}
+
+
+/* Google-knop */
+
+.booking-google-button {
+    flex-shrink: 0;
+
+    padding: 12px 18px;
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    background-color: white;
+
+    color: var(--text);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.booking-google-button:hover {
+    border-color: var(--green);
+
+    background-color: #fbfaf7;
+}
+
+
+.booking-google-button:disabled {
+    opacity: 0.6;
+
+    cursor: default;
+}
+
+
+/* Readonly Google e-mail */
+
+#customer-email[readonly] {
+    background-color: #f3f2ee;
+
+    color: var(--text-light);
+
+    cursor: not-allowed;
+}
+
+
+.booking-field-help {
+    font-size: 11px;
+    line-height: 1.4;
+
+    color: var(--text-light);
+}
+
+
+/* Smartphone */
+
+@media (max-width: 650px) {
+
+    .booking-google-account {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .booking-google-button {
+        width: 100%;
+    }
+
+}

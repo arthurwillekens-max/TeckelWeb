@@ -1,5 +1,7 @@
 import {
-    saveReservation
+    saveReservation,
+    loginWithGoogle,
+    watchAuthState
 } from "./firebase.js";
 /* =========================================
    TECKELWEB
@@ -176,8 +178,225 @@ const dogNameInput =
 
 const bookingNotesInput =
     document.getElementById("booking-notes");
+/* -----------------------------------------
+   GOOGLE-ACCOUNT BIJ RESERVATIE
+----------------------------------------- */
+
+const bookingGoogleEmail =
+    document.getElementById(
+        "booking-google-email"
+    );
+
+const bookingGoogleHelp =
+    document.getElementById(
+        "booking-google-help"
+    );
+
+const bookingGoogleLoginButton =
+    document.getElementById(
+        "booking-google-login"
+    );
 
 
+/*
+    Hier bewaren we de momenteel
+    ingelogde Firebase-gebruiker.
+*/
+
+let bookingGoogleUser = null;
+/* =========================================
+   GOOGLE-ACCOUNT IN RESERVATIEFORMULIER
+========================================= */
+
+function updateBookingGoogleAccount(
+    user
+) {
+
+    bookingGoogleUser =
+        user;
+
+
+    /*
+        NIET INGELOGD
+    */
+
+    if (
+        !user ||
+        !user.email
+    ) {
+
+        bookingGoogleEmail.textContent =
+            "Nog niet gekoppeld";
+
+
+        bookingGoogleHelp.textContent =
+            "Log in met het Google-account waarmee u later uw reservaties wilt bekijken.";
+
+
+        bookingGoogleLoginButton.textContent =
+            "Doorgaan met Google";
+
+
+        customerEmailInput.value =
+            "";
+
+
+        customerEmailInput.readOnly =
+            true;
+
+
+        return;
+    }
+
+
+    /*
+        WEL INGELOGD
+    */
+
+    const email =
+        user.email
+            .trim()
+            .toLowerCase();
+
+
+    bookingGoogleEmail.textContent =
+        email;
+
+
+    bookingGoogleHelp.textContent =
+        "Dit account wordt aan uw reservatie gekoppeld.";
+
+
+    bookingGoogleLoginButton.textContent =
+        "Ander Google-account";
+
+
+    /*
+        Google e-mailadres automatisch
+        in het reservatieformulier zetten.
+    */
+
+    customerEmailInput.value =
+        email;
+
+
+    customerEmailInput.readOnly =
+        true;
+
+
+    /*
+        Naam van Google automatisch invullen.
+
+        De klant mag zijn naam daarna nog
+        zelf aanpassen indien nodig.
+    */
+
+    if (
+        user.displayName &&
+        !customerNameInput.value.trim()
+    ) {
+
+        customerNameInput.value =
+            user.displayName;
+    }
+}
+
+
+
+/* -----------------------------------------
+   FIREBASE LOGINSTATUS VOLGEN
+----------------------------------------- */
+
+watchAuthState(
+    user => {
+
+        updateBookingGoogleAccount(
+            user
+        );
+    }
+);
+
+
+
+/* -----------------------------------------
+   GOOGLE-ACCOUNT KIEZEN / WISSELEN
+----------------------------------------- */
+
+bookingGoogleLoginButton.addEventListener(
+    "click",
+    async () => {
+
+        bookingMessage.textContent =
+            "";
+
+
+        bookingGoogleLoginButton.disabled =
+            true;
+
+
+        const originalText =
+            bookingGoogleLoginButton.textContent;
+
+
+        bookingGoogleLoginButton.textContent =
+            "Google openen...";
+
+
+        try {
+
+            /*
+                firebase.js gebruikt:
+                prompt: "select_account"
+
+                Daardoor kan de gebruiker ook
+                een ander Google-account kiezen.
+            */
+
+            await loginWithGoogle();
+
+
+        } catch (error) {
+
+            console.error(
+                "Google-login bij reservatie mislukt:",
+                error
+            );
+
+
+            if (
+                error.code ===
+                "auth/popup-closed-by-user"
+            ) {
+
+                bookingMessage.textContent =
+                    "Het Google-inloggen werd geannuleerd.";
+
+            } else {
+
+                bookingMessage.textContent =
+                    "Inloggen met Google is mislukt.";
+            }
+
+        } finally {
+
+            bookingGoogleLoginButton.disabled =
+                false;
+
+
+            /*
+                watchAuthState past de tekst
+                automatisch aan indien login
+                succesvol was.
+            */
+
+            if (!bookingGoogleUser) {
+
+                bookingGoogleLoginButton.textContent =
+                    originalText;
+            }
+        }
+    }
+);
 
 /* -----------------------------------------
    HUIDIGE MAAND
@@ -1214,16 +1433,42 @@ if (submitBookingButton) {
         "click",
         async () => {
 
-            bookingMessage.textContent = "";
+            bookingMessage.textContent =
+                "";
+
+
+            /* -------------------------------------
+               GOOGLE LOGIN VERPLICHT
+            ------------------------------------- */
+
+            if (
+                !bookingGoogleUser ||
+                !bookingGoogleUser.email
+            ) {
+
+                bookingMessage.textContent =
+                    "Log eerst in met Google zodat uw reservatie aan uw account gekoppeld kan worden.";
+
+
+                return;
+            }
+
+
+            /*
+                E-mailadres komt rechtstreeks
+                van Firebase Authentication.
+            
+                Dus NIET van een handmatig tekstveld.
+            */
+
+            const email =
+                bookingGoogleUser.email
+                    .trim()
+                    .toLowerCase();
 
 
             const name =
                 customerNameInput.value.trim();
-
-            const email =
-                customerEmailInput.value
-                    .trim()
-                    .toLowerCase();
 
             const phone =
                 customerPhoneInput.value.trim();
@@ -1239,7 +1484,6 @@ if (submitBookingButton) {
 
             if (
                 !name ||
-                !email ||
                 !phone ||
                 !dogName
             ) {
@@ -1249,6 +1493,15 @@ if (submitBookingButton) {
 
                 return;
             }
+
+
+            /*
+                Voor de zekerheid het veld opnieuw
+                gelijkzetten aan Google.
+            */
+
+            customerEmailInput.value =
+                email;
 
 
             /* E-mail controleren */
@@ -1270,6 +1523,7 @@ if (submitBookingButton) {
             const reservation = {
 
                 customer: {
+                    uid: bookingGoogleUser.uid,
                     name: name,
                     email: email,
                     phone: phone

@@ -480,20 +480,57 @@
                             </h3>
 
                             <p>
-                                Vul uw gegevens en die van uw hond in.
+                                Koppel uw Google-account en vul daarna
+                                de gegevens van uzelf en uw hond in.
                             </p>
 
                         </div>
 
 
+                        <!-- GOOGLE-ACCOUNT -->
+
+                        <div id="booking-google-account" class="booking-google-account">
+
+                            <div class="booking-google-info">
+
+                                <span class="booking-google-label">
+                                    Google-account
+                                </span>
+
+                                <strong id="booking-google-email">
+                                    Nog niet gekoppeld
+                                </strong>
+
+                                <small id="booking-google-help">
+                                    Log in met het Google-account waarmee u
+                                    later uw reservaties wilt bekijken.
+                                </small>
+
+                            </div>
+
+
+                            <button type="button" id="booking-google-login" class="booking-google-button">
+                                Doorgaan met Google
+                            </button>
+
+                        </div>
+
+
+
                         <div class="booking-details-grid">
 
                             <div class="booking-field">
-                                <label for="customer-name">
-                                    Naam
+
+                                <label for="customer-email">
+                                    E-mailadres
                                 </label>
 
-                                <input type="text" id="customer-name" placeholder="Voor- en achternaam">
+                                <input type="email" id="customer-email" placeholder="Log eerst in met Google" readonly>
+
+                                <small class="booking-field-help">
+                                    Wordt automatisch ingevuld via uw Google-account.
+                                </small>
+
                             </div>
 
 
