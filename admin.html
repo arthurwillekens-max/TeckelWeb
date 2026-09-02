@@ -287,23 +287,135 @@
                  RESERVATIES
             ================================== -->
 
+            <!-- =================================
+     RESERVATIE OVERZICHT
+================================== -->
+
+            <div class="admin-stats">
+
+                <div class="admin-stat-card">
+
+                    <span class="admin-stat-label">
+                        Nieuwe aanvragen
+                    </span>
+
+                    <strong id="stat-pending">
+                        0
+                    </strong>
+
+                    <small>
+                        Wachten op beslissing
+                    </small>
+
+                </div>
+
+
+                <div class="admin-stat-card">
+
+                    <span class="admin-stat-label">
+                        Bevestigd
+                    </span>
+
+                    <strong id="stat-accepted">
+                        0
+                    </strong>
+
+                    <small>
+                        Goedgekeurde reservaties
+                    </small>
+
+                </div>
+
+
+                <div class="admin-stat-card">
+
+                    <span class="admin-stat-label">
+                        Komende verblijven
+                    </span>
+
+                    <strong id="stat-upcoming">
+                        0
+                    </strong>
+
+                    <small>
+                        Bevestigd vanaf vandaag
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================
+     RESERVATIES
+================================== -->
+
             <div class="admin-reservations">
+
 
                 <div class="admin-reservations-header">
 
                     <div>
 
                         <h2>
-                            Reservatieaanvragen
+                            Reservaties
                         </h2>
 
                         <p>
-                            Bekijk en beheer hier de aanvragen van klanten.
+                            Bekijk, zoek en beheer alle reservaties.
                         </p>
 
                     </div>
 
                 </div>
+
+
+
+                <!-- FILTERS -->
+
+                <div class="admin-reservation-tools">
+
+
+                    <div class="admin-reservation-filters">
+
+                        <button type="button" class="admin-filter-button active" data-filter="all">
+                            Alles
+                        </button>
+
+
+                        <button type="button" class="admin-filter-button" data-filter="pending">
+                            In afwachting
+                        </button>
+
+
+                        <button type="button" class="admin-filter-button" data-filter="accepted">
+                            Goedgekeurd
+                        </button>
+
+
+                        <button type="button" class="admin-filter-button" data-filter="rejected">
+                            Geweigerd
+                        </button>
+
+
+                        <button type="button" class="admin-filter-button" data-filter="cancelled">
+                            Geannuleerd
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="admin-reservation-search">
+
+                        <input type="search" id="reservation-search" placeholder="Zoek klant, hond of e-mail..."
+                            autocomplete="off">
+
+                    </div>
+
+                </div>
+
 
 
                 <div id="reservations-list" class="reservations-list">

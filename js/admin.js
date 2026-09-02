@@ -46,6 +46,52 @@ const reservationsList =
 
 
 /* =========================================
+   DASHBOARD ELEMENTEN
+========================================= */
+
+const statPending =
+    document.getElementById(
+        "stat-pending"
+    );
+
+const statAccepted =
+    document.getElementById(
+        "stat-accepted"
+    );
+
+const statUpcoming =
+    document.getElementById(
+        "stat-upcoming"
+    );
+
+const reservationSearch =
+    document.getElementById(
+        "reservation-search"
+    );
+
+const filterButtons =
+    document.querySelectorAll(
+        ".admin-filter-button"
+    );
+
+
+
+/*
+    Alle reservaties blijven lokaal bewaard.
+
+    Daardoor hoeven we niet telkens opnieuw
+    Firestore te contacteren wanneer de admin
+    alleen een filter aanklikt.
+*/
+
+let allReservations =
+    [];
+
+
+let activeReservationFilter =
+    "all";
+
+/* =========================================
    GOOGLE LOGIN
 ========================================= */
 
@@ -115,8 +161,9 @@ async function loadReservations() {
 
     try {
 
-        let reservations =
+        allReservations =
             await getReservations();
+
 
 
         /*
@@ -128,7 +175,7 @@ async function loadReservations() {
             4. cancelled
 
             Binnen dezelfde status:
-            nieuwste eerst
+            nieuwste aanvraag eerst.
         */
 
         const statusPriority = {
@@ -139,7 +186,7 @@ async function loadReservations() {
         };
 
 
-        reservations.sort(
+        allReservations.sort(
             (a, b) => {
 
                 const priorityA =
@@ -167,11 +214,13 @@ async function loadReservations() {
 
                 const dateA =
                     a.createdAt
-                        ?.toMillis?.() || 0;
+                        ?.toMillis?.()
+                    || 0;
 
                 const dateB =
                     b.createdAt
-                        ?.toMillis?.() || 0;
+                        ?.toMillis?.()
+                    || 0;
 
 
                 return (
@@ -182,32 +231,9 @@ async function loadReservations() {
         );
 
 
-        if (
-            reservations.length === 0
-        ) {
+        updateDashboardStats();
 
-            reservationsList.innerHTML = `
-                <p class="reservations-empty">
-                    Er zijn nog geen reservatieaanvragen.
-                </p>
-            `;
-
-            return;
-        }
-
-
-        reservationsList.innerHTML = "";
-
-
-        reservations.forEach(
-            reservation => {
-
-                createReservationCard(
-                    reservation
-                );
-
-            }
-        );
+        renderReservations();
 
 
     } catch (error) {
@@ -225,9 +251,251 @@ async function loadReservations() {
         `;
     }
 }
+/* =========================================
+   DASHBOARD STATISTIEKEN
+========================================= */
+
+function updateDashboardStats() {
+
+    const pendingCount =
+        allReservations.filter(
+            reservation =>
+                reservation.status ===
+                "pending"
+        ).length;
+
+
+    const acceptedCount =
+        allReservations.filter(
+            reservation =>
+                reservation.status ===
+                "accepted"
+        ).length;
 
 
 
+    /*
+        YYYY-MM-DD sorteert ook correct
+        als tekst.
+
+        Daardoor kunnen we eenvoudig
+        vergelijken met vandaag.
+    */
+
+    const now =
+        new Date();
+
+
+    const todayString =
+        [
+            now.getFullYear(),
+
+            String(
+                now.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            ),
+
+            String(
+                now.getDate()
+            ).padStart(
+                2,
+                "0"
+            )
+        ].join("-");
+
+
+    const upcomingCount =
+        allReservations.filter(
+            reservation => {
+
+                if (
+                    reservation.status !==
+                    "accepted"
+                ) {
+
+                    return false;
+                }
+
+
+                const endDate =
+                    reservation.booking
+                        ?.endDate
+                    ||
+                    reservation.booking
+                        ?.startDate;
+
+
+                if (!endDate) {
+
+                    return false;
+                }
+
+
+                return (
+                    endDate >=
+                    todayString
+                );
+            }
+        ).length;
+
+
+    statPending.textContent =
+        pendingCount;
+
+    statAccepted.textContent =
+        acceptedCount;
+
+    statUpcoming.textContent =
+        upcomingCount;
+}
+
+/* =========================================
+   RESERVATIES FILTEREN
+========================================= */
+
+function getFilteredReservations() {
+
+    let reservations =
+        [...allReservations];
+
+
+
+    /*
+        STATUSFILTER
+    */
+
+    if (
+        activeReservationFilter !==
+        "all"
+    ) {
+
+        reservations =
+            reservations.filter(
+                reservation =>
+                    reservation.status ===
+                    activeReservationFilter
+            );
+    }
+
+
+
+    /*
+        ZOEKEN
+    */
+
+    const searchTerm =
+        reservationSearch.value
+            .trim()
+            .toLowerCase();
+
+
+    if (searchTerm) {
+
+        reservations =
+            reservations.filter(
+                reservation => {
+
+                    const customerName =
+                        reservation.customer
+                            ?.name
+                            ?.toLowerCase()
+                        || "";
+
+
+                    const customerEmail =
+                        reservation.customer
+                            ?.email
+                            ?.toLowerCase()
+                        || "";
+
+
+                    const customerPhone =
+                        reservation.customer
+                            ?.phone
+                            ?.toLowerCase()
+                        || "";
+
+
+                    const dogName =
+                        reservation.dog
+                            ?.name
+                            ?.toLowerCase()
+                        || "";
+
+
+                    return (
+                        customerName.includes(
+                            searchTerm
+                        )
+                        ||
+                        customerEmail.includes(
+                            searchTerm
+                        )
+                        ||
+                        customerPhone.includes(
+                            searchTerm
+                        )
+                        ||
+                        dogName.includes(
+                            searchTerm
+                        )
+                    );
+                }
+            );
+    }
+
+
+    return reservations;
+}
+/* =========================================
+   RESERVATIES TONEN
+========================================= */
+
+function renderReservations() {
+
+    const reservations =
+        getFilteredReservations();
+
+
+    reservationsList.innerHTML =
+        "";
+
+
+    if (
+        reservations.length ===
+        0
+    ) {
+
+        reservationsList.innerHTML = `
+            <div class="admin-no-results">
+
+                <strong>
+                    Geen reservaties gevonden
+                </strong>
+
+                <span>
+                    Pas uw filter of zoekopdracht aan.
+                </span>
+
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+    reservations.forEach(
+        reservation => {
+
+            createReservationCard(
+                reservation
+            );
+        }
+    );
+}
 /* =========================================
    RESERVATIEKAART MAKEN
 ========================================= */
@@ -895,7 +1163,55 @@ function formatDate(dateString) {
     ).format(date);
 }
 
+/* =========================================
+   FILTER EVENTS
+========================================= */
 
+filterButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                activeReservationFilter =
+                    button.dataset.filter;
+
+
+                filterButtons.forEach(
+                    filterButton => {
+
+                        filterButton.classList.remove(
+                            "active"
+                        );
+                    }
+                );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                renderReservations();
+            }
+        );
+    }
+);
+
+
+
+/* =========================================
+   ZOEKEN
+========================================= */
+
+reservationSearch.addEventListener(
+    "input",
+    () => {
+
+        renderReservations();
+    }
+);
 
 /* =========================================
    LOGINSTATUS + ADMINCONTROLE
