@@ -18,7 +18,8 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
     signOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    getIdToken
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 
@@ -56,6 +57,13 @@ const auth =
 
 const googleProvider =
     new GoogleAuthProvider();
+
+/* =========================================
+   CLOUDFLARE MAIL WORKER
+========================================= */
+
+const MAIL_WORKER_URL =
+    "https://teckelweb-mailer.arthurwillekens.workers.dev";
 
 
 /*
@@ -294,7 +302,118 @@ export async function updateReservationStatus(
     );
 }
 
+/* =========================================
+   RESERVATIEMAIL VERSTUREN
+========================================= */
 
+export async function sendReservationEmail(
+    reservationId
+) {
+
+    /*
+        De Worker moet weten wie de huidige
+        Firebase-gebruiker is.
+
+        Zonder login mag er geen mailrequest
+        worden uitgevoerd.
+    */
+
+    const user =
+        auth.currentUser;
+
+
+    if (!user) {
+
+        throw new Error(
+            "Geen ingelogde gebruiker gevonden."
+        );
+    }
+
+
+    /*
+        Firebase ID-token ophalen.
+
+        De Cloudflare Worker stuurt dit token
+        door naar Firestore.
+
+        Daardoor blijven Firestore Security
+        Rules gewoon actief.
+    */
+
+    const token =
+        await getIdToken(
+            user
+        );
+
+
+    const response =
+        await fetch(
+            MAIL_WORKER_URL,
+            {
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${token}`
+                },
+
+                body:
+                    JSON.stringify({
+                        reservationId:
+                            reservationId
+                    })
+            }
+        );
+
+
+    /*
+        Worker-response proberen lezen.
+    */
+
+    let result =
+        {};
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+
+        result =
+            {};
+    }
+
+
+    /*
+        Bij fout tonen we zoveel mogelijk
+        informatie in de browserconsole.
+    */
+
+    if (!response.ok) {
+
+        const errorMessage =
+            result?.resend?.message
+            ||
+            result?.error
+            ||
+            `Mailer fout HTTP ${response.status}`;
+
+
+        throw new Error(
+            errorMessage
+        );
+    }
+
+
+    return result;
+}
 
 /* =========================================
    GOOGLE LOGIN

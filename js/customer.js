@@ -2,6 +2,7 @@ import {
     loginWithGoogle,
     getCustomerReservations,
     cancelCustomerReservation,
+    sendReservationEmail,
     logout,
     watchAuthState
 } from "./firebase.js";
@@ -504,19 +505,15 @@ function createCustomerReservationCard(
                     "Annuleren...";
 
 
+
+                /* =================================
+                   1. RESERVATIE ANNULEREN
+                ================================= */
+
                 try {
 
                     await cancelCustomerReservation(
                         reservation.id
-                    );
-
-
-                    /*
-                        Reservaties opnieuw laden.
-                    */
-
-                    await loadCustomerReservations(
-                        currentEmail
                     );
 
 
@@ -539,6 +536,64 @@ function createCustomerReservationCard(
 
                     cancelButton.textContent =
                         "Reservatie annuleren";
+
+
+                    return;
+                }
+
+
+
+                /* =================================
+                   2. ANNULATIEMAIL
+                ================================= */
+
+                let emailSent =
+                    true;
+
+
+                try {
+
+                    const emailResult =
+                        await sendReservationEmail(
+                            reservation.id
+                        );
+
+
+                    console.log(
+                        "Annulatiemail verstuurd:",
+                        emailResult
+                    );
+
+
+                } catch (emailError) {
+
+                    emailSent =
+                        false;
+
+
+                    console.error(
+                        "Reservatie geannuleerd maar mail mislukt:",
+                        emailError
+                    );
+                }
+
+
+
+                /* =================================
+                   3. LIJST HERLADEN
+                ================================= */
+
+                await loadCustomerReservations(
+                    currentEmail
+                );
+
+
+
+                if (!emailSent) {
+
+                    alert(
+                        "Uw reservatie is correct geannuleerd, maar de bevestigingsmail kon momenteel niet verstuurd worden."
+                    );
                 }
             }
         );

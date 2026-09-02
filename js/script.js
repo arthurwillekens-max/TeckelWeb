@@ -1,7 +1,8 @@
 import {
     saveReservation,
     loginWithGoogle,
-    watchAuthState
+    watchAuthState,
+    sendReservationEmail
 } from "./firebase.js";
 /* =========================================
    TECKELWEB
@@ -1570,6 +1571,10 @@ if (submitBookingButton) {
 
             try {
 
+                /* =====================================
+                   1. RESERVATIE OPSLAAN
+                ===================================== */
+
                 const reservationId =
                     await saveReservation(
                         reservation
@@ -1582,10 +1587,69 @@ if (submitBookingButton) {
                 );
 
 
-                bookingMessage.textContent =
-                    `Uw reservatieaanvraag werd succesvol verstuurd. 
-                    U kunt ze later bekijken via "Mijn reservaties" 
-                    met het Google-account van ${email}.`;
+                /*
+                    Vanaf dit punt staat de reservatie
+                    veilig in Firestore.
+            
+                    Een mailfout mag dus NOOIT doen alsof
+                    de reservatie zelf mislukt is.
+                */
+
+                let emailSent =
+                    true;
+
+
+
+                /* =====================================
+                   2. BEVESTIGINGSMAIL
+                ===================================== */
+
+                try {
+
+                    const emailResult =
+                        await sendReservationEmail(
+                            reservationId
+                        );
+
+
+                    console.log(
+                        "Bevestigingsmail verstuurd:",
+                        emailResult
+                    );
+
+
+                } catch (emailError) {
+
+                    emailSent =
+                        false;
+
+
+                    console.error(
+                        "Reservatie opgeslagen, maar mail mislukt:",
+                        emailError
+                    );
+                }
+
+
+
+                /* =====================================
+                   3. MELDING VOOR KLANT
+                ===================================== */
+
+                if (emailSent) {
+
+                    bookingMessage.textContent =
+                        `Uw reservatieaanvraag werd succesvol verstuurd. 
+            Er werd ook een bevestigingsmail gestuurd naar ${email}.`;
+
+                } else {
+
+                    bookingMessage.textContent =
+                        `Uw reservatieaanvraag werd succesvol opgeslagen. 
+            De bevestigingsmail kon momenteel niet verstuurd worden. 
+            Uw reservatie staat wel gewoon bij "Mijn reservaties".`;
+                }
+
 
                 submitBookingButton.textContent =
                     "Reservatie verstuurd";
@@ -1593,17 +1657,24 @@ if (submitBookingButton) {
 
             } catch (error) {
 
+                /*
+                    Deze catch betekent dat het opslaan
+                    in Firestore zelf mislukt is.
+                */
+
                 console.error(
-                    "Fout bij opslaan:",
+                    "Reservatie opslaan mislukt:",
                     error
                 );
 
 
                 bookingMessage.textContent =
-                    "Er ging iets mis. Probeer opnieuw.";
+                    "De reservatie kon niet opgeslagen worden. Probeer opnieuw.";
 
 
-                submitBookingButton.disabled = false;
+                submitBookingButton.disabled =
+                    false;
+
 
                 submitBookingButton.textContent =
                     "Reservatie aanvragen";

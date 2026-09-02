@@ -3,7 +3,8 @@ import {
     logout,
     watchAuthState,
     getReservations,
-    updateReservationStatus
+    updateReservationStatus,
+    sendReservationEmail
 } from "./firebase.js";
 
 
@@ -587,17 +588,16 @@ async function changeReservationStatus(
     rejectButton
 ) {
 
-    acceptButton.disabled = true;
+    acceptButton.disabled =
+        true;
 
-    rejectButton.disabled = true;
-
-
-    const originalAcceptText =
-        acceptButton.textContent;
+    rejectButton.disabled =
+        true;
 
 
     if (
-        newStatus === "accepted"
+        newStatus ===
+        "accepted"
     ) {
 
         acceptButton.textContent =
@@ -610,21 +610,17 @@ async function changeReservationStatus(
     }
 
 
+
+    /* =====================================
+       1. STATUS IN FIRESTORE AANPASSEN
+    ===================================== */
+
     try {
 
         await updateReservationStatus(
             reservation.id,
             newStatus
         );
-
-
-        /*
-            Alles opnieuw ophalen zodat
-            dashboard en sortering meteen
-            correct zijn.
-        */
-
-        await loadReservations();
 
 
     } catch (error) {
@@ -648,10 +644,70 @@ async function changeReservationStatus(
 
 
         acceptButton.textContent =
-            originalAcceptText;
+            "Goedkeuren";
 
         rejectButton.textContent =
             "Weigeren";
+
+
+        return;
+    }
+
+
+
+    /* =====================================
+       2. KLANT MAILEN
+    ===================================== */
+
+    let emailSent =
+        true;
+
+
+    try {
+
+        const emailResult =
+            await sendReservationEmail(
+                reservation.id
+            );
+
+
+        console.log(
+            "Statusmail verstuurd:",
+            emailResult
+        );
+
+
+    } catch (emailError) {
+
+        emailSent =
+            false;
+
+
+        console.error(
+            "Status aangepast maar mail mislukt:",
+            emailError
+        );
+    }
+
+
+
+    /* =====================================
+       3. DASHBOARD HERLADEN
+    ===================================== */
+
+    await loadReservations();
+
+
+
+    /* =====================================
+       4. ADMIN WAARSCHUWEN BIJ MAILFOUT
+    ===================================== */
+
+    if (!emailSent) {
+
+        alert(
+            "De reservatiestatus is correct aangepast, maar de e-mail naar de klant kon niet verstuurd worden."
+        );
     }
 }
 
