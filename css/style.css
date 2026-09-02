@@ -3456,3 +3456,18 @@ body {
     }
 
 }
+
+/* =========================================
+   PUBLIEKE KALENDER - VERLEDEN DAGEN
+========================================= */
+
+.calendar-day.past {
+    color: #c2c0ba;
+
+    cursor: default;
+}
+
+
+.calendar-day.past::after {
+    background-color: transparent;
+}

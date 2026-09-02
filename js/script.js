@@ -764,8 +764,30 @@ function renderCalendar() {
             day;
 
 
-        if (data.type === "full") {
-            button.disabled = true;
+        const isPast =
+            dateString <
+            todayString;
+
+
+        if (isPast) {
+
+            button.disabled =
+                true;
+
+
+            button.classList.add(
+                "past"
+            );
+        }
+
+
+        if (
+            data.type ===
+            "full"
+        ) {
+
+            button.disabled =
+                true;
         }
 
 
@@ -869,25 +891,76 @@ function showDayDetails(dateString) {
     );
 
 
-    if (data.type === "full") {
+    /* -------------------------------------
+       VOLZET
+    ------------------------------------- */
+
+    if (
+        data.type ===
+        "full"
+    ) {
 
         timeSlots.innerHTML = `
             <div class="time-slot unavailable-time">
                 <div>
+
                     <strong>
                         Deze dag is volzet
                     </strong>
+
+                    <span>
+                        Reservaties zijn niet mogelijk.
+                    </span>
+
                 </div>
             </div>
         `;
+
 
         return;
     }
 
 
-    showTimeSlots(data.times);
-}
 
+    /* -------------------------------------
+       BEPERKT BESCHIKBAAR
+    ------------------------------------- */
+
+    if (
+        data.type ===
+        "limited"
+    ) {
+
+        timeSlots.innerHTML = `
+            <div class="time-slot available-time">
+                <div>
+
+                    <strong>
+                        Beperkte beschikbaarheid
+                    </strong>
+
+                    <span>
+                        Er is nog plaats, maar de beschikbaarheid is beperkt.
+                    </span>
+
+                </div>
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    /* -------------------------------------
+       GEWOON BESCHIKBAAR
+    ------------------------------------- */
+
+    showTimeSlots(
+        data.times
+    );
+}
 
 
 /* -----------------------------------------
@@ -1274,7 +1347,7 @@ document.addEventListener(
 
 previousMonthButton.addEventListener(
     "click",
-    () => {
+    async () => {
 
         displayedMonth =
             new Date(
@@ -1284,7 +1357,14 @@ previousMonthButton.addEventListener(
             );
 
 
-        renderCalendar();
+        const loaded =
+            await loadAvailabilityForDisplayedMonth();
+
+
+        if (loaded) {
+
+            renderCalendar();
+        }
     }
 );
 
@@ -1296,7 +1376,7 @@ previousMonthButton.addEventListener(
 
 nextMonthButton.addEventListener(
     "click",
-    () => {
+    async () => {
 
         displayedMonth =
             new Date(
@@ -1306,7 +1386,14 @@ nextMonthButton.addEventListener(
             );
 
 
-        renderCalendar();
+        const loaded =
+            await loadAvailabilityForDisplayedMonth();
+
+
+        if (loaded) {
+
+            renderCalendar();
+        }
     }
 );
 
@@ -1316,7 +1403,7 @@ nextMonthButton.addEventListener(
    DATUMVELDEN → KALENDER
 ----------------------------------------- */
 
-function syncInputsToCalendar() {
+async function syncInputsToCalendar() {
 
     const start =
         startDateInput.value;
@@ -1337,22 +1424,50 @@ function syncInputsToCalendar() {
         end || start;
 
 
-    if (
-        rangeContainsFullDay(
-            rangeStart,
-            rangeEnd
-        )
-    ) {
+    /*
+        Opnieuw rechtstreeks in Firestore controleren
+        of er een volgezette dag in de periode zit.
+    */
+
+    try {
+
+        if (
+            await serverRangeContainsFullDay(
+                rangeStart,
+                rangeEnd
+            )
+        ) {
+
+            bookingMessage.textContent =
+                "In deze periode zit een dag die volledig volzet is.";
+
+            return;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Beschikbaarheid controleren mislukt:",
+            error
+        );
+
 
         bookingMessage.textContent =
-            "In deze periode zit een dag die volledig volzet is.";
+            "De beschikbaarheid kon niet gecontroleerd worden.";
 
         return;
     }
 
 
+    /*
+        Kalender naar de maand van de
+        gekozen startdatum brengen.
+    */
+
     const startDate =
-        parseDate(start);
+        parseDate(
+            start
+        );
 
 
     displayedMonth =
@@ -1361,6 +1476,20 @@ function syncInputsToCalendar() {
             startDate.getMonth(),
             1
         );
+
+
+    /*
+        Eerst de beschikbaarheid van
+        die maand uit Firestore laden.
+    */
+
+    const loaded =
+        await loadAvailabilityForDisplayedMonth();
+
+
+    if (!loaded) {
+        return;
+    }
 
 
     renderCalendar();
@@ -1420,7 +1549,7 @@ document
 
 calculateButton.addEventListener(
     "click",
-    () => {
+    async () => {
 
         bookingMessage.textContent = "";
 
@@ -1482,15 +1611,31 @@ calculateButton.addEventListener(
 
         /* Volle dagen? */
 
-        if (
-            rangeContainsFullDay(
-                start,
-                end
-            )
-        ) {
+        try {
+
+            if (
+                await serverRangeContainsFullDay(
+                    start,
+                    end
+                )
+            ) {
+
+                bookingMessage.textContent =
+                    "Deze periode bevat een dag die volledig volzet is.";
+
+                return;
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Beschikbaarheid controleren mislukt:",
+                error
+            );
+
 
             bookingMessage.textContent =
-                "Deze periode bevat een dag die volledig volzet is.";
+                "De beschikbaarheid kon niet gecontroleerd worden. Probeer opnieuw.";
 
             return;
         }
@@ -1651,7 +1796,47 @@ if (submitBookingButton) {
 
                 return;
             }
+            /*
+    Laatste beschikbaarheidscontrole.
 
+    Tussen prijs berekenen en effectief boeken
+    kan de admin de kalender veranderd hebben.
+*/
+
+            try {
+
+                if (
+                    await serverRangeContainsFullDay(
+                        startDateInput.value,
+                        endDateInput.value
+                    )
+                ) {
+
+                    bookingMessage.textContent =
+                        "Deze periode is ondertussen niet meer volledig beschikbaar. Kies een andere periode.";
+
+
+                    resetCalculatedBooking();
+
+
+                    return;
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Laatste beschikbaarheidscontrole mislukt:",
+                    error
+                );
+
+
+                bookingMessage.textContent =
+                    "De beschikbaarheid kon niet gecontroleerd worden. Probeer opnieuw.";
+
+
+                return;
+            }
 
             /* Reservatie maken */
 
@@ -1823,9 +2008,6 @@ if (submitBookingButton) {
    WEBSITE STARTEN
 ----------------------------------------- */
 
-renderCalendar();
-
-
 const todayString =
     makeDateString(
         today.getFullYear(),
@@ -1834,4 +2016,53 @@ const todayString =
     );
 
 
-showDayDetails(todayString);
+/*
+    Geen datums in het verleden toelaten
+    via de gewone datumvelden.
+*/
+
+startDateInput.min =
+    todayString;
+
+endDateInput.min =
+    todayString;
+
+
+
+/* -----------------------------------------
+   WEBSITE STARTEN
+----------------------------------------- */
+
+async function startWebsite() {
+
+    /*
+        Eerst Firestore laden.
+    */
+
+    const loaded =
+        await loadAvailabilityForDisplayedMonth();
+
+
+    if (!loaded) {
+
+        bookingMessage.textContent =
+            "De beschikbaarheid kon niet geladen worden.";
+
+        return;
+    }
+
+
+    /*
+        Pas daarna de kalender tekenen.
+    */
+
+    renderCalendar();
+
+
+    showDayDetails(
+        todayString
+    );
+}
+
+
+startWebsite();
