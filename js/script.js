@@ -3,6 +3,7 @@ import {
     loginWithGoogle,
     watchAuthState,
     sendReservationEmail,
+    sendAdminNewBookingNotification,
     getAvailabilityForMonth,
     getAvailabilityBetween,
     getCustomerReservations
@@ -4239,6 +4240,33 @@ submitBookingButton.addEventListener(
                 console.error(
                     "Reservatie opgeslagen, mail mislukt:",
                     emailError
+                );
+            }
+
+
+
+            /*
+                Admin verwittigen.
+
+                Deze call stuurt via de aparte Cloudflare Worker:
+                - een pushmelding naar geregistreerde admin-toestellen
+                - een e-mail naar de beheerder
+
+                Een fout hierin mag de reservatie NOOIT blokkeren.
+            */
+
+            try {
+
+                await sendAdminNewBookingNotification(
+                    reservationId
+                );
+
+
+            } catch (adminNotificationError) {
+
+                console.error(
+                    "Reservatie opgeslagen, adminmelding mislukt:",
+                    adminNotificationError
                 );
             }
 
