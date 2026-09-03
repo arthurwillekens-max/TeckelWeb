@@ -1938,9 +1938,7 @@ async function initialiseAdmin() {
         renderEverything();
 
 
-        await showView(
-            currentView
-        );
+        await openDeepLinkedAdminViewV10();
 
 
         startRealtimeReservationsV9();
