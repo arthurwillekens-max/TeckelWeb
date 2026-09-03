@@ -305,6 +305,9 @@ const calendarToday =
 const calendarModeButtons =
     all("[data-calendar-mode]");
 
+const calendarWorkspace =
+    one(".admin-calendar-workspace");
+
 
 
 /* =========================================================
@@ -2147,10 +2150,8 @@ newBookingButton?.addEventListener(
             online booking flow.
         */
 
-        window.open(
-            "index.html",
-            "_blank"
-        );
+        window.location.href =
+            "index.html";
     }
 );
 
@@ -2885,6 +2886,11 @@ function createRequestRow(
         reservation.status
         ||
         "pending";
+
+
+    button.classList.add(
+        `status-${status}`
+    );
 
 
     button.innerHTML = `
@@ -4874,6 +4880,20 @@ function renderCalendarWorkspace() {
     updateCalendarModeButtons();
 
 
+    /*
+        In week- en maandweergave krijgt de planning
+        de volledige beschikbare breedte. De kleine
+        kalender links is dan niet nodig.
+    */
+
+    calendarWorkspace?.classList.toggle(
+        "wide-mode",
+        calendarMode === "week"
+        ||
+        calendarMode === "month"
+    );
+
+
     if (
         calendarMode ===
         "week"
@@ -5761,11 +5781,19 @@ function renderWeekView() {
 
 
     dayBookings.style.gridTemplateColumns =
-        "repeat(7, minmax(150px, 1fr))";
+        "repeat(7, minmax(0, 1fr))";
 
 
     dayBookings.style.gap =
-        "10px";
+        "6px";
+
+
+    dayBookings.style.width =
+        "100%";
+
+
+    dayBookings.style.minWidth =
+        "0";
 
 
     dayBookings.style.height =
@@ -5773,7 +5801,7 @@ function renderWeekView() {
 
 
     dayBookings.style.overflowX =
-        "auto";
+        "hidden";
 
 
 
@@ -6050,11 +6078,19 @@ function renderMonthView() {
 
 
     dayBookings.style.gridTemplateColumns =
-        "repeat(7, minmax(110px, 1fr))";
+        "repeat(7, minmax(0, 1fr))";
 
 
     dayBookings.style.gap =
-        "8px";
+        "4px";
+
+
+    dayBookings.style.width =
+        "100%";
+
+
+    dayBookings.style.minWidth =
+        "0";
 
 
     dayBookings.style.height =
@@ -6062,7 +6098,39 @@ function renderMonthView() {
 
 
     dayBookings.style.overflowX =
-        "auto";
+        "hidden";
+
+
+    [
+        "Ma",
+        "Di",
+        "Wo",
+        "Do",
+        "Vr",
+        "Za",
+        "Zo"
+    ].forEach(
+        label => {
+
+            const weekday =
+                document.createElement(
+                    "div"
+                );
+
+
+            weekday.className =
+                "admin-month-weekday";
+
+
+            weekday.textContent =
+                label;
+
+
+            dayBookings.appendChild(
+                weekday
+            );
+        }
+    );
 
 
 
