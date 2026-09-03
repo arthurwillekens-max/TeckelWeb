@@ -13555,3 +13555,383 @@ a {
     }
 
 }
+
+/* =========================================================
+   ADMIN V4.1 — CALENDAR + ONLINE BOOKING CLARITY
+========================================================= */
+
+
+/* =========================================================
+   WEEK / MONTH USE FULL CALENDAR WIDTH
+========================================================= */
+
+.admin-calendar-workspace.wide-mode {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.admin-calendar-workspace.wide-mode .admin-calendar-sidebar {
+    display: none;
+}
+
+.admin-calendar-workspace.wide-mode .admin-schedule {
+    min-width: 0;
+    width: 100%;
+}
+
+.admin-calendar-workspace.wide-mode .admin-day-agenda {
+    display: block;
+    min-width: 0;
+    width: 100%;
+    padding: 18px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-day-hours {
+    display: none !important;
+}
+
+.admin-calendar-workspace.wide-mode .admin-day-bookings {
+    width: 100%;
+    min-width: 0;
+    border-left: 0;
+}
+
+
+/* =========================================================
+   WEEK VIEW — BIGGER & CLEARER
+========================================================= */
+
+.admin-calendar-workspace.wide-mode .admin-week-column {
+    min-width: 0;
+    min-height: 500px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-column-header {
+    min-height: 58px;
+    margin: 0;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--admin-border);
+    background: #fafafa;
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-column-header strong {
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-column-header span {
+    min-width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: var(--admin-orange-soft);
+    color: var(--admin-orange);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-booking {
+    width: calc(100% - 12px);
+    margin: 6px;
+    padding: 10px;
+    border-left: 4px solid var(--admin-green);
+    border-radius: 6px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-booking.pending {
+    border-left-color: var(--admin-orange);
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-booking strong {
+    font-size: 12px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-booking span {
+    margin-top: 3px;
+    font-size: 10px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-booking small {
+    margin-top: 3px;
+    font-size: 9px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-week-empty {
+    padding: 28px 6px;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   MONTH VIEW — TRUE FULL-WIDTH MONTH GRID
+========================================================= */
+
+.admin-month-weekday {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-bottom: 1px solid var(--admin-border);
+    background: #f7f7f8;
+    color: var(--admin-text-soft);
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.admin-calendar-workspace.wide-mode .admin-month-empty {
+    min-height: 128px;
+    border: 1px solid #f0f0f1;
+    background: #fbfbfc;
+}
+
+.admin-calendar-workspace.wide-mode .admin-month-day {
+    min-width: 0;
+    min-height: 128px;
+    padding: 11px;
+    border-radius: 7px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-month-day-number {
+    width: 29px;
+    height: 29px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-month-day:hover .admin-month-day-number {
+    background: var(--admin-orange-soft);
+    color: var(--admin-orange);
+}
+
+.admin-calendar-workspace.wide-mode .admin-month-day-info {
+    margin-top: 7px;
+    gap: 5px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-month-day-info span {
+    display: inline-flex;
+    width: fit-content;
+    padding: 4px 6px;
+    border-radius: 5px;
+    font-size: 9px;
+}
+
+.admin-calendar-workspace.wide-mode .admin-month-day-info .confirmed {
+    background: var(--admin-green-soft);
+    color: var(--admin-green);
+}
+
+.admin-calendar-workspace.wide-mode .admin-month-day-info .pending {
+    background: var(--admin-orange-soft);
+    color: var(--admin-orange);
+}
+
+
+/* =========================================================
+   ONLINE BOOKING — CLEARER STATUS COLORS
+========================================================= */
+
+.admin-requests-layout {
+    background: #f5f5f6;
+}
+
+.admin-requests-list-panel,
+.admin-request-detail {
+    background: #ffffff;
+}
+
+.admin-request-tabs button[data-request-filter="pending"].active {
+    background: var(--admin-orange-soft);
+    color: var(--admin-orange);
+}
+
+.admin-request-tabs button[data-request-filter="accepted"].active {
+    background: var(--admin-green-soft);
+    color: var(--admin-green);
+}
+
+.admin-request-tabs button[data-request-filter="rejected"].active {
+    background: var(--admin-red-soft);
+    color: var(--admin-red);
+}
+
+.admin-request-tabs button[data-request-filter="cancelled"].active {
+    background: #eeeeef;
+    color: #66666b;
+}
+
+.admin-request-tabs button[data-request-filter="all"].active {
+    background: var(--admin-blue-soft);
+    color: var(--admin-blue);
+}
+
+.admin-request-item {
+    position: relative;
+    border-left: 5px solid transparent;
+}
+
+.admin-request-item.status-pending {
+    border-left-color: var(--admin-orange);
+    background: #fffaf7;
+}
+
+.admin-request-item.status-accepted {
+    border-left-color: var(--admin-green);
+    background: #f7fbf8;
+}
+
+.admin-request-item.status-rejected {
+    border-left-color: var(--admin-red);
+    background: #fff9f8;
+}
+
+.admin-request-item.status-cancelled {
+    border-left-color: #a0a0a5;
+    background: #fafafa;
+}
+
+.admin-request-item.status-pending:hover {
+    background: #fff2e9;
+}
+
+.admin-request-item.status-accepted:hover {
+    background: #eef8f1;
+}
+
+.admin-request-item.status-rejected:hover {
+    background: #fff0ed;
+}
+
+.admin-request-item.status-cancelled:hover {
+    background: #f1f1f2;
+}
+
+.admin-request-item.selected {
+    box-shadow:
+        inset 5px 0 0 currentColor,
+        inset 0 0 0 1px rgba(255, 107, 44, 0.24);
+}
+
+.admin-request-item.status-pending.selected {
+    color: var(--admin-orange);
+    background: var(--admin-orange-soft);
+}
+
+.admin-request-item.status-accepted.selected {
+    color: var(--admin-green);
+    background: var(--admin-green-soft);
+}
+
+.admin-request-item.status-rejected.selected {
+    color: var(--admin-red);
+    background: var(--admin-red-soft);
+}
+
+.admin-request-item.status-cancelled.selected {
+    color: #707075;
+    background: #eeeeef;
+}
+
+.admin-request-item-title strong,
+.admin-request-item-meta,
+.admin-request-item-title span {
+    color: var(--admin-text);
+}
+
+.admin-request-item-title span,
+.admin-request-item-meta span {
+    color: var(--admin-text-soft);
+}
+
+.admin-request-item-meta > span:first-child {
+    display: inline-flex;
+    align-items: center;
+    min-height: 23px;
+    padding: 0 7px;
+    border-radius: 5px;
+    background: #f1f2f4;
+    color: #55565c;
+    font-weight: 700;
+}
+
+.tw-admin-body .reservation-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    margin-right: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+#request-detail-content .admin-request-detail-header {
+    background: linear-gradient(135deg, #fff8f3 0%, #ffffff 70%);
+    border-bottom-color: var(--admin-orange-border);
+}
+
+#request-detail-content .admin-request-detail-section:nth-of-type(odd) {
+    background: #fcfcfd;
+}
+
+#request-detail-content .admin-contact-card {
+    border-color: #d8e5f4;
+    background: #f3f7fc;
+}
+
+#request-detail-content .admin-contact-avatar {
+    background: #e7f0fb;
+    color: #54779f;
+}
+
+#request-detail-content .admin-pet-card {
+    border-color: #e3dcef;
+    background: #f8f5fc;
+}
+
+#request-detail-content .admin-pet-avatar {
+    background: #eee8f8;
+    color: #745f97;
+}
+
+#request-detail-content .admin-request-price {
+    border-top: 1px solid #f0dfc8;
+    border-bottom: 1px solid #f0dfc8;
+    background: #fff9ef;
+}
+
+#request-detail-content .admin-request-price strong {
+    color: #c95a1e;
+}
+
+
+/* =========================================================
+   MOBILE / NARROW WINDOWS
+========================================================= */
+
+@media (max-width: 1050px) {
+
+    .admin-calendar-workspace.wide-mode .admin-week-column-header strong {
+        font-size: 10px;
+    }
+
+    .admin-calendar-workspace.wide-mode .admin-week-booking {
+        padding: 7px;
+    }
+
+    .admin-calendar-workspace.wide-mode .admin-week-booking strong {
+        font-size: 10px;
+    }
+
+    .admin-calendar-workspace.wide-mode .admin-month-day {
+        min-height: 108px;
+        padding: 7px;
+    }
+}
