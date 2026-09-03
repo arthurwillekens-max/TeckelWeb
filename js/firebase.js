@@ -1476,6 +1476,10 @@ export async function registerAdminPushDevice() {
         !(
             "serviceWorker" in navigator
         )
+        ||
+        !(
+            "PushManager" in window
+        )
     ) {
 
         throw new Error(
@@ -1520,25 +1524,165 @@ export async function registerAdminPushDevice() {
         );
 
 
-    const serviceWorkerRegistration =
+    let serviceWorkerRegistration =
         await navigator.serviceWorker.register(
-            serviceWorkerUrl.pathname
+            serviceWorkerUrl.pathname,
+            {
+                updateViaCache:
+                    "none"
+            }
+        );
+
+
+    await serviceWorkerRegistration
+        .update()
+        .catch(
+            () => {}
         );
 
 
     await navigator.serviceWorker.ready;
 
 
-    const token =
-        await getToken(
+    async function requestFirebaseToken(
+        registration
+    ) {
+
+        return getToken(
             messaging,
             {
                 vapidKey:
                     FIREBASE_VAPID_KEY,
 
-                serviceWorkerRegistration
+                serviceWorkerRegistration:
+                    registration
             }
         );
+    }
+
+
+    let token;
+
+
+    try {
+
+        token =
+            await requestFirebaseToken(
+                serviceWorkerRegistration
+            );
+
+    } catch (error) {
+
+        /*
+            Chromium kan een beschadigde / verouderde Push API-registratie
+            bewaren. In dat geval geeft PushManager een AbortError met
+            "Registration failed - push service error".
+
+            We ruimen de lokale subscription + service worker eenmaal op
+            en proberen daarna met een schone registratie opnieuw.
+        */
+
+        const isPushServiceAbort =
+            error?.name ===
+                "AbortError"
+            &&
+            String(
+                error?.message
+                ||
+                ""
+            )
+                .toLowerCase()
+                .includes(
+                    "push service"
+                );
+
+
+        if (
+            !isPushServiceAbort
+        ) {
+
+            throw error;
+        }
+
+
+        try {
+
+            const oldSubscription =
+                await serviceWorkerRegistration
+                    .pushManager
+                    .getSubscription();
+
+
+            if (
+                oldSubscription
+            ) {
+
+                await oldSubscription
+                    .unsubscribe();
+            }
+
+
+            await serviceWorkerRegistration
+                .unregister();
+
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        600
+                    )
+            );
+
+
+            serviceWorkerRegistration =
+                await navigator.serviceWorker.register(
+                    serviceWorkerUrl.pathname,
+                    {
+                        updateViaCache:
+                            "none"
+                    }
+                );
+
+
+            await navigator.serviceWorker.ready;
+
+
+            token =
+                await requestFirebaseToken(
+                    serviceWorkerRegistration
+                );
+
+        } catch (retryError) {
+
+            const isRetryPushServiceAbort =
+                retryError?.name ===
+                    "AbortError"
+                &&
+                String(
+                    retryError?.message
+                    ||
+                    ""
+                )
+                    .toLowerCase()
+                    .includes(
+                        "push service"
+                    );
+
+
+            if (
+                isRetryPushServiceAbort
+            ) {
+
+                throw new Error(
+                    "Chrome kan geen verbinding maken met zijn push-service. De meldingstoestemming staat wel goed, maar de browser kan nog geen echte pushregistratie aanmaken."
+                );
+            }
+
+
+            throw retryError;
+        }
+    }
 
 
     if (
