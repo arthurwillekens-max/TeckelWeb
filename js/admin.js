@@ -200,6 +200,15 @@ const requestFilterButtons =
    REQUEST DETAIL
 ========================================================= */
 
+const requestDetailPanel =
+    one(".admin-request-detail");
+
+const requestDetailBackdrop =
+    byId("request-detail-backdrop");
+
+const requestDetailClose =
+    byId("request-detail-close");
+
 const requestDetailEmpty =
     byId("request-detail-empty");
 
@@ -3006,6 +3015,16 @@ function showRequestDetail(
         reservationId;
 
 
+    requestDetailPanel?.classList.add(
+        "open"
+    );
+
+
+    requestDetailBackdrop?.classList.add(
+        "open"
+    );
+
+
 
     all(
         ".admin-request-item"
@@ -3150,6 +3169,16 @@ function clearRequestDetail() {
 
     selectedReservationId =
         null;
+
+
+    requestDetailPanel?.classList.remove(
+        "open"
+    );
+
+
+    requestDetailBackdrop?.classList.remove(
+        "open"
+    );
 
 
     if (
@@ -7854,7 +7883,7 @@ function createRequestRow(
 
 
     button.className =
-        `admin-request-item status-${status}`;
+        `admin-request-item admin-request-table-row status-${status}`;
 
 
     if (
@@ -7868,7 +7897,6 @@ function createRequestRow(
     }
 
 
-
     const dogName =
         reservation.dog
             ?.name
@@ -7876,11 +7904,28 @@ function createRequestRow(
         "Hond";
 
 
+    const dogBreed =
+        reservation.dog
+            ?.breed
+        ||
+        "—";
+
+
     const customerName =
         reservation.customer
             ?.name
         ||
         "Onbekende klant";
+
+
+    const customerContact =
+        reservation.customer
+            ?.phone
+        ||
+        reservation.customer
+            ?.email
+        ||
+        "—";
 
 
     const type =
@@ -7902,75 +7947,86 @@ function createRequestRow(
 
 
     button.innerHTML = `
-        <div class="admin-request-card-main">
+        <span class="admin-request-cell dog">
 
-            <div class="admin-request-dog-avatar">
+            <strong>
                 ${escapeHtml(
                     dogName
-                        .charAt(0)
-                        .toUpperCase()
                 )}
-            </div>
+            </strong>
 
-            <div class="admin-request-card-copy">
+            <small>
+                ${escapeHtml(
+                    dogBreed
+                )}
+            </small>
 
-                <div class="admin-request-card-title">
+        </span>
 
-                    <strong>
-                        ${escapeHtml(
-                            dogName
-                        )}
-                    </strong>
 
-                    <span class="reservation-status ${status}">
-                        ${escapeHtml(
-                            formatStatus(
-                                status
-                            )
-                        )}
-                    </span>
+        <span class="admin-request-cell customer">
 
-                </div>
+            <strong>
+                ${escapeHtml(
+                    customerName
+                )}
+            </strong>
 
-                <span class="admin-request-customer-name">
-                    ${escapeHtml(
-                        customerName
-                    )}
-                </span>
+            <small>
+                ${escapeHtml(
+                    customerContact
+                )}
+            </small>
 
-                <div class="admin-request-card-chips">
+        </span>
 
-                    <span class="service">
-                        ${escapeHtml(
-                            type
-                        )}
-                    </span>
 
-                    <span class="date">
-                        ${escapeHtml(
-                            period
-                        )}
-                    </span>
+        <span class="admin-request-cell service">
 
-                </div>
+            <span class="admin-service-pill">
+                ${escapeHtml(
+                    type
+                )}
+            </span>
 
-            </div>
+        </span>
 
-            <div class="admin-request-card-side">
 
-                <strong>
-                    ${formatCurrency(
-                        amount
-                    )}
-                </strong>
+        <span class="admin-request-cell period">
 
-                <span>
-                    Open →
-                </span>
+            ${escapeHtml(
+                period
+            )}
 
-            </div>
+        </span>
 
-        </div>
+
+        <span class="admin-request-cell status">
+
+            <span class="reservation-status ${status}">
+                ${escapeHtml(
+                    formatStatus(
+                        status
+                    )
+                )}
+            </span>
+
+        </span>
+
+
+        <span class="admin-request-cell price">
+
+            <strong>
+                ${formatCurrency(
+                    amount
+                )}
+            </strong>
+
+            <span class="admin-request-open-arrow">
+                ›
+            </span>
+
+        </span>
     `;
 
 
@@ -9459,4 +9515,40 @@ byId(
         "change",
         renderHistoryV5
     );
+
+
+
+/* =========================================================
+   REQUEST DETAIL DRAWER CONTROLS
+========================================================= */
+
+requestDetailClose?.addEventListener(
+    "click",
+    clearRequestDetail
+);
+
+
+requestDetailBackdrop?.addEventListener(
+    "click",
+    clearRequestDetail
+);
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "Escape"
+            &&
+            requestDetailPanel?.classList.contains(
+                "open"
+            )
+        ) {
+
+            clearRequestDetail();
+        }
+    }
+);
 
