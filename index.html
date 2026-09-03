@@ -2213,7 +2213,17 @@
                                         </label>
 
 
-                                        <input type="tel" id="customer-phone" placeholder="+32 ...">
+                                        <input
+                                            type="tel"
+                                            id="customer-phone"
+                                            placeholder="+32 471 12 34 56"
+                                            inputmode="tel"
+                                            autocomplete="tel"
+                                            minlength="8"
+                                            maxlength="24"
+                                            pattern="[+0-9() .-]{8,24}"
+                                            title="Gebruik een geldig telefoonnummer, bijvoorbeeld 0471 12 34 56 of +32 471 12 34 56"
+                                        >
 
                                     </div>
 
