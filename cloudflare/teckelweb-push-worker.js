@@ -144,6 +144,15 @@ function pemToArrayBuffer(
 
     const clean =
         pem
+            /*
+                Cloudflare Secrets kunnen de Firebase private key
+                met echte regeleinden OF met letterlijke \\n bewaren.
+                Beide formaten worden ondersteund.
+            */
+            .replaceAll(
+                "\\n",
+                "\n"
+            )
             .replace(
                 /-----BEGIN PRIVATE KEY-----/g,
                 ""
