@@ -206,6 +206,18 @@
 
                     </button>
 
+                    <button type="button" class="admin-nav-item" data-admin-view="history">
+
+                        <span class="admin-nav-icon">
+                            ↺
+                        </span>
+
+                        <span>
+                            Historiek
+                        </span>
+
+                    </button>
+
                 </div>
 
 
@@ -526,6 +538,34 @@
 
                 </div>
 
+
+
+
+                <!-- =============================================
+                     MANAGEMENT INSIGHTS
+                ============================================== -->
+
+                <div class="admin-insights-row">
+
+                    <article class="admin-insight-card revenue">
+                        <span>Omzet deze maand</span>
+                        <strong id="stat-month-revenue">€0</strong>
+                        <small>Afgeronde, goedgekeurde verblijven</small>
+                    </article>
+
+                    <article class="admin-insight-card upcoming">
+                        <span>Komende reservaties</span>
+                        <strong id="stat-upcoming-bookings">0</strong>
+                        <small>Goedgekeurd en nog niet afgelopen</small>
+                    </article>
+
+                    <article class="admin-insight-card completed">
+                        <span>Afgerond deze maand</span>
+                        <strong id="stat-completed-month">0</strong>
+                        <small>Voltooide verblijven in deze maand</small>
+                    </article>
+
+                </div>
 
 
                 <!-- =============================================
@@ -1068,18 +1108,21 @@
 
             <section class="admin-view" data-view="requests" hidden>
 
-
-                <div class="admin-view-heading">
-
+                <div class="admin-view-heading admin-booking-heading">
 
                     <div>
+
+                        <span class="admin-section-kicker">
+                            Reservatiebeheer
+                        </span>
 
                         <h2>
                             Online booking
                         </h2>
 
                         <p>
-                            Bekijk en verwerk binnenkomende aanvragen.
+                            Nieuwe aanvragen eerst. Bevestigde toekomstige verblijven apart.
+                            Oude verblijven vindt u onder Historiek.
                         </p>
 
                     </div>
@@ -1087,54 +1130,64 @@
                 </div>
 
 
+                <div class="admin-booking-summary">
 
-                <!-- =============================================
-                     REQUEST APP
-                ============================================== -->
+                    <article class="admin-booking-summary-card pending">
+                        <span>Nieuw</span>
+                        <strong id="booking-stat-pending">0</strong>
+                        <small>Moet nog beoordeeld worden</small>
+                    </article>
 
-                <div class="admin-requests-layout">
+                    <article class="admin-booking-summary-card upcoming">
+                        <span>Komend</span>
+                        <strong id="booking-stat-upcoming">0</strong>
+                        <small>Goedgekeurde reservaties</small>
+                    </article>
+
+                    <article class="admin-booking-summary-card revenue">
+                        <span>Omzet deze maand</span>
+                        <strong id="booking-stat-revenue">€0</strong>
+                        <small>Afgeronde reservaties</small>
+                    </article>
+
+                    <article class="admin-booking-summary-card archive">
+                        <span>In historiek</span>
+                        <strong id="booking-stat-past">0</strong>
+                        <small>Afgeronde verblijven</small>
+                    </article>
+
+                </div>
 
 
-                    <!-- =========================================
-                         LEFT REQUESTS
-                    ========================================== -->
+                <div class="admin-requests-layout admin-requests-layout-v2">
 
                     <section class="admin-requests-list-panel">
 
-
                         <div class="admin-requests-toolbar">
 
+                            <div class="admin-request-toolbar-title">
+                                <strong>Reservaties</strong>
+                                <span>Kies eerst een categorie</span>
+                            </div>
 
                             <div class="admin-request-tabs">
 
-
                                 <button type="button" class="active" data-request-filter="pending">
                                     Nieuw
-
-                                    <span id="request-tab-pending">
-                                        0
-                                    </span>
+                                    <span id="request-tab-pending">0</span>
                                 </button>
 
-
-
-                                <button type="button" data-request-filter="accepted">
-                                    Goedgekeurd
+                                <button type="button" data-request-filter="upcoming">
+                                    Komend
                                 </button>
-
-
 
                                 <button type="button" data-request-filter="rejected">
                                     Geweigerd
                                 </button>
 
-
-
                                 <button type="button" data-request-filter="cancelled">
                                     Geannuleerd
                                 </button>
-
-
 
                                 <button type="button" data-request-filter="all">
                                     Alles
@@ -1142,112 +1195,69 @@
 
                             </div>
 
-
-
                             <div class="admin-request-search">
-
-                                <input type="search" id="reservation-search"
-                                    placeholder="Zoek klant, hond of telefoon...">
-
+                                <input
+                                    type="search"
+                                    id="reservation-search"
+                                    placeholder="Zoek op klant, hond, e-mail of telefoon..."
+                                >
                             </div>
 
                         </div>
 
 
-
-                        <!-- =====================================
-                             COLUMN HEADERS
-                        ====================================== -->
-
                         <div class="admin-request-list-heading">
-
-                            <span>
-                                Reservatie
-                            </span>
-
-                            <span>
-                                Status
-                            </span>
-
+                            <span>Reservatie</span>
+                            <span>Status</span>
                         </div>
-
 
 
                         <div id="reservations-list" class="admin-request-list">
-
                             <div class="reservations-loading">
                                 Reservaties laden...
                             </div>
-
                         </div>
 
                     </section>
 
 
-
-                    <!-- =========================================
-                         RIGHT DETAIL
-                    ========================================== -->
-
                     <aside class="admin-request-detail">
 
-
-                        <!-- =====================================
-                             EMPTY
-                        ====================================== -->
-
                         <div id="request-detail-empty" class="admin-request-detail-empty">
-
 
                             <div class="admin-request-empty-icon">
                                 ☰
                             </div>
 
-
                             <strong>
-                                Selecteer een aanvraag
+                                Kies links een reservatie
                             </strong>
 
-
                             <p>
-
-                                Klik links op een reservatie om
-                                alle gegevens te bekijken.
-
+                                Daarna ziet u hier klant, hond, periode, verzorging,
+                                prijs en de beschikbare acties.
                             </p>
 
                         </div>
 
 
-
-                        <!-- =====================================
-                             CONTENT
-                        ====================================== -->
-
                         <div id="request-detail-content" hidden>
-
 
                             <div class="admin-request-detail-header">
 
-
                                 <div>
-
                                     <span class="admin-request-detail-label">
                                         Reservatie
                                     </span>
-
 
                                     <h2 id="request-detail-dog">
                                         —
                                     </h2>
 
-
                                     <p id="request-detail-customer">
                                         —
                                     </p>
-
                                 </div>
-
 
                                 <span id="request-detail-status" class="reservation-status pending">
                                     Nieuw
@@ -1256,74 +1266,32 @@
                             </div>
 
 
-
-                            <!-- =================================
-                                 VERBLIJF
-                            ================================== -->
-
-                            <section class="admin-request-detail-section">
-
+                            <section class="admin-request-detail-section detail-section-stay">
 
                                 <h3>
                                     Verblijf
                                 </h3>
 
-
                                 <div class="admin-request-detail-grid">
 
-
                                     <div>
-
-                                        <span>
-                                            Type
-                                        </span>
-
-                                        <strong id="request-detail-type">
-                                            —
-                                        </strong>
-
+                                        <span>Type</span>
+                                        <strong id="request-detail-type">—</strong>
                                     </div>
 
-
-
                                     <div>
-
-                                        <span>
-                                            Datum
-                                        </span>
-
-                                        <strong id="request-detail-period">
-                                            —
-                                        </strong>
-
+                                        <span>Datum</span>
+                                        <strong id="request-detail-period">—</strong>
                                     </div>
 
-
-
                                     <div>
-
-                                        <span>
-                                            Aankomst
-                                        </span>
-
-                                        <strong id="request-detail-arrival">
-                                            —
-                                        </strong>
-
+                                        <span>Aankomst</span>
+                                        <strong id="request-detail-arrival">—</strong>
                                     </div>
 
-
-
                                     <div>
-
-                                        <span>
-                                            Vertrek
-                                        </span>
-
-                                        <strong id="request-detail-departure">
-                                            —
-                                        </strong>
-
+                                        <span>Vertrek</span>
+                                        <strong id="request-detail-departure">—</strong>
                                     </div>
 
                                 </div>
@@ -1331,43 +1299,22 @@
                             </section>
 
 
-
-                            <!-- =================================
-                                 KLANT
-                            ================================== -->
-
-                            <section class="admin-request-detail-section">
-
+                            <section class="admin-request-detail-section detail-section-client">
 
                                 <h3>
                                     Klant
                                 </h3>
 
-
                                 <div class="admin-contact-card">
-
 
                                     <div class="admin-contact-avatar">
                                         K
                                     </div>
 
-
                                     <div>
-
-                                        <strong id="request-detail-client-name">
-                                            —
-                                        </strong>
-
-
-                                        <span id="request-detail-email">
-                                            —
-                                        </span>
-
-
-                                        <span id="request-detail-phone">
-                                            —
-                                        </span>
-
+                                        <strong id="request-detail-client-name">—</strong>
+                                        <span id="request-detail-email">—</span>
+                                        <span id="request-detail-phone">—</span>
                                     </div>
 
                                 </div>
@@ -1375,38 +1322,21 @@
                             </section>
 
 
-
-                            <!-- =================================
-                                 HOND
-                            ================================== -->
-
-                            <section class="admin-request-detail-section">
-
+                            <section class="admin-request-detail-section detail-section-dog">
 
                                 <h3>
                                     Hond
                                 </h3>
 
-
                                 <div class="admin-pet-card">
-
 
                                     <div class="admin-pet-avatar">
                                         ♢
                                     </div>
 
-
                                     <div>
-
-                                        <strong id="request-pet-name">
-                                            —
-                                        </strong>
-
-
-                                        <span id="request-pet-info">
-                                            —
-                                        </span>
-
+                                        <strong id="request-pet-name">—</strong>
+                                        <span id="request-pet-info">—</span>
                                     </div>
 
                                 </div>
@@ -1414,18 +1344,11 @@
                             </section>
 
 
-
-                            <!-- =================================
-                                 OPMERKINGEN
-                            ================================== -->
-
-                            <section class="admin-request-detail-section">
-
+                            <section class="admin-request-detail-section detail-section-care">
 
                                 <h3>
                                     Verzorging & opmerkingen
                                 </h3>
-
 
                                 <p id="request-detail-notes">
                                     Geen opmerkingen.
@@ -1434,37 +1357,17 @@
                             </section>
 
 
-
-                            <!-- =================================
-                                 PRICE
-                            ================================== -->
-
                             <div class="admin-request-price">
-
-                                <span>
-                                    Geschatte prijs
-                                </span>
-
-
-                                <strong id="request-detail-price">
-                                    —
-                                </strong>
-
+                                <span>Geschatte prijs</span>
+                                <strong id="request-detail-price">—</strong>
                             </div>
 
 
-
-                            <!-- =================================
-                                 ACTIONS
-                            ================================== -->
-
                             <div id="request-detail-actions" class="admin-request-actions">
-
 
                                 <button type="button" id="request-reject" class="admin-request-reject">
                                     Weigeren
                                 </button>
-
 
                                 <button type="button" id="request-accept" class="admin-request-accept">
                                     Accepteren
@@ -1482,81 +1385,112 @@
 
 
 
-
-
             <!-- =================================================
                  VIEW 4 — KLANTEN
             ================================================== -->
 
             <section class="admin-view" data-view="clients" hidden>
 
+                <div class="admin-entity-layout">
 
-                <div class="admin-directory-panel">
+                    <section class="admin-directory-panel">
 
+                        <div class="admin-directory-header">
 
-                    <div class="admin-directory-header">
+                            <div>
+                                <span class="admin-panel-label">Klantenbestand</span>
+                                <h2>Klanten</h2>
+                                <p>Klik op een klant voor de volledige reservatiehistoriek.</p>
+                            </div>
 
-
-                        <div>
-
-                            <span class="admin-panel-label">
-                                Klantenbestand
-                            </span>
-
-
-                            <h2>
-                                Klanten
-                            </h2>
+                            <div class="admin-directory-actions">
+                                <input type="search" id="client-search" placeholder="Zoek klant, e-mail of hond...">
+                            </div>
 
                         </div>
 
 
+                        <div class="admin-directory-table-head">
+                            <span>Klant</span>
+                            <span>Honden</span>
+                            <span>Reservaties</span>
+                        </div>
 
-                        <div class="admin-directory-actions">
 
-                            <input type="search" id="client-search" placeholder="Zoek klant...">
+                        <div id="clients-list" class="admin-directory-list">
+                            <div class="admin-empty-state">
+                                <strong>Klanten laden...</strong>
+                            </div>
+                        </div>
+
+                    </section>
+
+
+                    <aside class="admin-entity-detail">
+
+                        <div id="client-detail-empty" class="admin-entity-detail-empty">
+                            <div class="admin-entity-empty-icon">♙</div>
+                            <strong>Kies een klant</strong>
+                            <p>U ziet hier alle vorige en toekomstige reservaties van die klant.</p>
+                        </div>
+
+
+                        <div id="client-detail-content" hidden>
+
+                            <div class="admin-entity-detail-header">
+                                <span class="admin-panel-label">Klantprofiel</span>
+                                <h2 id="client-detail-name">—</h2>
+                                <p id="client-detail-contact">—</p>
+                            </div>
+
+
+                            <div class="admin-entity-stat-grid">
+
+                                <div>
+                                    <span>Totaal</span>
+                                    <strong id="client-detail-total">0</strong>
+                                </div>
+
+                                <div>
+                                    <span>Komend</span>
+                                    <strong id="client-detail-upcoming">0</strong>
+                                </div>
+
+                                <div>
+                                    <span>Afgerond</span>
+                                    <strong id="client-detail-past">0</strong>
+                                </div>
+
+                                <div>
+                                    <span>Omzet</span>
+                                    <strong id="client-detail-revenue">€0</strong>
+                                </div>
+
+                            </div>
+
+
+                            <section class="admin-entity-section">
+                                <h3>Honden</h3>
+                                <div id="client-detail-pets" class="admin-entity-tags"></div>
+                            </section>
+
+
+                            <section class="admin-entity-section">
+                                <div class="admin-entity-section-heading">
+                                    <h3>Reservaties</h3>
+                                    <span>Nieuwste eerst</span>
+                                </div>
+
+                                <div id="client-detail-reservations" class="admin-entity-reservation-list"></div>
+                            </section>
 
                         </div>
 
-                    </div>
-
-
-
-                    <div class="admin-directory-table-head">
-
-                        <span>
-                            Klant
-                        </span>
-
-                        <span>
-                            Honden
-                        </span>
-
-                        <span>
-                            Reservaties
-                        </span>
-
-                    </div>
-
-
-
-                    <div id="clients-list" class="admin-directory-list">
-
-                        <div class="admin-empty-state">
-
-                            <strong>
-                                Klanten laden...
-                            </strong>
-
-                        </div>
-
-                    </div>
+                    </aside>
 
                 </div>
 
             </section>
-
-
 
 
 
@@ -1566,49 +1500,73 @@
 
             <section class="admin-view" data-view="pets" hidden>
 
+                <div class="admin-entity-layout">
 
-                <div class="admin-directory-panel">
+                    <section class="admin-directory-panel">
 
+                        <div class="admin-directory-header">
 
-                    <div class="admin-directory-header">
+                            <div>
+                                <span class="admin-panel-label">Hondenbestand</span>
+                                <h2>Honden</h2>
+                                <p>Klik op een hond om alle verblijven en exacte kalenderdagen te zien.</p>
+                            </div>
 
-
-                        <div>
-
-                            <span class="admin-panel-label">
-                                Hondenbestand
-                            </span>
-
-
-                            <h2>
-                                Honden
-                            </h2>
+                            <div class="admin-directory-actions">
+                                <input type="search" id="pet-search" placeholder="Zoek hond, ras of eigenaar...">
+                            </div>
 
                         </div>
 
 
+                        <div id="pets-list" class="admin-pets-grid">
+                            <div class="admin-empty-state">
+                                <strong>Honden laden...</strong>
+                            </div>
+                        </div>
 
-                        <div class="admin-directory-actions">
+                    </section>
 
-                            <input type="search" id="pet-search" placeholder="Zoek hond of eigenaar...">
+
+                    <aside class="admin-entity-detail">
+
+                        <div id="pet-detail-empty" class="admin-entity-detail-empty">
+                            <div class="admin-entity-empty-icon dog">♢</div>
+                            <strong>Kies een hond</strong>
+                            <p>Daarna ziet u eigenaar, details, reservaties en alle exacte kalenderdagen.</p>
+                        </div>
+
+
+                        <div id="pet-detail-content" hidden>
+
+                            <div class="admin-entity-detail-header dog">
+                                <span class="admin-panel-label">Hondenprofiel</span>
+                                <h2 id="pet-detail-name">—</h2>
+                                <p id="pet-detail-info">—</p>
+                            </div>
+
+
+                            <section class="admin-entity-section">
+                                <h3>Eigenaar</h3>
+                                <div class="admin-owner-highlight">
+                                    <strong id="pet-detail-owner">—</strong>
+                                    <span id="pet-detail-owner-email">—</span>
+                                </div>
+                            </section>
+
+
+                            <section class="admin-entity-section">
+                                <div class="admin-entity-section-heading">
+                                    <h3>Kalender & reservaties</h3>
+                                    <span>Klik op een datum om die dag te openen</span>
+                                </div>
+
+                                <div id="pet-detail-reservations" class="admin-entity-reservation-list"></div>
+                            </section>
 
                         </div>
 
-                    </div>
-
-
-
-                    <div id="pets-list" class="admin-pets-grid">
-
-                        <div class="admin-empty-state">
-
-                            <strong>
-                                Honden laden...
-                            </strong>
-
-                        </div>
-
-                    </div>
+                    </aside>
 
                 </div>
 
@@ -1617,9 +1575,73 @@
 
 
 
+            <!-- =================================================
+                 VIEW 6 — HISTORIEK
+            ================================================== -->
+
+            <section class="admin-view" data-view="history" hidden>
+
+                <div class="admin-view-heading admin-history-heading">
+
+                    <div>
+                        <span class="admin-section-kicker">Archief</span>
+                        <h2>Historiek</h2>
+                        <p>Afgeronde reservaties, omzet en klanten per maand.</p>
+                    </div>
+
+                    <label class="admin-history-month-picker">
+                        <span>Maand</span>
+                        <input type="month" id="history-month">
+                    </label>
+
+                </div>
+
+
+                <div class="admin-history-summary">
+
+                    <article>
+                        <span>Omzet</span>
+                        <strong id="history-stat-revenue">€0</strong>
+                        <small>Afgeronde reservaties</small>
+                    </article>
+
+                    <article>
+                        <span>Reservaties</span>
+                        <strong id="history-stat-reservations">0</strong>
+                        <small>Afgerond in gekozen maand</small>
+                    </article>
+
+                    <article>
+                        <span>Unieke klanten</span>
+                        <strong id="history-stat-clients">0</strong>
+                        <small>Klanten in gekozen maand</small>
+                    </article>
+
+                </div>
+
+
+                <section class="admin-history-panel">
+
+                    <div class="admin-history-list-head">
+                        <span>Verblijf</span>
+                        <span>Klant</span>
+                        <span>Prijs</span>
+                    </div>
+
+                    <div id="history-list" class="admin-history-list">
+                        <div class="admin-empty-state">
+                            <strong>Historiek laden...</strong>
+                        </div>
+                    </div>
+
+                </section>
+
+            </section>
+
+
 
             <!-- =================================================
-                 VIEW 6 — SETTINGS
+                 VIEW 7 — SETTINGS
             ================================================== -->
 
             <section class="admin-view" data-view="settings" hidden>
