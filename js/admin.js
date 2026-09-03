@@ -92,6 +92,9 @@ const adminUser =
 const logoutButton =
     byId("logout-button");
 
+const sidebarToggleButton =
+    byId("admin-sidebar-toggle");
+
 
 
 /* =========================================================
@@ -10341,5 +10344,151 @@ document.addEventListener(
             closePetDetailV7();
         }
     }
+);
+
+
+
+/* =========================================================
+   ADMIN SIDEBAR COLLAPSE
+========================================================= */
+
+const ADMIN_SIDEBAR_KEY =
+    "teckelweb-admin-sidebar-collapsed";
+
+
+function setAdminSidebarCollapsed(
+    collapsed
+) {
+
+    if (
+        !adminDashboard
+    ) {
+
+        return;
+    }
+
+
+    adminDashboard.classList.toggle(
+        "sidebar-collapsed",
+        collapsed
+    );
+
+
+    if (
+        sidebarToggleButton
+    ) {
+
+        sidebarToggleButton.textContent =
+            collapsed
+                ? "›"
+                : "‹";
+
+
+        sidebarToggleButton.setAttribute(
+            "aria-expanded",
+            String(
+                !collapsed
+            )
+        );
+
+
+        sidebarToggleButton.setAttribute(
+            "aria-label",
+            collapsed
+                ? "Zijbalk uitklappen"
+                : "Zijbalk verkleinen"
+        );
+
+
+        sidebarToggleButton.title =
+            collapsed
+                ? "Zijbalk uitklappen"
+                : "Zijbalk verkleinen";
+    }
+
+
+    try {
+
+        localStorage.setItem(
+            ADMIN_SIDEBAR_KEY,
+            collapsed
+                ? "1"
+                : "0"
+        );
+
+    } catch {
+        // localStorage kan in sommige privacy-modi geblokkeerd zijn.
+    }
+
+
+    /*
+        Kalender opnieuw tekenen nadat de gridbreedte
+        veranderd is.
+    */
+
+    if (
+        currentView ===
+        "calendar"
+    ) {
+
+        window.setTimeout(
+            () => {
+
+                renderMiniCalendar();
+
+                renderCalendarWorkspace();
+            },
+            220
+        );
+    }
+}
+
+
+
+function getStoredSidebarCollapsed() {
+
+    try {
+
+        return (
+            localStorage.getItem(
+                ADMIN_SIDEBAR_KEY
+            ) ===
+            "1"
+        );
+
+    } catch {
+
+        return false;
+    }
+}
+
+
+
+sidebarToggleButton?.addEventListener(
+    "click",
+    () => {
+
+        const collapsed =
+            !adminDashboard
+                ?.classList
+                .contains(
+                    "sidebar-collapsed"
+                );
+
+
+        setAdminSidebarCollapsed(
+            collapsed
+        );
+    }
+);
+
+
+/*
+    Herstel de keuze van de beheerder
+    bij het openen van de admin.
+*/
+
+setAdminSidebarCollapsed(
+    getStoredSidebarCollapsed()
 );
 
