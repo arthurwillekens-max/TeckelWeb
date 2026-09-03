@@ -201,6 +201,24 @@
 
 
 
+                    <button type="button" class="admin-nav-item" data-admin-view="tasks" title="Taken">
+
+                        <span class="admin-nav-icon">
+                            ✓
+                        </span>
+
+                        <span>
+                            Taken
+                        </span>
+
+                        <span id="sidebar-task-count" class="admin-nav-badge" hidden>
+                            0
+                        </span>
+
+                    </button>
+
+
+
                     <button type="button" class="admin-nav-item" data-admin-view="requests" title="Online booking">
 
                         <span class="admin-nav-icon">
@@ -1066,7 +1084,122 @@
 
 
             <!-- =================================================
-                 VIEW 3 — ONLINE BOOKING
+                 VIEW 3 — TAKEN
+            ================================================== -->
+
+            <section class="admin-view" data-view="tasks" hidden>
+
+                <div class="admin-view-heading admin-tasks-heading">
+
+                    <div>
+                        <span class="admin-section-kicker">Dagelijkse verzorging</span>
+                        <h2>Taken</h2>
+                        <p>
+                            Voeding, medicatie en extra verzorging voor de geselecteerde dag.
+                        </p>
+                    </div>
+
+                    <div class="admin-task-date-controls">
+
+                        <button type="button" id="admin-task-prev" aria-label="Vorige dag">
+                            ‹
+                        </button>
+
+                        <input type="date" id="admin-task-date">
+
+                        <button type="button" id="admin-task-next" aria-label="Volgende dag">
+                            ›
+                        </button>
+
+                        <button type="button" id="admin-task-today">
+                            Vandaag
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-task-summary">
+
+                    <article>
+                        <span>Te doen</span>
+                        <strong id="task-stat-open">0</strong>
+                    </article>
+
+                    <article>
+                        <span>Klaar</span>
+                        <strong id="task-stat-completed">0</strong>
+                    </article>
+
+                    <article>
+                        <span>Totaal</span>
+                        <strong id="task-stat-total">0</strong>
+                    </article>
+
+                </div>
+
+
+                <section class="admin-task-panel">
+
+                    <div class="admin-task-toolbar">
+
+                        <div class="admin-task-tabs">
+
+                            <button type="button" class="active" data-task-filter="all">
+                                Alles
+                            </button>
+
+                            <button type="button" data-task-filter="feeding">
+                                Voeding
+                            </button>
+
+                            <button type="button" data-task-filter="medication">
+                                Medicatie
+                            </button>
+
+                            <button type="button" data-task-filter="addons">
+                                Extra's
+                            </button>
+
+                        </div>
+
+
+                        <input
+                            type="search"
+                            id="admin-task-search"
+                            placeholder="Zoek hond of klant..."
+                        >
+
+                    </div>
+
+
+                    <div class="admin-task-table-head">
+                        <span>Hond</span>
+                        <span>Taak</span>
+                        <span>Tijd</span>
+                        <span>Klant</span>
+                        <span>Status</span>
+                    </div>
+
+
+                    <div id="admin-task-list" class="admin-task-list">
+
+                        <div class="admin-empty-state">
+                            <strong>Taken laden...</strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 VIEW 4 — ONLINE BOOKING
             ================================================== -->
 
             <section class="admin-view" data-view="requests" hidden>
@@ -1340,7 +1473,7 @@
 
 
             <!-- =================================================
-                 VIEW 4 — KLANTEN
+                 VIEW 5 — KLANTEN
             ================================================== -->
 
             <section class="admin-view" data-view="clients" hidden>
@@ -1466,7 +1599,7 @@
 
 
             <!-- =================================================
-                 VIEW 5 — HONDEN
+                 VIEW 6 — HONDEN
             ================================================== -->
 
             <section class="admin-view" data-view="pets" hidden>
@@ -1564,7 +1697,7 @@
 
 
             <!-- =================================================
-                 VIEW 6 — HISTORIEK
+                 VIEW 7 — HISTORIEK
             ================================================== -->
 
             <section class="admin-view" data-view="history" hidden>
@@ -1702,7 +1835,7 @@
 
 
             <!-- =================================================
-                 VIEW 7 — SETTINGS
+                 VIEW 8 — SETTINGS
             ================================================== -->
 
             <section class="admin-view" data-view="settings" hidden>
