@@ -542,33 +542,6 @@
 
 
                 <!-- =============================================
-                     MANAGEMENT INSIGHTS
-                ============================================== -->
-
-                <div class="admin-insights-row">
-
-                    <article class="admin-insight-card revenue">
-                        <span>Omzet deze maand</span>
-                        <strong id="stat-month-revenue">€0</strong>
-                        <small>Afgeronde, goedgekeurde verblijven</small>
-                    </article>
-
-                    <article class="admin-insight-card upcoming">
-                        <span>Komende reservaties</span>
-                        <strong id="stat-upcoming-bookings">0</strong>
-                        <small>Goedgekeurd en nog niet afgelopen</small>
-                    </article>
-
-                    <article class="admin-insight-card completed">
-                        <span>Afgerond deze maand</span>
-                        <strong id="stat-completed-month">0</strong>
-                        <small>Voltooide verblijven in deze maand</small>
-                    </article>
-
-                </div>
-
-
-                <!-- =============================================
                      DASHBOARD CONTENT
                 ============================================== -->
 
@@ -1121,40 +1094,11 @@
                         </h2>
 
                         <p>
-                            Nieuwe aanvragen eerst. Bevestigde toekomstige verblijven apart.
-                            Oude verblijven vindt u onder Historiek.
+                            Een duidelijke lijst van actieve aanvragen en komende reservaties.
+                            Klik op een rij om de details te openen.
                         </p>
 
                     </div>
-
-                </div>
-
-
-                <div class="admin-booking-summary">
-
-                    <article class="admin-booking-summary-card pending">
-                        <span>Nieuw</span>
-                        <strong id="booking-stat-pending">0</strong>
-                        <small>Moet nog beoordeeld worden</small>
-                    </article>
-
-                    <article class="admin-booking-summary-card upcoming">
-                        <span>Komend</span>
-                        <strong id="booking-stat-upcoming">0</strong>
-                        <small>Goedgekeurde reservaties</small>
-                    </article>
-
-                    <article class="admin-booking-summary-card revenue">
-                        <span>Omzet deze maand</span>
-                        <strong id="booking-stat-revenue">€0</strong>
-                        <small>Afgeronde reservaties</small>
-                    </article>
-
-                    <article class="admin-booking-summary-card archive">
-                        <span>In historiek</span>
-                        <strong id="booking-stat-past">0</strong>
-                        <small>Afgeronde verblijven</small>
-                    </article>
 
                 </div>
 
@@ -1167,7 +1111,7 @@
 
                             <div class="admin-request-toolbar-title">
                                 <strong>Reservaties</strong>
-                                <span>Kies eerst een categorie</span>
+                                <span>Filter of zoek en open daarna een reservatie</span>
                             </div>
 
                             <div class="admin-request-tabs">
@@ -1206,9 +1150,13 @@
                         </div>
 
 
-                        <div class="admin-request-list-heading">
-                            <span>Reservatie</span>
+                        <div class="admin-request-list-heading admin-request-list-heading-v2">
+                            <span>Hond</span>
+                            <span>Klant</span>
+                            <span>Verblijf</span>
+                            <span>Datum</span>
                             <span>Status</span>
+                            <span>Prijs</span>
                         </div>
 
 
@@ -1220,8 +1168,24 @@
 
                     </section>
 
+                    <button
+                        type="button"
+                        id="request-detail-backdrop"
+                        class="admin-request-detail-backdrop"
+                        aria-label="Reservatiedetail sluiten"
+                    ></button>
 
                     <aside class="admin-request-detail">
+
+                        <button
+                            type="button"
+                            id="request-detail-close"
+                            class="admin-request-detail-close"
+                            aria-label="Sluiten"
+                            title="Sluiten"
+                        >
+                            ×
+                        </button>
 
                         <div id="request-detail-empty" class="admin-request-detail-empty">
 
