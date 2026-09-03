@@ -3696,6 +3696,64 @@ bookingBackButton.addEventListener(
 
 
 /* =========================================================
+   TELEFOONNUMMER VALIDATIE
+========================================================= */
+
+function normalizePhoneNumber(
+    value
+) {
+
+    let normalized =
+        String(
+            value
+            ||
+            ""
+        )
+            .trim()
+            .replace(
+                /[\s().-]/g,
+                ""
+            );
+
+
+    if (
+        normalized.startsWith(
+            "00"
+        )
+    ) {
+
+        normalized =
+            "+"
+            +
+            normalized.slice(
+                2
+            );
+    }
+
+
+    return normalized;
+}
+
+
+
+function isStructurallyValidPhoneNumber(
+    value
+) {
+
+    const normalized =
+        normalizePhoneNumber(
+            value
+        );
+
+
+    return /^\+?[0-9]{8,15}$/.test(
+        normalized
+    );
+}
+
+
+
+/* =========================================================
    CONTACT VALIDATIE
 ========================================================= */
 
@@ -3743,6 +3801,23 @@ function validateCustomerDetails() {
 
         bookingMessage.textContent =
             "Vul uw telefoonnummer in.";
+
+
+        customerPhoneInput.focus();
+
+
+        return false;
+    }
+
+
+    if (
+        !isStructurallyValidPhoneNumber(
+            phone
+        )
+    ) {
+
+        bookingMessage.textContent =
+            "Vul een geldig telefoonnummer in, bijvoorbeeld 0471 12 34 56 of +32 471 12 34 56.";
 
 
         customerPhoneInput.focus();
@@ -3905,9 +3980,10 @@ function buildReservation() {
                 email,
 
             phone:
-                customerPhoneInput
-                    .value
-                    .trim()
+                normalizePhoneNumber(
+                    customerPhoneInput
+                        .value
+                )
         },
 
 
