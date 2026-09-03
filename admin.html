@@ -1390,7 +1390,24 @@
                     </section>
 
 
-                    <aside class="admin-entity-detail">
+                    <button
+                        type="button"
+                        id="client-detail-backdrop"
+                        class="admin-entity-detail-backdrop"
+                        aria-label="Klantdetail sluiten"
+                    ></button>
+
+                    <aside id="client-detail-drawer" class="admin-entity-detail">
+
+                        <button
+                            type="button"
+                            id="client-detail-close"
+                            class="admin-entity-detail-close"
+                            aria-label="Sluiten"
+                            title="Sluiten"
+                        >
+                            ×
+                        </button>
 
                         <div id="client-detail-empty" class="admin-entity-detail-empty">
                             <div class="admin-entity-empty-icon">♙</div>
@@ -1492,7 +1509,24 @@
                     </section>
 
 
-                    <aside class="admin-entity-detail">
+                    <button
+                        type="button"
+                        id="pet-detail-backdrop"
+                        class="admin-entity-detail-backdrop"
+                        aria-label="Honddetail sluiten"
+                    ></button>
+
+                    <aside id="pet-detail-drawer" class="admin-entity-detail">
+
+                        <button
+                            type="button"
+                            id="pet-detail-close"
+                            class="admin-entity-detail-close"
+                            aria-label="Sluiten"
+                            title="Sluiten"
+                        >
+                            ×
+                        </button>
 
                         <div id="pet-detail-empty" class="admin-entity-detail-empty">
                             <div class="admin-entity-empty-icon dog">♢</div>
@@ -1548,9 +1582,52 @@
                 <div class="admin-view-heading admin-history-heading">
 
                     <div>
-                        <span class="admin-section-kicker">Archief</span>
+                        <span class="admin-section-kicker">Verblijven</span>
                         <h2>Historiek</h2>
-                        <p>Afgeronde reservaties, omzet en klanten per maand.</p>
+                        <p>
+                            Bevestig eerst dat een verblijf echt is afgerond.
+                            Pas daarna telt het mee in de omzet.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <section class="admin-completion-panel">
+
+                    <div class="admin-completion-header">
+
+                        <div>
+                            <span class="admin-panel-label">Actie nodig</span>
+                            <h3>Voorbije verblijven te bevestigen</h3>
+                            <p>
+                                Deze reservaties zijn voorbij, maar nog niet als afgerond bevestigd.
+                            </p>
+                        </div>
+
+                        <span id="history-pending-count" class="admin-completion-count">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div id="history-pending-list" class="admin-completion-list">
+
+                        <div class="admin-empty-state compact">
+                            <strong>Geen verblijven te bevestigen</strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <div class="admin-history-section-heading">
+
+                    <div>
+                        <span class="admin-panel-label">Bevestigd</span>
+                        <h3>Maandelijkse historiek</h3>
                     </div>
 
                     <label class="admin-history-month-picker">
@@ -1566,13 +1643,13 @@
                     <article>
                         <span>Omzet</span>
                         <strong id="history-stat-revenue">€0</strong>
-                        <small>Afgeronde reservaties</small>
+                        <small>Alleen bevestigde, afgeronde verblijven</small>
                     </article>
 
                     <article>
                         <span>Reservaties</span>
                         <strong id="history-stat-reservations">0</strong>
-                        <small>Afgerond in gekozen maand</small>
+                        <small>Bevestigd als afgerond</small>
                     </article>
 
                     <article>
@@ -1596,6 +1673,36 @@
                         <div class="admin-empty-state">
                             <strong>Historiek laden...</strong>
                         </div>
+                    </div>
+
+                </section>
+
+
+                <section class="admin-trash-panel">
+
+                    <div class="admin-trash-header">
+
+                        <div>
+                            <span class="admin-panel-label">Veilig verwijderen</span>
+                            <h3>Prullenbak</h3>
+                            <p>
+                                Verwijderde reservaties blijven hier bewaard en kunnen worden hersteld.
+                            </p>
+                        </div>
+
+                        <span id="trash-count" class="admin-trash-count">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div id="trash-list" class="admin-trash-list">
+
+                        <div class="admin-empty-state compact">
+                            <strong>Prullenbak is leeg</strong>
+                        </div>
+
                     </div>
 
                 </section>
