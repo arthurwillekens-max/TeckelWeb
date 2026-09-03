@@ -15703,3 +15703,416 @@ a {
     }
 }
 
+
+
+/* =========================================================
+   =========================================================
+   TECKELWEB ADMIN V6
+   LESS CHROME / FULL-WIDTH BOOKING LIST / DETAIL DRAWER
+   =========================================================
+   ========================================================= */
+
+
+/* =========================================================
+   REMOVE THE DUPLICATE TOP BAR
+========================================================= */
+
+.tw-admin-body .admin-topbar-v4 {
+    display: none !important;
+}
+
+.tw-admin-body .admin-main-v4 {
+    padding-top: 18px;
+}
+
+.tw-admin-body .admin-view-heading,
+.tw-admin-body .admin-calendar-page-header {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.tw-admin-body .admin-view-heading h2,
+.tw-admin-body .admin-calendar-page-header h2 {
+    font-size: 25px;
+}
+
+
+/* =========================================================
+   ONLINE BOOKING — ONE CLEAR FULL-WIDTH LIST
+========================================================= */
+
+.tw-admin-body .admin-requests-layout-v2 {
+    display: block;
+    min-height: 0;
+    overflow: visible;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    background: white;
+    box-shadow: var(--admin-shadow);
+}
+
+.tw-admin-body .admin-requests-list-panel {
+    width: 100%;
+    border-right: 0;
+}
+
+.tw-admin-body .admin-requests-toolbar {
+    padding: 15px 17px;
+    background: white;
+}
+
+.tw-admin-body .admin-request-toolbar-title {
+    margin-bottom: 12px;
+}
+
+.tw-admin-body .admin-request-toolbar-title strong {
+    font-size: 16px;
+}
+
+.tw-admin-body .admin-request-toolbar-title span {
+    font-size: 11px;
+}
+
+.tw-admin-body .admin-request-tabs {
+    width: fit-content;
+    max-width: 100%;
+    display: inline-flex;
+    gap: 3px;
+    padding: 3px;
+}
+
+.tw-admin-body .admin-request-tabs button {
+    flex: none;
+    min-width: 88px;
+    min-height: 35px;
+    padding: 0 12px;
+}
+
+.tw-admin-body .admin-request-search {
+    margin-top: 12px;
+}
+
+.tw-admin-body .admin-request-search input {
+    max-width: 520px;
+}
+
+
+/* =========================================================
+   BOOKING TABLE HEADER
+========================================================= */
+
+.tw-admin-body .admin-request-list-heading-v2 {
+    display: grid;
+    grid-template-columns:
+        minmax(150px, 1.15fr)
+        minmax(180px, 1.35fr)
+        minmax(115px, 0.8fr)
+        minmax(175px, 1.25fr)
+        minmax(110px, 0.8fr)
+        minmax(90px, 0.65fr);
+    gap: 18px;
+    padding: 10px 17px;
+    border-top: 1px solid var(--admin-border);
+    border-bottom: 1px solid var(--admin-border);
+    background: #f7f7f8;
+    color: var(--admin-text-faint);
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.45px;
+}
+
+
+/* =========================================================
+   BOOKING TABLE ROW
+========================================================= */
+
+.tw-admin-body .admin-request-list {
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+}
+
+.tw-admin-body .admin-request-table-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns:
+        minmax(150px, 1.15fr)
+        minmax(180px, 1.35fr)
+        minmax(115px, 0.8fr)
+        minmax(175px, 1.25fr)
+        minmax(110px, 0.8fr)
+        minmax(90px, 0.65fr);
+    align-items: center;
+    gap: 18px;
+    min-height: 72px;
+    padding: 12px 17px;
+    border: 0;
+    border-bottom: 1px solid var(--admin-border);
+    border-radius: 0;
+    background: white;
+    color: var(--admin-text);
+    text-align: left;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.tw-admin-body .admin-request-table-row:last-child {
+    border-bottom: 0;
+}
+
+.tw-admin-body .admin-request-table-row:hover {
+    background: #fafafa;
+}
+
+.tw-admin-body .admin-request-table-row.selected {
+    color: var(--admin-text);
+    background: #fff8f4;
+    box-shadow: inset 4px 0 0 var(--admin-orange);
+}
+
+.tw-admin-body .admin-request-table-row.status-pending {
+    background: #fffdfb;
+}
+
+.tw-admin-body .admin-request-table-row.status-pending:hover {
+    background: #fff8f3;
+}
+
+.tw-admin-body .admin-request-cell {
+    min-width: 0;
+}
+
+.tw-admin-body .admin-request-cell.dog,
+.tw-admin-body .admin-request-cell.customer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tw-admin-body .admin-request-cell.dog strong {
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 760;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-admin-body .admin-request-cell.customer strong {
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-admin-body .admin-request-cell small {
+    overflow: hidden;
+    color: var(--admin-text-faint);
+    font-size: 10px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-admin-body .admin-service-pill {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 26px;
+    padding: 0 8px;
+    border-radius: 6px;
+    background: #eef2f6;
+    color: #566b80;
+    font-size: 10px;
+    font-weight: 720;
+}
+
+.tw-admin-body .admin-request-cell.period {
+    color: var(--admin-text-soft);
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.tw-admin-body .admin-request-cell.price {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+}
+
+.tw-admin-body .admin-request-cell.price strong {
+    font-size: 12px;
+    font-weight: 760;
+}
+
+.tw-admin-body .admin-request-open-arrow {
+    color: var(--admin-orange);
+    font-size: 21px;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   REQUEST DETAIL AS A DRAWER, NOT A PERMANENT COLUMN
+========================================================= */
+
+.tw-admin-body .admin-request-detail-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 880;
+    display: block;
+    border: 0;
+    background: rgba(35, 35, 40, 0.26);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.tw-admin-body .admin-request-detail-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tw-admin-body .admin-request-detail {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    width: min(510px, calc(100vw - 28px));
+    overflow-y: auto;
+    border: 0;
+    border-left: 1px solid var(--admin-border);
+    background: white;
+    box-shadow: -18px 0 45px rgba(30, 30, 35, 0.13);
+    transform: translateX(102%);
+    visibility: hidden;
+    transition:
+        transform 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.tw-admin-body .admin-request-detail.open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.tw-admin-body .admin-request-detail-close {
+    position: sticky;
+    top: 12px;
+    z-index: 8;
+    float: right;
+    width: 36px;
+    height: 36px;
+    margin: 12px 12px -48px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: white;
+    color: var(--admin-text-soft);
+    font-size: 23px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tw-admin-body .admin-request-detail-close:hover {
+    border-color: var(--admin-orange-border);
+    color: var(--admin-orange);
+    background: var(--admin-orange-soft);
+}
+
+.tw-admin-body .admin-request-detail-empty {
+    min-height: 100vh;
+    padding: 70px 38px;
+}
+
+.tw-admin-body #request-detail-content {
+    max-height: none;
+    overflow: visible;
+    padding-top: 0;
+}
+
+.tw-admin-body #request-detail-content .admin-request-detail-header {
+    padding-top: 58px;
+}
+
+
+/* =========================================================
+   SMALLER SCREENS
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .tw-admin-body .admin-request-list-heading-v2 {
+        display: none;
+    }
+
+    .tw-admin-body .admin-request-table-row {
+        grid-template-columns:
+            minmax(140px, 1fr)
+            minmax(170px, 1.2fr)
+            minmax(120px, 0.8fr)
+            minmax(130px, 1fr);
+        gap: 12px;
+    }
+
+    .tw-admin-body .admin-request-cell.service {
+        display: none;
+    }
+
+    .tw-admin-body .admin-request-cell.price {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+
+    .tw-admin-body .admin-main-v4 {
+        padding-top: 12px;
+    }
+
+    .tw-admin-body .admin-request-toolbar-title {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .tw-admin-body .admin-request-tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .tw-admin-body .admin-request-search input {
+        max-width: none;
+    }
+
+    .tw-admin-body .admin-request-table-row {
+        grid-template-columns: 1fr auto;
+        gap: 8px 14px;
+        padding: 13px 14px;
+    }
+
+    .tw-admin-body .admin-request-cell.customer {
+        grid-column: 1;
+    }
+
+    .tw-admin-body .admin-request-cell.period {
+        grid-column: 1 / -1;
+    }
+
+    .tw-admin-body .admin-request-cell.status {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .tw-admin-body .admin-request-cell.price {
+        grid-column: 2;
+        grid-row: 2;
+        justify-content: flex-end;
+    }
+}
+
