@@ -620,6 +620,45 @@ async function getAdminPushTokens(
 }
 
 
+function buildAdminReservationUrl(
+    reservationId,
+    env
+) {
+
+    const baseUrl =
+        env.ADMIN_URL
+        ||
+        "https://arthurwillekens-max.github.io/TeckelWeb/admin.html";
+
+
+    const url =
+        new URL(
+            baseUrl
+        );
+
+
+    url.searchParams.set(
+        "view",
+        "requests"
+    );
+
+
+    if (
+        reservationId
+    ) {
+
+        url.searchParams.set(
+            "reservation",
+            reservationId
+        );
+    }
+
+
+    return url.toString();
+}
+
+
+
 async function sendFcmMessage(
     token,
     reservation,
@@ -662,9 +701,10 @@ async function sendFcmMessage(
 
 
     const adminUrl =
-        env.ADMIN_URL
-        ||
-        "https://arthurwillekens-max.github.io/TeckelWeb/admin.html";
+        buildAdminReservationUrl(
+            reservation.id,
+            env
+        );
 
 
     const response =
@@ -813,9 +853,10 @@ async function sendAdminEmail(
 
 
     const adminUrl =
-        env.ADMIN_URL
-        ||
-        "https://arthurwillekens-max.github.io/TeckelWeb/admin.html";
+        buildAdminReservationUrl(
+            reservation.id,
+            env
+        );
 
 
     const response =
@@ -934,6 +975,79 @@ function escapeHtml(
 }
 
 
+async function markAdminNotificationSent(
+    reservationId,
+    accessToken,
+    env
+) {
+
+    const url =
+        new URL(
+            `https://firestore.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/databases/(default)/documents/reservations/${encodeURIComponent(
+                reservationId
+            )}`
+        );
+
+
+    url.searchParams.append(
+        "updateMask.fieldPaths",
+        "adminNotificationSentAt"
+    );
+
+
+    const response =
+        await fetch(
+            url.toString(),
+            {
+                method:
+                    "PATCH",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${accessToken}`,
+
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(
+                        {
+                            fields: {
+                                adminNotificationSentAt: {
+                                    timestampValue:
+                                        new Date()
+                                            .toISOString()
+                                }
+                            }
+                        }
+                    )
+            }
+        );
+
+
+    if (
+        !response.ok
+    ) {
+
+        const result =
+            await response
+                .json()
+                .catch(
+                    () =>
+                        ({})
+                );
+
+
+        console.error(
+            "Admin notification marker opslaan mislukt:",
+            result
+        );
+    }
+}
+
+
+
 async function handleNotifyBooking(
     request,
     env
@@ -1033,6 +1147,24 @@ async function handleNotifyBooking(
 
 
         if (
+            reservation.adminNotificationSentAt
+        ) {
+
+            return jsonResponse(
+                {
+                    ok:
+                        true,
+
+                    alreadySent:
+                        true
+                },
+                200,
+                origin
+            );
+        }
+
+
+        if (
             reservation.customer
                 ?.uid !==
                 user.localId
@@ -1087,6 +1219,13 @@ async function handleNotifyBooking(
                 reservation,
                 env
             );
+
+
+        await markAdminNotificationSent(
+            reservationId,
+            accessToken,
+            env
+        );
 
 
         return jsonResponse(
