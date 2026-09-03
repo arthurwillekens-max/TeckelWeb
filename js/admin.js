@@ -23,6 +23,8 @@ import {
     logout,
     watchAuthState,
     getReservations,
+    watchReservations,
+    setReservationTaskCompleted,
     updateReservationStatus,
     confirmReservationCompleted,
     reopenCompletedReservation,
@@ -318,6 +320,45 @@ const petDetailClose =
 
 
 /* =========================================================
+   TAKEN
+========================================================= */
+
+const taskDateInput =
+    byId("admin-task-date");
+
+const taskPreviousButton =
+    byId("admin-task-prev");
+
+const taskNextButton =
+    byId("admin-task-next");
+
+const taskTodayButton =
+    byId("admin-task-today");
+
+const taskSearchInput =
+    byId("admin-task-search");
+
+const taskFilterButtons =
+    all("[data-task-filter]");
+
+const taskList =
+    byId("admin-task-list");
+
+const taskStatOpen =
+    byId("task-stat-open");
+
+const taskStatCompleted =
+    byId("task-stat-completed");
+
+const taskStatTotal =
+    byId("task-stat-total");
+
+const sidebarTaskCount =
+    byId("sidebar-task-count");
+
+
+
+/* =========================================================
    KALENDER
 ========================================================= */
 
@@ -432,6 +473,16 @@ let requestFilter =
     "pending";
 
 
+let taskFilter =
+    "all";
+
+
+let selectedTaskDate =
+    dateToString(
+        new Date()
+    );
+
+
 let selectedReservationId =
     null;
 
@@ -480,6 +531,16 @@ const VIEW_CONFIG = {
 
         title:
             "Kalender"
+    },
+
+
+    tasks: {
+
+        eyebrow:
+            "Verzorging",
+
+        title:
+            "Taken"
     },
 
 
@@ -1737,6 +1798,9 @@ watchAuthState(
 
         if (!user) {
 
+            stopRealtimeReservationsV9();
+
+
             if (
                 loginSection
             ) {
@@ -1872,6 +1936,9 @@ async function initialiseAdmin() {
         await showView(
             currentView
         );
+
+
+        startRealtimeReservationsV9();
 
 
     } catch (error) {
@@ -2070,6 +2137,15 @@ async function showView(
                 renderCalendarWorkspace();
             }
         );
+    }
+
+
+    if (
+        viewName ===
+        "tasks"
+    ) {
+
+        renderTasksV9();
     }
 }
 
@@ -10185,6 +10261,8 @@ function renderEverything() {
 
     renderPets();
 
+    renderTasksV9();
+
     renderManagementStatsV5();
 
     renderHistoryV5();
@@ -10490,5 +10568,1287 @@ sidebarToggleButton?.addEventListener(
 
 setAdminSidebarCollapsed(
     getStoredSidebarCollapsed()
+);
+
+
+
+/* =========================================================
+   =========================================================
+   TECKELWEB ADMIN V9
+   REALTIME BOOKING ALERTS + DAILY CARE TASKS
+   =========================================================
+   ========================================================= */
+
+
+/* =========================================================
+   REALTIME RESERVATIONS
+========================================================= */
+
+let realtimeReservationUnsubscribeV9 =
+    null;
+
+
+let realtimeReservationReadyV9 =
+    false;
+
+
+
+function stopRealtimeReservationsV9() {
+
+    if (
+        typeof realtimeReservationUnsubscribeV9 ===
+        "function"
+    ) {
+
+        realtimeReservationUnsubscribeV9();
+    }
+
+
+    realtimeReservationUnsubscribeV9 =
+        null;
+
+
+    realtimeReservationReadyV9 =
+        false;
+}
+
+
+
+function startRealtimeReservationsV9() {
+
+    if (
+        !currentUser
+        ||
+        !ADMIN_UIDS.includes(
+            currentUser.uid
+        )
+    ) {
+
+        return;
+    }
+
+
+    stopRealtimeReservationsV9();
+
+
+    realtimeReservationUnsubscribeV9 =
+        watchReservations(
+            payload => {
+
+                const isFirstSnapshot =
+                    !realtimeReservationReadyV9;
+
+
+                reservations =
+                    [
+                        ...payload.reservations
+                    ];
+
+
+                reservations.sort(
+                    (
+                        a,
+                        b
+                    ) => {
+
+                        const timestampA =
+                            a.createdAt
+                                ?.toMillis?.()
+                            ||
+                            0;
+
+
+                        const timestampB =
+                            b.createdAt
+                                ?.toMillis?.()
+                            ||
+                            0;
+
+
+                        return (
+                            timestampB -
+                            timestampA
+                        );
+                    }
+                );
+
+
+                deriveDirectories();
+
+                renderEverything();
+
+
+                if (
+                    !isFirstSnapshot
+                ) {
+
+                    payload.changes
+                        .filter(
+                            change =>
+                                change.type ===
+                                    "added"
+                                &&
+                                change.reservation
+                                    ?.source ===
+                                    "online-booking"
+                                &&
+                                change.reservation
+                                    ?.status ===
+                                    "pending"
+                                &&
+                                change.reservation
+                                    ?.isDeleted !==
+                                    true
+                        )
+                        .forEach(
+                            change => {
+
+                                notifyNewReservationV9(
+                                    change.reservation
+                                );
+                            }
+                        );
+                }
+
+
+                realtimeReservationReadyV9 =
+                    true;
+            },
+
+            error => {
+
+                console.error(
+                    "Realtime adminmeldingen gestopt:",
+                    error
+                );
+
+
+                showToast(
+                    "Live reservatiemeldingen zijn tijdelijk niet beschikbaar.",
+                    "error"
+                );
+            }
+        );
+}
+
+
+
+function notifyNewReservationV9(
+    reservation
+) {
+
+    const dogName =
+        reservation.dog
+            ?.name
+        ||
+        "Hond";
+
+
+    const customerName =
+        reservation.customer
+            ?.name
+        ||
+        "Nieuwe klant";
+
+
+    const period =
+        formatReservationPeriod(
+            reservation
+        );
+
+
+    showToast(
+        `Nieuwe reservatie: ${dogName} · ${customerName}`,
+        "success"
+    );
+
+
+    playAdminNotificationSoundV9();
+
+
+    if (
+        "Notification" in window
+        &&
+        Notification.permission ===
+            "granted"
+    ) {
+
+        const notification =
+            new Notification(
+                "Nieuwe reservatie · TeckelWeb",
+                {
+                    body:
+                        `${dogName} · ${customerName}\n${period}`
+                }
+            );
+
+
+        notification.onclick =
+            async () => {
+
+                window.focus();
+
+                await openReservation(
+                    reservation.id
+                );
+
+
+                notification.close();
+            };
+    }
+}
+
+
+
+function playAdminNotificationSoundV9() {
+
+    try {
+
+        const AudioContextClass =
+            window.AudioContext
+            ||
+            window.webkitAudioContext;
+
+
+        if (
+            !AudioContextClass
+        ) {
+
+            return;
+        }
+
+
+        const context =
+            new AudioContextClass();
+
+
+        const oscillator =
+            context.createOscillator();
+
+
+        const gain =
+            context.createGain();
+
+
+        oscillator.frequency.value =
+            760;
+
+
+        gain.gain.setValueAtTime(
+            0.0001,
+            context.currentTime
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.08,
+            context.currentTime
+                +
+                0.01
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            context.currentTime
+                +
+                0.22
+        );
+
+
+        oscillator.connect(
+            gain
+        );
+
+
+        gain.connect(
+            context.destination
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            context.currentTime
+                +
+                0.24
+        );
+
+    } catch {
+        // Geluid is een extra; fouten mogen de admin niet beïnvloeden.
+    }
+}
+
+
+
+/* =========================================================
+   TASK CONFIG
+========================================================= */
+
+const TASK_ADDON_CONFIG_V9 = {
+
+    "extra-walk": {
+
+        title:
+            "Extra wandeling",
+
+        time:
+            "15:00"
+    },
+
+    "photo-update": {
+
+        title:
+            "Foto-update",
+
+        time:
+            "16:00"
+    },
+
+    "individual-play": {
+
+        title:
+            "Individueel speelmoment",
+
+        time:
+            "14:00"
+    }
+};
+
+
+
+function getFeedingScheduleV9(
+    frequency
+) {
+
+    const value =
+        String(
+            frequency
+            ||
+            ""
+        );
+
+
+    if (
+        value ===
+        "1"
+    ) {
+
+        return [
+            {
+                key:
+                    "feeding-noon",
+
+                time:
+                    "12:00"
+            }
+        ];
+    }
+
+
+    if (
+        value ===
+        "2"
+    ) {
+
+        return [
+            {
+                key:
+                    "feeding-am",
+
+                time:
+                    "08:00"
+            },
+            {
+                key:
+                    "feeding-pm",
+
+                time:
+                    "17:00"
+            }
+        ];
+    }
+
+
+    if (
+        value ===
+        "3"
+    ) {
+
+        return [
+            {
+                key:
+                    "feeding-am",
+
+                time:
+                    "08:00"
+            },
+            {
+                key:
+                    "feeding-noon",
+
+                time:
+                    "12:00"
+            },
+            {
+                key:
+                    "feeding-pm",
+
+                time:
+                    "17:00"
+            }
+        ];
+    }
+
+
+    if (
+        value ===
+        "custom"
+    ) {
+
+        return [
+            {
+                key:
+                    "feeding-custom",
+
+                time:
+                    "—"
+            }
+        ];
+    }
+
+
+    return [];
+}
+
+
+
+function getTaskCompletionV9(
+    reservation,
+    dateString,
+    key
+) {
+
+    return (
+        reservation
+            ?.taskCompletions
+            ?.[dateString]
+            ?.[key] ===
+        true
+    );
+}
+
+
+
+function buildTasksForDateV9(
+    dateString
+) {
+
+    const dateReservations =
+        getReservationsForDate(
+            dateString
+        )
+            .filter(
+                reservation =>
+                    reservation.status ===
+                    "accepted"
+                &&
+                    reservation.isDeleted !==
+                    true
+            );
+
+
+    const tasks =
+        [];
+
+
+    dateReservations.forEach(
+        reservation => {
+
+            const booking =
+                reservation.booking
+                ||
+                {};
+
+
+            const dogName =
+                reservation.dog
+                    ?.name
+                ||
+                "Hond";
+
+
+            const customerName =
+                reservation.customer
+                    ?.name
+                ||
+                "Onbekende klant";
+
+
+            /*
+                VOEDING
+            */
+
+            const feeding =
+                booking.feeding
+                ||
+                {};
+
+
+            let feedingSchedule =
+                getFeedingScheduleV9(
+                    feeding.frequency
+                );
+
+
+            if (
+                !feedingSchedule.length
+                &&
+                (
+                    feeding.source
+                    ||
+                    feeding.notes
+                )
+            ) {
+
+                feedingSchedule = [
+                    {
+                        key:
+                            "feeding-general",
+
+                        time:
+                            "—"
+                    }
+                ];
+            }
+
+
+            const foodSource = {
+
+                owner:
+                    "Eigen voeding",
+
+                facility:
+                    "Voeding van opvang"
+
+            }[
+                feeding.source
+            ]
+            ||
+            "";
+
+
+            feedingSchedule.forEach(
+                item => {
+
+                    const detail =
+                        [
+                            foodSource,
+                            feeding.notes
+                        ]
+                            .filter(
+                                Boolean
+                            )
+                            .join(
+                                " · "
+                            )
+                        ||
+                        "Voeding volgens afspraak";
+
+
+                    tasks.push(
+                        {
+                            reservation,
+                            reservationId:
+                                reservation.id,
+
+                            key:
+                                item.key,
+
+                            category:
+                                "feeding",
+
+                            title:
+                                "Voeding",
+
+                            detail,
+
+                            time:
+                                item.time,
+
+                            dogName,
+                            customerName,
+
+                            completed:
+                                getTaskCompletionV9(
+                                    reservation,
+                                    dateString,
+                                    item.key
+                                )
+                        }
+                    );
+                }
+            );
+
+
+            /*
+                MEDICATIE
+            */
+
+            if (
+                booking.medication
+                    ?.needed
+            ) {
+
+                const key =
+                    "medication";
+
+
+                tasks.push(
+                    {
+                        reservation,
+                        reservationId:
+                            reservation.id,
+
+                        key,
+
+                        category:
+                            "medication",
+
+                        title:
+                            "Medicatie",
+
+                        detail:
+                            booking.medication
+                                ?.notes
+                            ||
+                            "Medicatie volgens afspraak",
+
+                        time:
+                            "—",
+
+                        dogName,
+                        customerName,
+
+                        completed:
+                            getTaskCompletionV9(
+                                reservation,
+                                dateString,
+                                key
+                            )
+                    }
+                );
+            }
+
+
+            /*
+                EXTRA'S
+            */
+
+            (
+                Array.isArray(
+                    booking.addons
+                )
+                    ? booking.addons
+                    : []
+            )
+                .forEach(
+                    addon => {
+
+                        const config =
+                            TASK_ADDON_CONFIG_V9[
+                                addon
+                            ]
+                            ||
+                            {
+                                title:
+                                    addon,
+
+                                time:
+                                    "—"
+                            };
+
+
+                        const key =
+                            `addon-${String(
+                                addon
+                            )
+                                .replace(
+                                    /[^a-zA-Z0-9_-]/g,
+                                    "_"
+                                )}`;
+
+
+                        tasks.push(
+                            {
+                                reservation,
+                                reservationId:
+                                    reservation.id,
+
+                                key,
+
+                                category:
+                                    "addons",
+
+                                title:
+                                    config.title,
+
+                                detail:
+                                    "Extra verzorging",
+
+                                time:
+                                    config.time,
+
+                                dogName,
+                                customerName,
+
+                                completed:
+                                    getTaskCompletionV9(
+                                        reservation,
+                                        dateString,
+                                        key
+                                    )
+                            }
+                        );
+                    }
+                );
+        }
+    );
+
+
+    return tasks.sort(
+        (
+            a,
+            b
+        ) => {
+
+            if (
+                a.completed !==
+                b.completed
+            ) {
+
+                return a.completed
+                    ? 1
+                    : -1;
+            }
+
+
+            const timeA =
+                a.time ===
+                    "—"
+                    ? "99:99"
+                    : a.time;
+
+
+            const timeB =
+                b.time ===
+                    "—"
+                    ? "99:99"
+                    : b.time;
+
+
+            return (
+                timeA.localeCompare(
+                    timeB
+                )
+                ||
+                a.dogName.localeCompare(
+                    b.dogName,
+                    "nl"
+                )
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   TASK RENDERING
+========================================================= */
+
+function renderTasksV9() {
+
+    if (
+        !taskList
+    ) {
+
+        return;
+    }
+
+
+    if (
+        taskDateInput
+    ) {
+
+        taskDateInput.value =
+            selectedTaskDate;
+    }
+
+
+    const allTasks =
+        buildTasksForDateV9(
+            selectedTaskDate
+        );
+
+
+    const openCount =
+        allTasks.filter(
+            task =>
+                !task.completed
+        ).length;
+
+
+    const completedCount =
+        allTasks.length
+        -
+        openCount;
+
+
+    if (
+        taskStatOpen
+    ) {
+
+        taskStatOpen.textContent =
+            openCount;
+    }
+
+
+    if (
+        taskStatCompleted
+    ) {
+
+        taskStatCompleted.textContent =
+            completedCount;
+    }
+
+
+    if (
+        taskStatTotal
+    ) {
+
+        taskStatTotal.textContent =
+            allTasks.length;
+    }
+
+
+    /*
+        Sidebarbadge toont altijd open taken VANDAAG,
+        ook wanneer de gebruiker een andere dag bekijkt.
+    */
+
+    if (
+        sidebarTaskCount
+    ) {
+
+        const todayOpen =
+            buildTasksForDateV9(
+                dateToString(
+                    new Date()
+                )
+            )
+                .filter(
+                    task =>
+                        !task.completed
+                )
+                .length;
+
+
+        sidebarTaskCount.textContent =
+            todayOpen;
+
+
+        sidebarTaskCount.hidden =
+            todayOpen ===
+            0;
+    }
+
+
+    const search =
+        taskSearchInput
+            ?.value
+            .trim()
+            .toLowerCase()
+        ||
+        "";
+
+
+    const visible =
+        allTasks.filter(
+            task => {
+
+                if (
+                    taskFilter !==
+                        "all"
+                    &&
+                    task.category !==
+                        taskFilter
+                ) {
+
+                    return false;
+                }
+
+
+                if (
+                    search
+                ) {
+
+                    const haystack =
+                        [
+                            task.dogName,
+                            task.customerName,
+                            task.title,
+                            task.detail
+                        ]
+                            .join(
+                                " "
+                            )
+                            .toLowerCase();
+
+
+                    if (
+                        !haystack.includes(
+                            search
+                        )
+                    ) {
+
+                        return false;
+                    }
+                }
+
+
+                return true;
+            }
+        );
+
+
+    taskList.innerHTML =
+        "";
+
+
+    if (
+        !visible.length
+    ) {
+
+        taskList.innerHTML = `
+            <div class="admin-empty-state">
+                <strong>
+                    Geen taken gevonden
+                </strong>
+                <span>
+                    Voor deze dag en filter zijn er geen verzorgingstaken.
+                </span>
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+    visible.forEach(
+        task => {
+
+            const row =
+                document.createElement(
+                    "article"
+                );
+
+
+            row.className =
+                `admin-task-row category-${task.category}`;
+
+
+            if (
+                task.completed
+            ) {
+
+                row.classList.add(
+                    "completed"
+                );
+            }
+
+
+            row.innerHTML = `
+                <div class="admin-task-pet">
+
+                    <div class="admin-task-pet-avatar">
+                        ${escapeHtml(
+                            task.dogName
+                                .charAt(0)
+                                .toUpperCase()
+                        )}
+                    </div>
+
+                    <div>
+                        <strong>
+                            ${escapeHtml(
+                                task.dogName
+                            )}
+                        </strong>
+                        <span>
+                            ${escapeHtml(
+                                formatDogInfo(
+                                    task.reservation.dog
+                                )
+                            )}
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="admin-task-description">
+
+                    <strong>
+                        ${escapeHtml(
+                            task.title
+                        )}
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(
+                            task.detail
+                        )}
+                    </span>
+
+                </div>
+
+
+                <strong class="admin-task-time">
+                    ${escapeHtml(
+                        task.time
+                    )}
+                </strong>
+
+
+                <span class="admin-task-customer">
+                    ${escapeHtml(
+                        task.customerName
+                    )}
+                </span>
+
+
+                <button
+                    type="button"
+                    class="admin-task-status-button ${task.completed
+                        ? "completed"
+                        : ""
+                    }"
+                >
+                    ${task.completed
+                        ? "✓ Klaar"
+                        : "Markeer klaar"
+                    }
+                </button>
+            `;
+
+
+            const button =
+                row.querySelector(
+                    ".admin-task-status-button"
+                );
+
+
+            button?.addEventListener(
+                "click",
+                async () => {
+
+                    const newCompleted =
+                        !task.completed;
+
+
+                    button.disabled =
+                        true;
+
+
+                    try {
+
+                        await setReservationTaskCompleted(
+                            task.reservationId,
+                            selectedTaskDate,
+                            task.key,
+                            newCompleted
+                        );
+
+
+                        if (
+                            !task.reservation
+                                .taskCompletions
+                        ) {
+
+                            task.reservation
+                                .taskCompletions =
+                                {};
+                        }
+
+
+                        if (
+                            !task.reservation
+                                .taskCompletions[
+                                    selectedTaskDate
+                                ]
+                        ) {
+
+                            task.reservation
+                                .taskCompletions[
+                                    selectedTaskDate
+                                ] =
+                                {};
+                        }
+
+
+                        task.reservation
+                            .taskCompletions[
+                                selectedTaskDate
+                            ][
+                                task.key
+                            ] =
+                            newCompleted;
+
+
+                        renderTasksV9();
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Taak bijwerken mislukt:",
+                            error
+                        );
+
+
+                        showToast(
+                            "Taak kon niet worden bijgewerkt.",
+                            "error"
+                        );
+
+
+                        button.disabled =
+                            false;
+                    }
+                }
+            );
+
+
+            taskList.appendChild(
+                row
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   TASK CONTROLS
+========================================================= */
+
+taskFilterButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                taskFilter =
+                    button.dataset
+                        .taskFilter
+                    ||
+                    "all";
+
+
+                taskFilterButtons.forEach(
+                    other => {
+
+                        other.classList.toggle(
+                            "active",
+                            other === button
+                        );
+                    }
+                );
+
+
+                renderTasksV9();
+            }
+        );
+    }
+);
+
+
+
+taskSearchInput?.addEventListener(
+    "input",
+    renderTasksV9
+);
+
+
+
+taskDateInput?.addEventListener(
+    "change",
+    () => {
+
+        if (
+            taskDateInput.value
+        ) {
+
+            selectedTaskDate =
+                taskDateInput.value;
+
+
+            renderTasksV9();
+        }
+    }
+);
+
+
+
+taskPreviousButton?.addEventListener(
+    "click",
+    () => {
+
+        selectedTaskDate =
+            addDays(
+                selectedTaskDate,
+                -1
+            );
+
+
+        renderTasksV9();
+    }
+);
+
+
+
+taskNextButton?.addEventListener(
+    "click",
+    () => {
+
+        selectedTaskDate =
+            addDays(
+                selectedTaskDate,
+                1
+            );
+
+
+        renderTasksV9();
+    }
+);
+
+
+
+taskTodayButton?.addEventListener(
+    "click",
+    () => {
+
+        selectedTaskDate =
+            dateToString(
+                new Date()
+            );
+
+
+        renderTasksV9();
+    }
 );
 
