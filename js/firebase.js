@@ -35,6 +35,19 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 
+import {
+    getMessaging,
+    getToken,
+    isSupported as isMessagingSupported
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-messaging.js";
+
+
+import {
+    FIREBASE_VAPID_KEY,
+    ADMIN_PUSH_WORKER_URL
+} from "./push-config.js";
+
+
 
 /* =========================================================
    FIREBASE CONFIG
@@ -82,6 +95,22 @@ const auth =
     getAuth(
         app
     );
+
+
+const messagingPromise =
+    isMessagingSupported()
+        .then(
+            supported =>
+                supported
+                    ? getMessaging(
+                        app
+                    )
+                    : null
+        )
+        .catch(
+            () =>
+                null
+        );
 
 
 
@@ -1390,6 +1419,301 @@ export async function saveAvailability(
                 null
         }
     );
+}
+
+
+
+/* =========================================================
+   ADMIN PUSH — CONFIG
+========================================================= */
+
+export function isAdminPushConfigured() {
+
+    return Boolean(
+        FIREBASE_VAPID_KEY
+        &&
+        ADMIN_PUSH_WORKER_URL
+    );
+}
+
+
+
+/* =========================================================
+   ADMIN PUSH — TOESTEL REGISTREREN
+========================================================= */
+
+export async function registerAdminPushDevice() {
+
+    const user =
+        auth.currentUser;
+
+
+    if (
+        !user
+    ) {
+
+        throw new Error(
+            "Log eerst in als beheerder."
+        );
+    }
+
+
+    if (
+        !FIREBASE_VAPID_KEY
+    ) {
+
+        throw new Error(
+            "Firebase Web Push certificate is nog niet ingesteld."
+        );
+    }
+
+
+    if (
+        !(
+            "Notification" in window
+        )
+        ||
+        !(
+            "serviceWorker" in navigator
+        )
+    ) {
+
+        throw new Error(
+            "Pushmeldingen worden niet ondersteund op dit toestel."
+        );
+    }
+
+
+    const permission =
+        await Notification.requestPermission();
+
+
+    if (
+        permission !==
+        "granted"
+    ) {
+
+        throw new Error(
+            "Meldingstoestemming werd niet gegeven."
+        );
+    }
+
+
+    const messaging =
+        await messagingPromise;
+
+
+    if (
+        !messaging
+    ) {
+
+        throw new Error(
+            "Firebase Messaging wordt niet ondersteund in deze browser."
+        );
+    }
+
+
+    const serviceWorkerUrl =
+        new URL(
+            "../firebase-messaging-sw.js",
+            import.meta.url
+        );
+
+
+    const serviceWorkerRegistration =
+        await navigator.serviceWorker.register(
+            serviceWorkerUrl.pathname
+        );
+
+
+    await navigator.serviceWorker.ready;
+
+
+    const token =
+        await getToken(
+            messaging,
+            {
+                vapidKey:
+                    FIREBASE_VAPID_KEY,
+
+                serviceWorkerRegistration
+            }
+        );
+
+
+    if (
+        !token
+    ) {
+
+        throw new Error(
+            "Er kon geen push-token worden aangemaakt."
+        );
+    }
+
+
+    let deviceId =
+        localStorage.getItem(
+            "teckelweb-push-device-id"
+        );
+
+
+    if (
+        !deviceId
+    ) {
+
+        deviceId =
+            crypto.randomUUID
+                ? crypto.randomUUID()
+                : String(
+                    Date.now()
+                );
+
+
+        localStorage.setItem(
+            "teckelweb-push-device-id",
+            deviceId
+        );
+    }
+
+
+    const deviceRef =
+        doc(
+            db,
+            "adminPushDevices",
+            `${user.uid}_${deviceId}`
+        );
+
+
+    await setDoc(
+        deviceRef,
+        {
+            uid:
+                user.uid,
+
+            token,
+
+            deviceId,
+
+            userAgent:
+                navigator.userAgent,
+
+            updatedAt:
+                serverTimestamp()
+        },
+        {
+            merge:
+                true
+        }
+    );
+
+
+    return token;
+}
+
+
+
+/* =========================================================
+   ADMIN PUSH — NIEUWE BOOKING MELDEN
+========================================================= */
+
+export async function sendAdminNewBookingNotification(
+    reservationId
+) {
+
+    if (
+        !reservationId
+    ) {
+
+        throw new Error(
+            "Geen reservatie opgegeven."
+        );
+    }
+
+
+    if (
+        !ADMIN_PUSH_WORKER_URL
+    ) {
+
+        return {
+            skipped:
+                true
+        };
+    }
+
+
+    const user =
+        auth.currentUser;
+
+
+    if (
+        !user
+    ) {
+
+        throw new Error(
+            "Geen ingelogde gebruiker gevonden."
+        );
+    }
+
+
+    const token =
+        await getIdToken(
+            user
+        );
+
+
+    const response =
+        await fetch(
+            `${ADMIN_PUSH_WORKER_URL}/notify-booking`,
+            {
+                method:
+                    "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${token}`
+                },
+
+                body:
+                    JSON.stringify(
+                        {
+                            reservationId
+                        }
+                    )
+            }
+        );
+
+
+    let result =
+        {};
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+        result =
+            {};
+    }
+
+
+    if (
+        !response.ok
+    ) {
+
+        throw new Error(
+            result.error
+            ||
+            `Adminmelding fout HTTP ${response.status}`
+        );
+    }
+
+
+    return result;
 }
 
 
