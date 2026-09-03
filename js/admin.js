@@ -25,6 +25,8 @@ import {
     getReservations,
     watchReservations,
     setReservationTaskCompleted,
+    registerAdminPushDevice,
+    isAdminPushConfigured,
     updateReservationStatus,
     confirmReservationCompleted,
     reopenCompletedReservation,
@@ -11858,7 +11860,7 @@ taskTodayButton?.addEventListener(
 
 
 /* =========================================================
-   BROWSER NOTIFICATION PERMISSION
+   PUSH NOTIFICATION PERMISSION
 ========================================================= */
 
 function syncNotificationPermissionButtonV9() {
@@ -11866,6 +11868,23 @@ function syncNotificationPermissionButtonV9() {
     if (
         !enableNotificationsButton
     ) {
+
+        return;
+    }
+
+
+    if (
+        !isAdminPushConfigured()
+    ) {
+
+        enableNotificationsButton.textContent =
+            "🔔 Push instellen";
+
+
+        enableNotificationsButton.classList.remove(
+            "enabled"
+        );
+
 
         return;
     }
@@ -11884,13 +11903,22 @@ function syncNotificationPermissionButtonV9() {
     }
 
 
+    const registered =
+        localStorage.getItem(
+            "teckelweb-admin-push-enabled"
+        ) ===
+        "1";
+
+
     if (
         Notification.permission ===
-        "granted"
+            "granted"
+        &&
+        registered
     ) {
 
         enableNotificationsButton.textContent =
-            "🔔 Meldingen aan";
+            "🔔 Push aan";
 
 
         enableNotificationsButton.classList.add(
@@ -11899,11 +11927,11 @@ function syncNotificationPermissionButtonV9() {
 
     } else if (
         Notification.permission ===
-        "denied"
+            "denied"
     ) {
 
         enableNotificationsButton.textContent =
-            "🔕 Geblokkeerd";
+            "🔕 Push geblokkeerd";
 
 
         enableNotificationsButton.classList.remove(
@@ -11913,7 +11941,7 @@ function syncNotificationPermissionButtonV9() {
     } else {
 
         enableNotificationsButton.textContent =
-            "🔔 Meldingen";
+            "🔔 Push activeren";
 
 
         enableNotificationsButton.classList.remove(
@@ -11929,13 +11957,11 @@ enableNotificationsButton?.addEventListener(
     async () => {
 
         if (
-            !(
-                "Notification" in window
-            )
+            !isAdminPushConfigured()
         ) {
 
             showToast(
-                "Deze browser ondersteunt geen meldingen.",
+                "Push is voorbereid, maar de Firebase Web Push-sleutel moet nog worden ingevuld.",
                 "error"
             );
 
@@ -11943,63 +11969,57 @@ enableNotificationsButton?.addEventListener(
         }
 
 
-        if (
-            Notification.permission ===
-            "granted"
-        ) {
+        enableNotificationsButton.disabled =
+            true;
 
-            showToast(
-                "Browsermeldingen staan al aan.",
-                "success"
-            );
 
-            return;
-        }
+        const oldText =
+            enableNotificationsButton.textContent;
+
+
+        enableNotificationsButton.textContent =
+            "Push activeren...";
 
 
         try {
 
-            const permission =
-                await Notification.requestPermission();
+            await registerAdminPushDevice();
 
 
             syncNotificationPermissionButtonV9();
 
 
-            if (
-                permission ===
-                "granted"
-            ) {
-
-                showToast(
-                    "Browsermeldingen ingeschakeld.",
-                    "success"
-                );
-
-            } else {
-
-                showToast(
-                    "Browsermeldingen zijn niet toegestaan.",
-                    "error"
-                );
-            }
+            showToast(
+                "Pushmeldingen zijn actief op dit toestel.",
+                "success"
+            );
 
         } catch (error) {
 
             console.error(
-                "Meldingstoestemming mislukt:",
+                "Push activeren mislukt:",
                 error
             );
 
 
+            enableNotificationsButton.textContent =
+                oldText;
+
+
             showToast(
-                "Browsermeldingen konden niet worden ingeschakeld.",
+                error.message
+                ||
+                "Pushmeldingen konden niet worden ingeschakeld.",
                 "error"
             );
+
+        } finally {
+
+            enableNotificationsButton.disabled =
+                false;
         }
     }
 );
 
 
 syncNotificationPermissionButtonV9();
-
