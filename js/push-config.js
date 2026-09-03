@@ -8,7 +8,7 @@
 */
 
 export const FIREBASE_VAPID_KEY =
-    "";
+    "BH9WurYsXggAFgEcJ1PayS-BfpLwBIE8YhUplDDN4l1-EFMdQ3bI-S3YSC8LXVwE0gNCRIPTKItxoXPam5kr_dk";
 
 
 /*
