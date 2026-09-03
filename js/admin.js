@@ -1916,7 +1916,7 @@ async function loadAvailability() {
    ALLES RENDEREN
 ========================================================= */
 
-function renderEverything() {
+function renderEverythingLegacy() {
 
     renderOverview();
 
@@ -2712,7 +2712,7 @@ reservationSearch?.addEventListener(
    REQUESTS FILTEREN
 ========================================================= */
 
-function getVisibleRequests() {
+function getVisibleRequestsLegacy() {
 
     let result =
         [...reservations];
@@ -2858,7 +2858,7 @@ function renderRequests() {
    REQUEST ROW
 ========================================================= */
 
-function createRequestRow(
+function createRequestRowLegacy(
     reservation
 ) {
 
@@ -4062,7 +4062,7 @@ clientSearch?.addEventListener(
    CLIENTS
 ========================================================= */
 
-function renderClients() {
+function renderClientsLegacy() {
 
     if (!clientsList) {
 
@@ -4236,7 +4236,7 @@ petSearch?.addEventListener(
    PETS
 ========================================================= */
 
-function renderPets() {
+function renderPetsLegacy() {
 
     if (!petsList) {
 
