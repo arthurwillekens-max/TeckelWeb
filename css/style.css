@@ -16796,3 +16796,391 @@ a {
     }
 }
 
+
+
+/* =========================================================
+   =========================================================
+   TECKELWEB ADMIN V9
+   DAILY CARE TASKS
+   =========================================================
+   ========================================================= */
+
+
+/* =========================================================
+   TASKS HEADER
+========================================================= */
+
+.tw-admin-body .admin-tasks-heading {
+    align-items: flex-end;
+}
+
+.tw-admin-body .admin-task-date-controls {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.tw-admin-body .admin-task-date-controls button,
+.tw-admin-body .admin-task-date-controls input {
+    min-height: 38px;
+    border: 1px solid var(--admin-border-strong);
+    border-radius: 7px;
+    background: white;
+    color: var(--admin-text);
+    font-size: 11px;
+}
+
+.tw-admin-body .admin-task-date-controls button {
+    min-width: 38px;
+    padding: 0 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tw-admin-body .admin-task-date-controls button:hover {
+    border-color: var(--admin-orange);
+    color: var(--admin-orange);
+}
+
+.tw-admin-body .admin-task-date-controls input {
+    padding: 0 10px;
+}
+
+
+/* =========================================================
+   TASK SUMMARY
+========================================================= */
+
+.tw-admin-body .admin-task-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.tw-admin-body .admin-task-summary article {
+    min-height: 88px;
+    padding: 14px 16px;
+    border: 1px solid var(--admin-border);
+    border-radius: 9px;
+    background: white;
+}
+
+.tw-admin-body .admin-task-summary article:nth-child(1) {
+    border-top: 3px solid var(--admin-orange);
+}
+
+.tw-admin-body .admin-task-summary article:nth-child(2) {
+    border-top: 3px solid #68a078;
+}
+
+.tw-admin-body .admin-task-summary article:nth-child(3) {
+    border-top: 3px solid #7e8ca4;
+}
+
+.tw-admin-body .admin-task-summary span {
+    color: var(--admin-text-soft);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.tw-admin-body .admin-task-summary strong {
+    display: block;
+    margin-top: 8px;
+    font-size: 23px;
+    line-height: 1;
+    font-weight: 760;
+}
+
+
+/* =========================================================
+   TASK PANEL
+========================================================= */
+
+.tw-admin-body .admin-task-panel {
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    background: white;
+    box-shadow: var(--admin-shadow);
+}
+
+.tw-admin-body .admin-task-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    background: #fbfbfc;
+}
+
+.tw-admin-body .admin-task-tabs {
+    display: inline-flex;
+    gap: 3px;
+    padding: 3px;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: #f2f2f3;
+}
+
+.tw-admin-body .admin-task-tabs button {
+    min-height: 33px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--admin-text-soft);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tw-admin-body .admin-task-tabs button:hover {
+    background: white;
+}
+
+.tw-admin-body .admin-task-tabs button.active {
+    background: white;
+    color: var(--admin-orange);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.tw-admin-body #admin-task-search {
+    width: min(320px, 100%);
+    min-height: 39px;
+    padding: 0 11px;
+    border: 1px solid var(--admin-border-strong);
+    border-radius: 7px;
+    background: white;
+    color: var(--admin-text);
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   TASK TABLE
+========================================================= */
+
+.tw-admin-body .admin-task-table-head {
+    display: grid;
+    grid-template-columns:
+        minmax(170px, 1fr)
+        minmax(280px, 1.65fr)
+        85px
+        minmax(160px, 0.95fr)
+        125px;
+    gap: 16px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    background: #f6f6f7;
+    color: var(--admin-text-faint);
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.42px;
+}
+
+.tw-admin-body .admin-task-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.tw-admin-body .admin-task-row {
+    display: grid;
+    grid-template-columns:
+        minmax(170px, 1fr)
+        minmax(280px, 1.65fr)
+        85px
+        minmax(160px, 0.95fr)
+        125px;
+    align-items: center;
+    gap: 16px;
+    min-height: 70px;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    background: white;
+}
+
+.tw-admin-body .admin-task-row:last-child {
+    border-bottom: 0;
+}
+
+.tw-admin-body .admin-task-row:hover {
+    background: #fcfcfd;
+}
+
+.tw-admin-body .admin-task-row.completed {
+    background: #fafcfb;
+    opacity: 0.74;
+}
+
+.tw-admin-body .admin-task-pet {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tw-admin-body .admin-task-pet-avatar {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: #f2ecf9;
+    color: #705993;
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.tw-admin-body .category-feeding .admin-task-pet-avatar {
+    background: #fff4e8;
+    color: #b56c20;
+}
+
+.tw-admin-body .category-medication .admin-task-pet-avatar {
+    background: #f5ecf8;
+    color: #825b94;
+}
+
+.tw-admin-body .category-addons .admin-task-pet-avatar {
+    background: #edf4fb;
+    color: #567a9f;
+}
+
+.tw-admin-body .admin-task-pet > div:last-child,
+.tw-admin-body .admin-task-description {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.tw-admin-body .admin-task-pet strong,
+.tw-admin-body .admin-task-description strong {
+    overflow: hidden;
+    font-size: 11px;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-admin-body .admin-task-pet span,
+.tw-admin-body .admin-task-description span,
+.tw-admin-body .admin-task-customer {
+    overflow: hidden;
+    color: var(--admin-text-soft);
+    font-size: 10px;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-admin-body .admin-task-time {
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.tw-admin-body .admin-task-status-button {
+    min-height: 34px;
+    padding: 0 10px;
+    border: 1px solid #dfb98f;
+    border-radius: 7px;
+    background: #fff8f1;
+    color: #b56320;
+    font-size: 9px;
+    font-weight: 780;
+    cursor: pointer;
+}
+
+.tw-admin-body .admin-task-status-button:hover {
+    background: #fff2e5;
+}
+
+.tw-admin-body .admin-task-status-button.completed {
+    border-color: #9bc8a7;
+    background: #edf8f0;
+    color: #4f8a60;
+}
+
+.tw-admin-body .admin-task-status-button:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+
+
+/* =========================================================
+   TASKS RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .tw-admin-body .admin-task-table-head {
+        display: none;
+    }
+
+    .tw-admin-body .admin-task-row {
+        grid-template-columns:
+            minmax(160px, 0.9fr)
+            minmax(240px, 1.4fr)
+            70px
+            120px;
+    }
+
+    .tw-admin-body .admin-task-customer {
+        display: none;
+    }
+}
+
+@media (max-width: 760px) {
+
+    .tw-admin-body .admin-tasks-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .tw-admin-body .admin-task-date-controls {
+        flex-wrap: wrap;
+    }
+
+    .tw-admin-body .admin-task-summary {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .tw-admin-body .admin-task-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .tw-admin-body .admin-task-tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .tw-admin-body #admin-task-search {
+        width: 100%;
+    }
+
+    .tw-admin-body .admin-task-row {
+        grid-template-columns: 1fr auto;
+        gap: 8px 12px;
+        padding: 13px 14px;
+    }
+
+    .tw-admin-body .admin-task-description {
+        grid-column: 1 / -1;
+    }
+
+    .tw-admin-body .admin-task-time {
+        grid-column: 1;
+    }
+
+    .tw-admin-body .admin-task-status-button {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
