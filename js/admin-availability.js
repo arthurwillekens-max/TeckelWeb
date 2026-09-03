@@ -1,15 +1,23 @@
 import {
+    loginWithGoogle,
+    logout,
     watchAuthState,
-    getAvailabilityForMonth,
-    saveAvailability,
-    getReservations
+    getReservations,
+    updateReservationStatus,
+    sendReservationEmail,
+    getClientDirectory,
+    getPetDirectory
 } from "./firebase.js";
 
 
+/* =========================================================
+   TECKELWEB ADMIN
+========================================================= */
 
-/* =========================================
+
+/* =========================================================
    ADMIN ACCOUNTS
-========================================= */
+========================================================= */
 
 const ADMIN_UIDS = [
     "3v8qJh6ZXrPYqfzxJ3f6if4BH3r2"
@@ -17,147 +25,490 @@ const ADMIN_UIDS = [
 
 
 
-/* =========================================
-   HTML
-========================================= */
+/* =========================================================
+   LOGIN ELEMENTEN
+========================================================= */
 
-const calendarTitle =
-    document.getElementById(
-        "admin-calendar-title"
+const loginSection =
+    document.querySelector(
+        ".admin-login"
     );
 
-const calendarGrid =
+const loginButton =
     document.getElementById(
-        "admin-calendar-grid"
+        "google-login"
     );
 
-const previousMonthButton =
+const adminMessage =
     document.getElementById(
-        "admin-calendar-prev"
+        "admin-message"
     );
 
-const nextMonthButton =
+const adminDashboard =
     document.getElementById(
-        "admin-calendar-next"
+        "admin-dashboard"
     );
 
-const selectedDateTitle =
+const adminUser =
     document.getElementById(
-        "admin-selected-date"
+        "admin-user"
     );
 
-const saveButton =
+const logoutButton =
     document.getElementById(
-        "admin-save-availability"
-    );
-
-const message =
-    document.getElementById(
-        "admin-availability-message"
+        "logout-button"
     );
 
 
 
-/* -----------------------------------------
-   DAGPLANNING
------------------------------------------ */
+/* =========================================================
+   ALGEMENE ADMIN NAVIGATIE
+========================================================= */
 
-const daySummary =
-    document.getElementById(
-        "admin-day-summary"
+const adminNavButtons =
+    Array.from(
+        document.querySelectorAll(
+            "[data-admin-view]"
+        )
     );
 
-const confirmedCount =
-    document.getElementById(
-        "admin-day-confirmed-count"
+const adminViews =
+    Array.from(
+        document.querySelectorAll(
+            ".admin-view"
+        )
     );
 
-const pendingCount =
-    document.getElementById(
-        "admin-day-pending-count"
+const goViewButtons =
+    Array.from(
+        document.querySelectorAll(
+            "[data-go-view]"
+        )
     );
 
-const dayPlanning =
+const adminPageTitle =
     document.getElementById(
-        "admin-day-planning"
+        "admin-page-title"
     );
 
-const dayBookings =
+const adminPageEyebrow =
     document.getElementById(
-        "admin-day-bookings"
+        "admin-page-eyebrow"
     );
 
-const dayPending =
+const refreshButton =
     document.getElementById(
-        "admin-day-pending"
+        "admin-refresh"
     );
 
-const dayPendingList =
+const newBookingButton =
     document.getElementById(
-        "admin-day-pending-list"
+        "admin-new-booking"
     );
 
 
 
-/* =========================================
+/* =========================================================
+   KPI ELEMENTEN
+========================================================= */
+
+const statPending =
+    document.getElementById(
+        "stat-pending"
+    );
+
+const statToday =
+    document.getElementById(
+        "stat-today"
+    );
+
+const statArrivals =
+    document.getElementById(
+        "stat-arrivals"
+    );
+
+const statDepartures =
+    document.getElementById(
+        "stat-departures"
+    );
+
+
+/*
+    Legacy hidden counters.
+*/
+
+const statAccepted =
+    document.getElementById(
+        "stat-accepted"
+    );
+
+const statUpcoming =
+    document.getElementById(
+        "stat-upcoming"
+    );
+
+
+const sidebarPendingCount =
+    document.getElementById(
+        "sidebar-pending-count"
+    );
+
+const requestTabPending =
+    document.getElementById(
+        "request-tab-pending"
+    );
+
+
+
+/* =========================================================
+   OVERZICHT VANDAAG
+========================================================= */
+
+const overviewTodayTitle =
+    document.getElementById(
+        "overview-today-title"
+    );
+
+const todayArrivalsCount =
+    document.getElementById(
+        "today-arrivals-count"
+    );
+
+const todayStayingCount =
+    document.getElementById(
+        "today-staying-count"
+    );
+
+const todayDeparturesCount =
+    document.getElementById(
+        "today-departures-count"
+    );
+
+const todayArrivalsList =
+    document.getElementById(
+        "today-arrivals-list"
+    );
+
+const todayStayingList =
+    document.getElementById(
+        "today-staying-list"
+    );
+
+const todayDeparturesList =
+    document.getElementById(
+        "today-departures-list"
+    );
+
+const overviewPendingList =
+    document.getElementById(
+        "overview-pending-list"
+    );
+
+
+
+/* =========================================================
+   REQUESTS
+========================================================= */
+
+const reservationsList =
+    document.getElementById(
+        "reservations-list"
+    );
+
+const reservationSearch =
+    document.getElementById(
+        "reservation-search"
+    );
+
+const requestFilterButtons =
+    Array.from(
+        document.querySelectorAll(
+            "[data-request-filter]"
+        )
+    );
+
+
+
+/* =========================================================
+   REQUEST DETAIL
+========================================================= */
+
+const requestDetailEmpty =
+    document.getElementById(
+        "request-detail-empty"
+    );
+
+const requestDetailContent =
+    document.getElementById(
+        "request-detail-content"
+    );
+
+const requestDetailDog =
+    document.getElementById(
+        "request-detail-dog"
+    );
+
+const requestDetailCustomer =
+    document.getElementById(
+        "request-detail-customer"
+    );
+
+const requestDetailStatus =
+    document.getElementById(
+        "request-detail-status"
+    );
+
+const requestDetailType =
+    document.getElementById(
+        "request-detail-type"
+    );
+
+const requestDetailPeriod =
+    document.getElementById(
+        "request-detail-period"
+    );
+
+const requestDetailArrival =
+    document.getElementById(
+        "request-detail-arrival"
+    );
+
+const requestDetailDeparture =
+    document.getElementById(
+        "request-detail-departure"
+    );
+
+const requestDetailClientName =
+    document.getElementById(
+        "request-detail-client-name"
+    );
+
+const requestDetailEmail =
+    document.getElementById(
+        "request-detail-email"
+    );
+
+const requestDetailPhone =
+    document.getElementById(
+        "request-detail-phone"
+    );
+
+const requestPetName =
+    document.getElementById(
+        "request-pet-name"
+    );
+
+const requestPetInfo =
+    document.getElementById(
+        "request-pet-info"
+    );
+
+const requestDetailNotes =
+    document.getElementById(
+        "request-detail-notes"
+    );
+
+const requestDetailPrice =
+    document.getElementById(
+        "request-detail-price"
+    );
+
+const requestDetailActions =
+    document.getElementById(
+        "request-detail-actions"
+    );
+
+const requestAcceptButton =
+    document.getElementById(
+        "request-accept"
+    );
+
+const requestRejectButton =
+    document.getElementById(
+        "request-reject"
+    );
+
+
+
+/* =========================================================
+   DIRECTORY
+========================================================= */
+
+const clientsList =
+    document.getElementById(
+        "clients-list"
+    );
+
+const petsList =
+    document.getElementById(
+        "pets-list"
+    );
+
+const clientSearch =
+    document.getElementById(
+        "client-search"
+    );
+
+const petSearch =
+    document.getElementById(
+        "pet-search"
+    );
+
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const settingMaxCapacity =
+    document.getElementById(
+        "setting-max-capacity"
+    );
+
+const settingLimitedCapacity =
+    document.getElementById(
+        "setting-limited-capacity"
+    );
+
+const settingOpeningTime =
+    document.getElementById(
+        "setting-opening-time"
+    );
+
+const settingClosingTime =
+    document.getElementById(
+        "setting-closing-time"
+    );
+
+const saveSettingsButton =
+    document.getElementById(
+        "save-admin-settings"
+    );
+
+
+
+/* =========================================================
    STATE
-========================================= */
+========================================================= */
 
-const today =
-    new Date();
-
-
-let displayedMonth =
-    new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1
-    );
-
-
-let availabilityData =
-    {};
-
-
-let reservations =
+let allReservations =
     [];
 
 
-let selectedDate =
+let clients =
+    [];
+
+
+let pets =
+    [];
+
+
+let activeAdminView =
+    "overview";
+
+
+let activeRequestFilter =
+    "pending";
+
+
+let selectedReservationId =
     null;
 
 
+let directoriesLoaded =
+    false;
 
-/* =========================================
+
+/* =========================================================
+   VIEW TITELS
+========================================================= */
+
+const VIEW_TITLES = {
+
+    overview: {
+        eyebrow:
+            "TeckelWeb",
+
+        title:
+            "Overzicht"
+    },
+
+    calendar: {
+        eyebrow:
+            "Planning",
+
+        title:
+            "Kalender"
+    },
+
+    requests: {
+        eyebrow:
+            "Online booking",
+
+        title:
+            "Reservatieaanvragen"
+    },
+
+    clients: {
+        eyebrow:
+            "Relaties",
+
+        title:
+            "Klanten"
+    },
+
+    pets: {
+        eyebrow:
+            "Huisdieren",
+
+        title:
+            "Honden"
+    },
+
+    settings: {
+        eyebrow:
+            "Configuratie",
+
+        title:
+            "Instellingen"
+    }
+};
+
+
+
+/* =========================================================
    DATUM HELPERS
-========================================= */
+========================================================= */
 
 function makeDateString(
-    year,
-    month,
-    day
+    date
 ) {
 
-    const formattedMonth =
+    return [
+        date.getFullYear(),
+
         String(
-            month + 1
+            date.getMonth() + 1
         ).padStart(
             2,
             "0"
-        );
+        ),
 
-
-    const formattedDay =
         String(
-            day
+            date.getDate()
         ).padStart(
             2,
             "0"
-        );
+        )
+    ].join("-");
+}
 
 
-    return (
-        `${year}-${formattedMonth}-${formattedDay}`
+
+function getTodayString() {
+
+    return makeDateString(
+        new Date()
     );
 }
 
@@ -166,6 +517,12 @@ function makeDateString(
 function parseDate(
     dateString
 ) {
+
+    if (!dateString) {
+
+        return null;
+    }
+
 
     const [
         year,
@@ -186,9 +543,56 @@ function parseDate(
 
 
 
-function formatSelectedDate(
+function formatDate(
     dateString
 ) {
+
+    const date =
+        parseDate(
+            dateString
+        );
+
+
+    if (!date) {
+
+        return "—";
+    }
+
+
+    return new Intl.DateTimeFormat(
+        "nl-BE",
+        {
+            day:
+                "numeric",
+
+            month:
+                "short",
+
+            year:
+                "numeric"
+        }
+    ).format(
+        date
+    );
+}
+
+
+
+function formatLongDate(
+    dateString
+) {
+
+    const date =
+        parseDate(
+            dateString
+        );
+
+
+    if (!date) {
+
+        return "—";
+    }
+
 
     const formatted =
         new Intl.DateTimeFormat(
@@ -207,9 +611,7 @@ function formatSelectedDate(
                     "numeric"
             }
         ).format(
-            parseDate(
-                dateString
-            )
+            date
         );
 
 
@@ -222,49 +624,128 @@ function formatSelectedDate(
 
 
 
-/* =========================================
-   BESCHIKBAARHEIDSSTATUS
-========================================= */
+/* =========================================================
+   BOOKING HELPERS
+========================================================= */
 
-function getStatusForDate(
-    dateString
+function isDaycare(
+    reservation
 ) {
 
     return (
-        availabilityData[
-            dateString
-        ]?.status
+        reservation.booking
+            ?.careType ===
+        "daycare"
+
         ||
-        "available"
+
+        reservation.booking
+            ?.type ===
+        "daycare"
     );
 }
 
 
 
-/* =========================================
-   RESERVATIE VALT OP DEZE DAG?
-========================================= */
+function isBoarding(
+    reservation
+) {
+
+    return (
+        reservation.booking
+            ?.careType ===
+        "boarding"
+
+        ||
+
+        reservation.booking
+            ?.type ===
+        "overnight"
+    );
+}
+
+
+
+/*
+    Nieuwe daycare-reservaties kunnen
+    losse dagen bevatten:
+
+        3 sept
+        5 sept
+        9 sept
+
+    Die mogen NIET geïnterpreteerd worden
+    als één verblijf van 3 t.e.m. 9 september.
+*/
+
+function getExactDaycareDates(
+    reservation
+) {
+
+    if (
+        isDaycare(
+            reservation
+        )
+        &&
+        Array.isArray(
+            reservation.booking
+                ?.dates
+        )
+        &&
+        reservation.booking
+            .dates
+            .length >
+        0
+    ) {
+
+        return reservation.booking
+            .dates;
+    }
+
+
+    return [];
+}
+
+
 
 function reservationTouchesDate(
     reservation,
     dateString
 ) {
 
-    const startDate =
+    const exactDates =
+        getExactDaycareDates(
+            reservation
+        );
+
+
+    if (
+        exactDates.length >
+        0
+    ) {
+
+        return exactDates.includes(
+            dateString
+        );
+    }
+
+
+
+    const start =
         reservation.booking
             ?.startDate;
 
 
-    const endDate =
+    const end =
         reservation.booking
             ?.endDate
         ||
-        startDate;
+        start;
 
 
     if (
-        !startDate ||
-        !endDate
+        !start ||
+        !end
     ) {
 
         return false;
@@ -272,301 +753,191 @@ function reservationTouchesDate(
 
 
     return (
-        dateString >= startDate
+        dateString >= start
         &&
-        dateString <= endDate
+        dateString <= end
     );
 }
 
 
 
-/* =========================================
-   RESERVATIES VOOR EEN DAG
-========================================= */
-
-function getReservationsForDate(
-    dateString
-) {
-
-    return reservations.filter(
-        reservation =>
-            reservationTouchesDate(
-                reservation,
-                dateString
-            )
-    );
-}
-
-
-
-/* =========================================
-   BEVESTIGDE HONDEN OP DAG
-========================================= */
-
-function getConfirmedCountForDate(
-    dateString
-) {
-
-    return getReservationsForDate(
-        dateString
-    ).filter(
-        reservation =>
-            reservation.status ===
-            "accepted"
-    ).length;
-}
-
-
-
-/* =========================================
-   TIJD HELPERS
-========================================= */
-
-function timeToMinutes(
-    time
-) {
-
-    if (
-        !time ||
-        !time.includes(":")
-    ) {
-
-        return null;
-    }
-
-
-    const [
-        hours,
-        minutes
-    ] =
-        time
-            .split(":")
-            .map(Number);
-
-
-    return (
-        hours * 60
-        +
-        minutes
-    );
-}
-
-
-
-/* =========================================
-   TIJDEN VAN RESERVATIE OP SPECIFIEKE DAG
-========================================= */
-
-function getReservationTimesForDay(
+function reservationArrivesOn(
     reservation,
     dateString
 ) {
 
-    const booking =
+    const exactDates =
+        getExactDaycareDates(
+            reservation
+        );
+
+
+    if (
+        exactDates.length >
+        0
+    ) {
+
+        /*
+            Iedere daycare-dag is een
+            nieuwe aankomst.
+        */
+
+        return exactDates.includes(
+            dateString
+        );
+    }
+
+
+    return (
         reservation.booking
-        || {};
-
-
-    const startDate =
-        booking.startDate;
-
-
-    const endDate =
-        booking.endDate
-        ||
-        startDate;
-
-
-
-    /*
-        Reservatie van één dag.
-    */
-
-    if (
-        startDate ===
-        endDate
-    ) {
-
-        return {
-            start:
-                booking.arrivalTime
-                ||
-                "08:00",
-
-            end:
-                booking.departureTime
-                ||
-                "18:00"
-        };
-    }
-
-
-
-    /*
-        Eerste dag van meerdaagse reservatie.
-    */
-
-    if (
-        dateString ===
-        startDate
-    ) {
-
-        return {
-            start:
-                booking.arrivalTime
-                ||
-                "08:00",
-
-            end:
-                "18:00"
-        };
-    }
-
-
-
-    /*
-        Laatste dag.
-    */
-
-    if (
-        dateString ===
-        endDate
-    ) {
-
-        return {
-            start:
-                "08:00",
-
-            end:
-                booking.departureTime
-                ||
-                "18:00"
-        };
-    }
-
-
-
-    /*
-        Tussendag van een meerdaagse reservatie.
-    */
-
-    return {
-        start:
-            "08:00",
-
-        end:
-            "18:00"
-    };
+            ?.startDate ===
+        dateString
+    );
 }
 
 
 
-/* =========================================
-   TIJDLIJN POSITIE BEREKENEN
-========================================= */
-
-function getTimelinePosition(
-    startTime,
-    endTime
+function reservationDepartsOn(
+    reservation,
+    dateString
 ) {
 
-    const timelineStart =
-        8 * 60;
-
-    const timelineEnd =
-        18 * 60;
-
-    const timelineDuration =
-        timelineEnd -
-        timelineStart;
-
-
-    let start =
-        timeToMinutes(
-            startTime
-        );
-
-
-    let end =
-        timeToMinutes(
-            endTime
-        );
-
-
-    start =
-        Math.max(
-            timelineStart,
-            start ?? timelineStart
-        );
-
-
-    end =
-        Math.min(
-            timelineEnd,
-            end ?? timelineEnd
+    const exactDates =
+        getExactDaycareDates(
+            reservation
         );
 
 
     if (
-        end < start
+        exactDates.length >
+        0
     ) {
 
-        end =
-            start;
+        /*
+            Daycare vertrekt op
+            iedere geselecteerde dag.
+        */
+
+        return exactDates.includes(
+            dateString
+        );
     }
 
 
-    const left =
-        (
-            (
-                start -
-                timelineStart
-            )
-            /
-            timelineDuration
-        )
-        *
-        100;
+    const end =
+        reservation.booking
+            ?.endDate
+        ||
+        reservation.booking
+            ?.startDate;
 
 
-    const width =
-        (
-            (
-                end -
-                start
-            )
-            /
-            timelineDuration
-        )
-        *
-        100;
-
-
-    return {
-        left:
-            left,
-
-        width:
-            Math.max(
-                width,
-                1
-            )
-    };
+    return (
+        end ===
+        dateString
+    );
 }
 
 
 
-/* =========================================
-   TYPE OPVANG
-========================================= */
+/* =========================================================
+   PERIOD FORMAT
+========================================================= */
+
+function formatReservationPeriod(
+    reservation
+) {
+
+    const exactDates =
+        getExactDaycareDates(
+            reservation
+        );
+
+
+    if (
+        exactDates.length >
+        0
+    ) {
+
+        if (
+            exactDates.length ===
+            1
+        ) {
+
+            return formatDate(
+                exactDates[0]
+            );
+        }
+
+
+        if (
+            exactDates.length <=
+            3
+        ) {
+
+            return exactDates
+                .map(
+                    formatDate
+                )
+                .join(", ");
+        }
+
+
+        return `${exactDates.length} losse dagen`;
+    }
+
+
+
+    const start =
+        reservation.booking
+            ?.startDate;
+
+
+    const end =
+        reservation.booking
+            ?.endDate
+        ||
+        start;
+
+
+    if (
+        !start
+    ) {
+
+        return "—";
+    }
+
+
+    if (
+        start ===
+        end
+    ) {
+
+        return formatDate(
+            start
+        );
+    }
+
+
+    return (
+        `${formatDate(start)} → ${formatDate(end)}`
+    );
+}
+
+
+
+/* =========================================================
+   TYPE FORMAT
+========================================================= */
 
 function formatBookingType(
-    type
+    reservation
 ) {
 
     if (
-        type ===
-        "daycare"
+        isDaycare(
+            reservation
+        )
     ) {
 
         return "Dagopvang";
@@ -574,8 +945,9 @@ function formatBookingType(
 
 
     if (
-        type ===
-        "overnight"
+        isBoarding(
+            reservation
+        )
     ) {
 
         return "Overnachting";
@@ -587,16 +959,2931 @@ function formatBookingType(
 
 
 
-/* =========================================
-   HTML VEILIG TONEN
-========================================= */
+/* =========================================================
+   STATUS FORMAT
+========================================================= */
+
+function getStatusText(
+    status
+) {
+
+    switch (
+    status
+    ) {
+
+        case "accepted":
+
+            return "Goedgekeurd";
+
+
+        case "rejected":
+
+            return "Geweigerd";
+
+
+        case "cancelled":
+
+            return "Geannuleerd";
+
+
+        case "pending":
+        default:
+
+            return "In afwachting";
+    }
+}
+
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+loginButton.addEventListener(
+    "click",
+    async () => {
+
+        adminMessage.textContent =
+            "";
+
+
+        loginButton.disabled =
+            true;
+
+
+        loginButton.textContent =
+            "Google openen...";
+
+
+        try {
+
+            await loginWithGoogle();
+
+
+        } catch (error) {
+
+            console.error(
+                "Admin login mislukt:",
+                error
+            );
+
+
+            if (
+                error.code ===
+                "auth/popup-closed-by-user"
+            ) {
+
+                adminMessage.textContent =
+                    "Het inloggen werd geannuleerd.";
+
+            } else {
+
+                adminMessage.textContent =
+                    "Inloggen is mislukt.";
+            }
+
+
+        } finally {
+
+            loginButton.disabled =
+                false;
+
+
+            loginButton.textContent =
+                "Inloggen met Google";
+        }
+    }
+);
+
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+logoutButton.addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            await logout();
+
+
+        } catch (error) {
+
+            console.error(
+                "Uitloggen mislukt:",
+                error
+            );
+        }
+    }
+);
+
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+watchAuthState(
+    async user => {
+
+        /*
+            Niet ingelogd.
+        */
+
+        if (
+            !user
+        ) {
+
+            loginSection.hidden =
+                false;
+
+
+            adminDashboard.hidden =
+                true;
+
+
+            return;
+        }
+
+
+
+        /*
+            Ingelogd maar geen admin.
+        */
+
+        if (
+            !ADMIN_UIDS.includes(
+                user.uid
+            )
+        ) {
+
+            loginSection.hidden =
+                false;
+
+
+            adminDashboard.hidden =
+                true;
+
+
+            adminMessage.textContent =
+                "Dit Google-account heeft geen toegang tot TeckelWeb beheer.";
+
+
+            try {
+
+                await logout();
+
+            } catch {
+
+                // niets doen
+            }
+
+
+            return;
+        }
+
+
+
+        /*
+            Geldige admin.
+        */
+
+        adminMessage.textContent =
+            "";
+
+
+        loginSection.hidden =
+            true;
+
+
+        adminDashboard.hidden =
+            false;
+
+
+        adminUser.textContent =
+            user.email
+            ||
+            user.displayName
+            ||
+            "Beheerder";
+
+
+        await loadAdminData();
+
+
+        showAdminView(
+            activeAdminView
+        );
+    }
+);
+
+
+
+/* =========================================================
+   ADMIN VIEW NAVIGATIE
+========================================================= */
+
+async function showAdminView(
+    viewName
+) {
+
+    if (
+        !VIEW_TITLES[
+        viewName
+        ]
+    ) {
+
+        viewName =
+            "overview";
+    }
+
+
+    activeAdminView =
+        viewName;
+
+
+
+    adminViews.forEach(
+        view => {
+
+            const active =
+                view.dataset
+                    .view ===
+                viewName;
+
+
+            view.hidden =
+                !active;
+
+
+            view.classList.toggle(
+                "active",
+                active
+            );
+        }
+    );
+
+
+
+    adminNavButtons.forEach(
+        button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset
+                    .adminView ===
+                viewName
+            );
+        }
+    );
+
+
+
+    adminPageEyebrow.textContent =
+        VIEW_TITLES[
+            viewName
+        ].eyebrow;
+
+
+    adminPageTitle.textContent =
+        VIEW_TITLES[
+            viewName
+        ].title;
+
+
+
+    /*
+        Klanten en honden laden we pas
+        wanneer ze echt nodig zijn.
+    */
+
+    if (
+        viewName ===
+        "clients"
+        ||
+        viewName ===
+        "pets"
+    ) {
+
+        await ensureDirectoriesLoaded();
+    }
+}
+
+
+
+adminNavButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            async () => {
+
+                await showAdminView(
+                    button.dataset
+                        .adminView
+                );
+            }
+        );
+    }
+);
+
+
+
+goViewButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            async () => {
+
+                await showAdminView(
+                    button.dataset
+                        .goView
+                );
+            }
+        );
+    }
+);
+
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+refreshButton.addEventListener(
+    "click",
+    async () => {
+
+        refreshButton.disabled =
+            true;
+
+
+        const oldText =
+            refreshButton.textContent;
+
+
+        refreshButton.textContent =
+            "Vernieuwen...";
+
+
+        try {
+
+            directoriesLoaded =
+                false;
+
+
+            await loadAdminData();
+
+
+            if (
+                activeAdminView ===
+                "clients"
+                ||
+                activeAdminView ===
+                "pets"
+            ) {
+
+                await ensureDirectoriesLoaded();
+            }
+
+
+        } finally {
+
+            refreshButton.disabled =
+                false;
+
+
+            refreshButton.textContent =
+                oldText;
+        }
+    }
+);
+
+
+
+/* =========================================================
+   NIEUWE RESERVATIE
+========================================================= */
+
+newBookingButton.addEventListener(
+    "click",
+    () => {
+
+        /*
+            Voorlopig opent dit de publieke
+            bookingpagina.
+
+            Later bouwen we eventueel een
+            aparte handmatige admin booking.
+        */
+
+        window.open(
+            "index.html",
+            "_blank"
+        );
+    }
+);
+
+
+
+/* =========================================================
+   DATA LADEN
+========================================================= */
+
+async function loadAdminData() {
+
+    try {
+
+        allReservations =
+            await getReservations();
+
+
+
+        /*
+            Nieuwste eerst.
+        */
+
+        allReservations.sort(
+            (
+                a,
+                b
+            ) => {
+
+                const timeA =
+                    a.createdAt
+                        ?.toMillis?.()
+                    ||
+                    0;
+
+
+                const timeB =
+                    b.createdAt
+                        ?.toMillis?.()
+                    ||
+                    0;
+
+
+                return (
+                    timeB -
+                    timeA
+                );
+            }
+        );
+
+
+
+        renderOverview();
+
+        renderRequests();
+
+        updatePendingCounters();
+
+
+
+        /*
+            Kalendermodule laten weten
+            dat nieuwe reservatiedata
+            beschikbaar is.
+        */
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "teckelweb:reservations-updated",
+                {
+                    detail: {
+
+                        reservations:
+                            allReservations
+                    }
+                }
+            )
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Admin data laden mislukt:",
+            error
+        );
+
+
+        reservationsList.innerHTML = `
+            <div class="admin-empty-state">
+
+                <strong>
+                    Reservaties konden niet geladen worden.
+                </strong>
+
+            </div>
+        `;
+    }
+}
+
+
+
+/* =========================================================
+   PENDING COUNTERS
+========================================================= */
+
+function updatePendingCounters() {
+
+    const pending =
+        allReservations.filter(
+            reservation =>
+                reservation.status ===
+                "pending"
+        ).length;
+
+
+
+    if (
+        sidebarPendingCount
+    ) {
+
+        sidebarPendingCount.textContent =
+            pending;
+
+
+        sidebarPendingCount.hidden =
+            pending ===
+            0;
+    }
+
+
+
+    if (
+        requestTabPending
+    ) {
+
+        requestTabPending.textContent =
+            pending;
+    }
+}
+
+
+
+/* =========================================================
+   OVERVIEW
+========================================================= */
+
+function renderOverview() {
+
+    const today =
+        getTodayString();
+
+
+
+    const accepted =
+        allReservations.filter(
+            reservation =>
+                reservation.status ===
+                "accepted"
+        );
+
+
+
+    const pending =
+        allReservations.filter(
+            reservation =>
+                reservation.status ===
+                "pending"
+        );
+
+
+
+    const todayReservations =
+        accepted.filter(
+            reservation =>
+                reservationTouchesDate(
+                    reservation,
+                    today
+                )
+        );
+
+
+
+    const arrivals =
+        accepted.filter(
+            reservation =>
+                reservationArrivesOn(
+                    reservation,
+                    today
+                )
+        );
+
+
+
+    const departures =
+        accepted.filter(
+            reservation =>
+                reservationDepartsOn(
+                    reservation,
+                    today
+                )
+        );
+
+
+
+    /*
+        KPI's
+    */
+
+    statPending.textContent =
+        pending.length;
+
+
+    statToday.textContent =
+        todayReservations.length;
+
+
+    statArrivals.textContent =
+        arrivals.length;
+
+
+    statDepartures.textContent =
+        departures.length;
+
+
+
+    /*
+        Legacy counters.
+    */
+
+    if (
+        statAccepted
+    ) {
+
+        statAccepted.textContent =
+            accepted.length;
+    }
+
+
+
+    if (
+        statUpcoming
+    ) {
+
+        statUpcoming.textContent =
+            accepted.filter(
+                reservation => {
+
+                    const end =
+                        getReservationLastDate(
+                            reservation
+                        );
+
+
+                    return (
+                        end
+                        &&
+                        end >= today
+                    );
+                }
+            ).length;
+    }
+
+
+
+    /*
+        Titel.
+    */
+
+    overviewTodayTitle.textContent =
+        formatLongDate(
+            today
+        );
+
+
+
+    /*
+        Counters vandaag.
+    */
+
+    todayArrivalsCount.textContent =
+        arrivals.length;
+
+
+    todayStayingCount.textContent =
+        todayReservations.length;
+
+
+    todayDeparturesCount.textContent =
+        departures.length;
+
+
+
+    renderOperationList(
+        todayArrivalsList,
+        arrivals,
+        "arrival"
+    );
+
+
+    renderOperationList(
+        todayStayingList,
+        todayReservations,
+        "staying"
+    );
+
+
+    renderOperationList(
+        todayDeparturesList,
+        departures,
+        "departure"
+    );
+
+
+
+    renderOverviewPending(
+        pending
+    );
+}
+
+
+
+/* =========================================================
+   LAATSTE DATUM VAN RESERVATIE
+========================================================= */
+
+function getReservationLastDate(
+    reservation
+) {
+
+    const exactDates =
+        getExactDaycareDates(
+            reservation
+        );
+
+
+    if (
+        exactDates.length >
+        0
+    ) {
+
+        return [
+            ...exactDates
+        ].sort().at(
+            -1
+        );
+    }
+
+
+    return (
+        reservation.booking
+            ?.endDate
+
+        ||
+
+        reservation.booking
+            ?.startDate
+
+        ||
+
+        null
+    );
+}
+
+
+
+/* =========================================================
+   DAGOPERATIES
+========================================================= */
+
+function renderOperationList(
+    container,
+    reservations,
+    mode
+) {
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        reservations.length ===
+        0
+    ) {
+
+        const labels = {
+
+            arrival:
+                "Geen aankomsten.",
+
+            staying:
+                "Geen honden aanwezig.",
+
+            departure:
+                "Geen vertrekken."
+        };
+
+
+        container.innerHTML = `
+            <div class="admin-empty-small">
+                ${labels[mode]}
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    const sorted =
+        [
+            ...reservations
+        ].sort(
+            (
+                a,
+                b
+            ) => {
+
+                const timeA =
+                    getOperationTime(
+                        a,
+                        mode
+                    );
+
+
+                const timeB =
+                    getOperationTime(
+                        b,
+                        mode
+                    );
+
+
+                return timeA.localeCompare(
+                    timeB
+                );
+            }
+        );
+
+
+
+    sorted.forEach(
+        reservation => {
+
+            const item =
+                document.createElement(
+                    "button"
+                );
+
+
+            item.type =
+                "button";
+
+
+            item.className =
+                "admin-operation-item";
+
+
+            const dog =
+                escapeHtml(
+                    reservation.dog
+                        ?.name
+                    ||
+                    "Hond"
+                );
+
+
+            const customer =
+                escapeHtml(
+                    reservation.customer
+                        ?.name
+                    ||
+                    "Onbekende klant"
+                );
+
+
+            const time =
+                escapeHtml(
+                    getOperationTime(
+                        reservation,
+                        mode
+                    )
+                );
+
+
+            item.innerHTML = `
+                <div class="admin-operation-main">
+
+                    <strong>
+                        ${dog}
+                    </strong>
+
+                    <span>
+                        ${customer}
+                    </span>
+
+                </div>
+
+                <span class="admin-operation-time">
+                    ${time}
+                </span>
+            `;
+
+
+            item.addEventListener(
+                "click",
+                async () => {
+
+                    await openReservationFromAnywhere(
+                        reservation.id
+                    );
+                }
+            );
+
+
+            container.appendChild(
+                item
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   OPERATIETIJD
+========================================================= */
+
+function getOperationTime(
+    reservation,
+    mode
+) {
+
+    if (
+        mode ===
+        "arrival"
+    ) {
+
+        return (
+            reservation.booking
+                ?.arrivalTime
+            ||
+            "08:00"
+        );
+    }
+
+
+    if (
+        mode ===
+        "departure"
+    ) {
+
+        return (
+            reservation.booking
+                ?.departureTime
+            ||
+            "18:00"
+        );
+    }
+
+
+    if (
+        isDaycare(
+            reservation
+        )
+    ) {
+
+        return (
+            `${reservation.booking?.arrivalTime || "08:00"}`
+            +
+            " – "
+            +
+            `${reservation.booking?.departureTime || "18:00"}`
+        );
+    }
+
+
+    return "Verblijf";
+}
+
+
+
+/* =========================================================
+   OVERVIEW PENDING
+========================================================= */
+
+function renderOverviewPending(
+    reservations
+) {
+
+    overviewPendingList.innerHTML =
+        "";
+
+
+    if (
+        reservations.length ===
+        0
+    ) {
+
+        overviewPendingList.innerHTML = `
+            <div class="admin-empty-small">
+                Geen nieuwe aanvragen.
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    reservations
+        .slice(
+            0,
+            5
+        )
+        .forEach(
+            reservation => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.className =
+                    "admin-pending-preview-item";
+
+
+                button.innerHTML = `
+                    <div>
+
+                        <strong>
+                            ${escapeHtml(
+                    reservation.dog?.name
+                    ||
+                    "Hond"
+                )}
+                        </strong>
+
+                        <span>
+                            ${escapeHtml(
+                    reservation.customer?.name
+                    ||
+                    "Onbekende klant"
+                )}
+                        </span>
+
+                    </div>
+
+                    <small>
+                        ${escapeHtml(
+                    formatReservationPeriod(
+                        reservation
+                    )
+                )}
+                    </small>
+                `;
+
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        await openReservationFromAnywhere(
+                            reservation.id
+                        );
+                    }
+                );
+
+
+                overviewPendingList.appendChild(
+                    button
+                );
+            }
+        );
+}
+
+
+
+/* =========================================================
+   REQUEST FILTER
+========================================================= */
+
+requestFilterButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                activeRequestFilter =
+                    button.dataset
+                        .requestFilter;
+
+
+                requestFilterButtons.forEach(
+                    otherButton => {
+
+                        otherButton.classList.toggle(
+                            "active",
+                            otherButton ===
+                            button
+                        );
+                    }
+                );
+
+
+                renderRequests();
+            }
+        );
+    }
+);
+
+
+
+reservationSearch.addEventListener(
+    "input",
+    renderRequests
+);
+
+
+
+/* =========================================================
+   REQUEST FILTER DATA
+========================================================= */
+
+function getFilteredReservations() {
+
+    let result =
+        [
+            ...allReservations
+        ];
+
+
+
+    if (
+        activeRequestFilter !==
+        "all"
+    ) {
+
+        result =
+            result.filter(
+                reservation =>
+                    reservation.status ===
+                    activeRequestFilter
+            );
+    }
+
+
+
+    const search =
+        reservationSearch
+            .value
+            .trim()
+            .toLowerCase();
+
+
+
+    if (
+        search
+    ) {
+
+        result =
+            result.filter(
+                reservation => {
+
+                    const haystack =
+                        [
+                            reservation.customer
+                                ?.name,
+
+                            reservation.customer
+                                ?.email,
+
+                            reservation.customer
+                                ?.phone,
+
+                            reservation.dog
+                                ?.name,
+
+                            reservation.dog
+                                ?.breed
+                        ]
+                            .filter(
+                                Boolean
+                            )
+                            .join(
+                                " "
+                            )
+                            .toLowerCase();
+
+
+                    return haystack.includes(
+                        search
+                    );
+                }
+            );
+    }
+
+
+    return result;
+}
+
+
+
+/* =========================================================
+   REQUEST LIST
+========================================================= */
+
+function renderRequests() {
+
+    const reservations =
+        getFilteredReservations();
+
+
+
+    reservationsList.innerHTML =
+        "";
+
+
+
+    if (
+        reservations.length ===
+        0
+    ) {
+
+        reservationsList.innerHTML = `
+            <div class="admin-empty-state">
+
+                <strong>
+                    Geen reservaties gevonden
+                </strong>
+
+                <span>
+                    Pas de filter of zoekopdracht aan.
+                </span>
+
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    reservations.forEach(
+        reservation => {
+
+            const card =
+                createRequestCard(
+                    reservation
+                );
+
+
+            reservationsList.appendChild(
+                card
+            );
+        }
+    );
+
+
+
+    /*
+        Als geselecteerde reservatie niet meer
+        in huidige filter zit, detail sluiten.
+    */
+
+    if (
+        selectedReservationId
+        &&
+        !reservations.some(
+            reservation =>
+                reservation.id ===
+                selectedReservationId
+        )
+    ) {
+
+        clearRequestDetail();
+    }
+}
+
+
+
+/* =========================================================
+   REQUEST CARD
+========================================================= */
+
+function createRequestCard(
+    reservation
+) {
+
+    const card =
+        document.createElement(
+            "button"
+        );
+
+
+    card.type =
+        "button";
+
+
+    card.id =
+        `reservation-${reservation.id}`;
+
+
+    card.className =
+        "admin-request-item";
+
+
+    if (
+        reservation.id ===
+        selectedReservationId
+    ) {
+
+        card.classList.add(
+            "selected"
+        );
+    }
+
+
+
+    const dog =
+        escapeHtml(
+            reservation.dog
+                ?.name
+            ||
+            "Hond"
+        );
+
+
+    const customer =
+        escapeHtml(
+            reservation.customer
+                ?.name
+            ||
+            "Onbekende klant"
+        );
+
+
+    const period =
+        escapeHtml(
+            formatReservationPeriod(
+                reservation
+            )
+        );
+
+
+    const type =
+        escapeHtml(
+            formatBookingType(
+                reservation
+            )
+        );
+
+
+    const status =
+        reservation.status
+        ||
+        "pending";
+
+
+
+    card.innerHTML = `
+        <div class="admin-request-item-top">
+
+            <div class="admin-request-item-title">
+
+                <strong>
+                    ${dog}
+                </strong>
+
+                <span>
+                    ${customer}
+                </span>
+
+            </div>
+
+            <span class="reservation-status ${status}">
+                ${escapeHtml(
+        getStatusText(
+            status
+        )
+    )}
+            </span>
+
+        </div>
+
+
+        <div class="admin-request-item-meta">
+
+            <span>
+                ${type}
+            </span>
+
+            <span>
+                ${period}
+            </span>
+
+        </div>
+    `;
+
+
+
+    card.addEventListener(
+        "click",
+        () => {
+
+            showRequestDetail(
+                reservation.id
+            );
+        }
+    );
+
+
+    return card;
+}
+
+
+
+/* =========================================================
+   REQUEST DETAIL
+========================================================= */
+
+function showRequestDetail(
+    reservationId
+) {
+
+    const reservation =
+        allReservations.find(
+            item =>
+                item.id ===
+                reservationId
+        );
+
+
+    if (
+        !reservation
+    ) {
+
+        clearRequestDetail();
+
+        return;
+    }
+
+
+
+    selectedReservationId =
+        reservationId;
+
+
+
+    /*
+        Linker lijst selected state vernieuwen.
+    */
+
+    renderRequests();
+
+
+
+    requestDetailEmpty.hidden =
+        true;
+
+
+    requestDetailContent.hidden =
+        false;
+
+
+
+    const dogName =
+        reservation.dog
+            ?.name
+        ||
+        "Hond";
+
+
+    const customerName =
+        reservation.customer
+            ?.name
+        ||
+        "Onbekende klant";
+
+
+    const status =
+        reservation.status
+        ||
+        "pending";
+
+
+
+    requestDetailDog.textContent =
+        dogName;
+
+
+    requestDetailCustomer.textContent =
+        customerName;
+
+
+    requestDetailStatus.className =
+        `reservation-status ${status}`;
+
+
+    requestDetailStatus.textContent =
+        getStatusText(
+            status
+        );
+
+
+    requestDetailType.textContent =
+        formatBookingType(
+            reservation
+        );
+
+
+    requestDetailPeriod.textContent =
+        formatReservationPeriod(
+            reservation
+        );
+
+
+    requestDetailArrival.textContent =
+        reservation.booking
+            ?.arrivalTime
+        ||
+        "—";
+
+
+    requestDetailDeparture.textContent =
+        reservation.booking
+            ?.departureTime
+        ||
+        "—";
+
+
+    requestDetailClientName.textContent =
+        customerName;
+
+
+    requestDetailEmail.textContent =
+        reservation.customer
+            ?.email
+        ||
+        "—";
+
+
+    requestDetailPhone.textContent =
+        reservation.customer
+            ?.phone
+        ||
+        "—";
+
+
+    requestPetName.textContent =
+        dogName;
+
+
+    requestPetInfo.textContent =
+        formatPetInfo(
+            reservation.dog
+        );
+
+
+    requestDetailNotes.textContent =
+        buildReservationNotes(
+            reservation
+        );
+
+
+    requestDetailPrice.textContent =
+        reservation.price
+        ||
+        (
+            reservation.estimatedPrice !==
+                undefined
+                ? `€${reservation.estimatedPrice}`
+                : "—"
+        );
+
+
+
+    /*
+        Alleen pending aanvragen
+        mogen nog geaccepteerd/geweigerd worden.
+    */
+
+    requestDetailActions.hidden =
+        status !==
+        "pending";
+}
+
+
+
+/* =========================================================
+   DETAIL LEEGMAKEN
+========================================================= */
+
+function clearRequestDetail() {
+
+    selectedReservationId =
+        null;
+
+
+    requestDetailEmpty.hidden =
+        false;
+
+
+    requestDetailContent.hidden =
+        true;
+}
+
+
+
+/* =========================================================
+   PET INFO
+========================================================= */
+
+function formatPetInfo(
+    dog = {}
+) {
+
+    const parts =
+        [];
+
+
+    if (
+        dog.breed
+    ) {
+
+        parts.push(
+            dog.breed
+        );
+    }
+
+
+    if (
+        dog.age !==
+        null
+        &&
+        dog.age !==
+        undefined
+        &&
+        dog.age !==
+        ""
+    ) {
+
+        parts.push(
+            `${dog.age} jaar`
+        );
+    }
+
+
+    if (
+        dog.weight !==
+        null
+        &&
+        dog.weight !==
+        undefined
+        &&
+        dog.weight !==
+        ""
+    ) {
+
+        parts.push(
+            `${dog.weight} kg`
+        );
+    }
+
+
+    return (
+        parts.join(
+            " · "
+        )
+        ||
+        "Hond"
+    );
+}
+
+
+
+/* =========================================================
+   RESERVATIE NOTITIES SAMENVOEGEN
+========================================================= */
+
+function buildReservationNotes(
+    reservation
+) {
+
+    const blocks =
+        [];
+
+
+
+    if (
+        reservation.notes
+    ) {
+
+        blocks.push(
+            reservation.notes
+        );
+    }
+
+
+
+    if (
+        reservation.dog
+            ?.notes
+    ) {
+
+        blocks.push(
+            `Hond: ${reservation.dog.notes}`
+        );
+    }
+
+
+
+    const addons =
+        reservation.booking
+            ?.addons;
+
+
+    if (
+        Array.isArray(
+            addons
+        )
+        &&
+        addons.length >
+        0
+    ) {
+
+        const names = {
+
+            "extra-walk":
+                "Extra wandeling",
+
+            "photo-update":
+                "Foto-update",
+
+            "individual-play":
+                "Individueel speelmoment"
+        };
+
+
+        blocks.push(
+            "Extra's: "
+            +
+            addons
+                .map(
+                    addon =>
+                        names[addon]
+                        ||
+                        addon
+                )
+                .join(
+                    ", "
+                )
+        );
+    }
+
+
+
+    const feeding =
+        reservation.booking
+            ?.feeding;
+
+
+    if (
+        feeding
+    ) {
+
+        const feedingParts =
+            [];
+
+
+        if (
+            feeding.frequency
+        ) {
+
+            feedingParts.push(
+                `${feeding.frequency}× per dag`
+            );
+        }
+
+
+        if (
+            feeding.source ===
+            "owner"
+        ) {
+
+            feedingParts.push(
+                "eigen voeding"
+            );
+        }
+
+
+        if (
+            feeding.source ===
+            "facility"
+        ) {
+
+            feedingParts.push(
+                "voeding opvang"
+            );
+        }
+
+
+        if (
+            feeding.notes
+        ) {
+
+            feedingParts.push(
+                feeding.notes
+            );
+        }
+
+
+        if (
+            feedingParts.length >
+            0
+        ) {
+
+            blocks.push(
+                "Voeding: "
+                +
+                feedingParts.join(
+                    " · "
+                )
+            );
+        }
+    }
+
+
+
+    const medication =
+        reservation.booking
+            ?.medication;
+
+
+    if (
+        medication
+            ?.needed
+    ) {
+
+        blocks.push(
+            "Medicatie: "
+            +
+            (
+                medication.notes
+                ||
+                "Medicatie nodig"
+            )
+        );
+    }
+
+
+
+    return (
+        blocks.join(
+            "\n\n"
+        )
+        ||
+        "Geen opmerkingen."
+    );
+}
+
+
+
+/* =========================================================
+   REQUEST ACCEPTEREN
+========================================================= */
+
+requestAcceptButton.addEventListener(
+    "click",
+    async () => {
+
+        await changeSelectedReservationStatus(
+            "accepted"
+        );
+    }
+);
+
+
+
+/* =========================================================
+   REQUEST WEIGEREN
+========================================================= */
+
+requestRejectButton.addEventListener(
+    "click",
+    async () => {
+
+        const confirmed =
+            window.confirm(
+                "Wilt u deze reservatieaanvraag weigeren?"
+            );
+
+
+        if (
+            !confirmed
+        ) {
+
+            return;
+        }
+
+
+        await changeSelectedReservationStatus(
+            "rejected"
+        );
+    }
+);
+
+
+
+/* =========================================================
+   STATUS AANPASSEN
+========================================================= */
+
+async function changeSelectedReservationStatus(
+    newStatus
+) {
+
+    if (
+        !selectedReservationId
+    ) {
+
+        return;
+    }
+
+
+
+    const reservationId =
+        selectedReservationId;
+
+
+
+    requestAcceptButton.disabled =
+        true;
+
+
+    requestRejectButton.disabled =
+        true;
+
+
+
+    if (
+        newStatus ===
+        "accepted"
+    ) {
+
+        requestAcceptButton.textContent =
+            "Accepteren...";
+
+    } else {
+
+        requestRejectButton.textContent =
+            "Weigeren...";
+    }
+
+
+
+    try {
+
+        /*
+            1. Status opslaan.
+        */
+
+        await updateReservationStatus(
+            reservationId,
+            newStatus
+        );
+
+
+
+        /*
+            2. Mail versturen.
+
+            Mailfout mag statuswijziging
+            niet terugdraaien.
+        */
+
+        try {
+
+            await sendReservationEmail(
+                reservationId
+            );
+
+
+        } catch (emailError) {
+
+            console.error(
+                "Status gewijzigd maar e-mail mislukt:",
+                emailError
+            );
+        }
+
+
+
+        /*
+            3. Alles opnieuw laden.
+        */
+
+        selectedReservationId =
+            reservationId;
+
+
+        directoriesLoaded =
+            false;
+
+
+        await loadAdminData();
+
+
+
+        /*
+            Reservatie opnieuw tonen.
+        */
+
+        showRequestDetail(
+            reservationId
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Status wijzigen mislukt:",
+            error
+        );
+
+
+        alert(
+            "De reservatiestatus kon niet gewijzigd worden."
+        );
+
+
+    } finally {
+
+        requestAcceptButton.disabled =
+            false;
+
+
+        requestRejectButton.disabled =
+            false;
+
+
+        requestAcceptButton.textContent =
+            "Accepteren";
+
+
+        requestRejectButton.textContent =
+            "Weigeren";
+    }
+}
+
+
+
+/* =========================================================
+   RESERVATIE VANUIT ANDERE VIEW OPENEN
+========================================================= */
+
+async function openReservationFromAnywhere(
+    reservationId
+) {
+
+    /*
+        Zorg dat "Alles" actief is als
+        een niet-pending reservatie wordt geopend.
+    */
+
+    const reservation =
+        allReservations.find(
+            item =>
+                item.id ===
+                reservationId
+        );
+
+
+    if (
+        !reservation
+    ) {
+
+        return;
+    }
+
+
+
+    activeRequestFilter =
+        reservation.status ===
+            "pending"
+            ? "pending"
+            : "all";
+
+
+
+    requestFilterButtons.forEach(
+        button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset
+                    .requestFilter ===
+                activeRequestFilter
+            );
+        }
+    );
+
+
+
+    await showAdminView(
+        "requests"
+    );
+
+
+    renderRequests();
+
+
+    showRequestDetail(
+        reservationId
+    );
+
+
+
+    const card =
+        document.getElementById(
+            `reservation-${reservationId}`
+        );
+
+
+    if (
+        card
+    ) {
+
+        card.scrollIntoView(
+            {
+                behavior:
+                    "smooth",
+
+                block:
+                    "center"
+            }
+        );
+    }
+}
+
+
+
+/*
+    Kalendermodule kan later dit event
+    gebruiken om een reservatie te openen.
+*/
+
+window.addEventListener(
+    "teckelweb:open-reservation",
+    async event => {
+
+        const reservationId =
+            event.detail
+                ?.reservationId;
+
+
+        if (
+            reservationId
+        ) {
+
+            await openReservationFromAnywhere(
+                reservationId
+            );
+        }
+    }
+);
+
+
+
+/* =========================================================
+   CLIENT DIRECTORY LADEN
+========================================================= */
+
+async function ensureDirectoriesLoaded() {
+
+    if (
+        directoriesLoaded
+    ) {
+
+        renderClients();
+
+        renderPets();
+
+        return;
+    }
+
+
+
+    try {
+
+        /*
+            Voorlopig komen klanten en honden
+            uit de reservatiegeschiedenis.
+        */
+
+        [
+            clients,
+            pets
+        ] =
+            await Promise.all(
+                [
+                    getClientDirectory(),
+                    getPetDirectory()
+                ]
+            );
+
+
+        directoriesLoaded =
+            true;
+
+
+        renderClients();
+
+        renderPets();
+
+
+    } catch (error) {
+
+        console.error(
+            "Directory laden mislukt:",
+            error
+        );
+
+
+        clientsList.innerHTML = `
+            <div class="admin-empty-state">
+
+                <strong>
+                    Klanten konden niet geladen worden.
+                </strong>
+
+            </div>
+        `;
+
+
+        petsList.innerHTML = `
+            <div class="admin-empty-state">
+
+                <strong>
+                    Honden konden niet geladen worden.
+                </strong>
+
+            </div>
+        `;
+    }
+}
+
+
+
+/* =========================================================
+   CLIENT SEARCH
+========================================================= */
+
+clientSearch.addEventListener(
+    "input",
+    renderClients
+);
+
+
+
+/* =========================================================
+   CLIENTS RENDEREN
+========================================================= */
+
+function renderClients() {
+
+    if (
+        !directoriesLoaded
+    ) {
+
+        return;
+    }
+
+
+
+    const search =
+        clientSearch
+            .value
+            .trim()
+            .toLowerCase();
+
+
+
+    const filtered =
+        clients.filter(
+            client => {
+
+                if (
+                    !search
+                ) {
+
+                    return true;
+                }
+
+
+                const haystack =
+                    [
+                        client.name,
+                        client.email,
+                        client.phone,
+                        ...client.pets
+                    ]
+                        .filter(
+                            Boolean
+                        )
+                        .join(
+                            " "
+                        )
+                        .toLowerCase();
+
+
+                return haystack.includes(
+                    search
+                );
+            }
+        );
+
+
+
+    clientsList.innerHTML =
+        "";
+
+
+
+    if (
+        filtered.length ===
+        0
+    ) {
+
+        clientsList.innerHTML = `
+            <div class="admin-empty-state">
+
+                <strong>
+                    Geen klanten gevonden
+                </strong>
+
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    filtered.forEach(
+        client => {
+
+            const item =
+                document.createElement(
+                    "article"
+                );
+
+
+            item.className =
+                "admin-directory-item";
+
+
+
+            const initials =
+                makeInitials(
+                    client.name
+                );
+
+
+
+            item.innerHTML = `
+                <div class="admin-directory-avatar">
+                    ${escapeHtml(initials)}
+                </div>
+
+
+                <div class="admin-directory-main">
+
+                    <strong>
+                        ${escapeHtml(
+                client.name
+                ||
+                client.email
+                ||
+                "Onbekende klant"
+            )}
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(
+                client.email
+                ||
+                "Geen e-mail"
+            )}
+                    </span>
+
+                    <small>
+                        ${escapeHtml(
+                client.phone
+                ||
+                "Geen telefoonnummer"
+            )}
+                    </small>
+
+                </div>
+
+
+                <div class="admin-directory-meta">
+
+                    <span>
+                        ${client.pets.length}
+                        hond${client.pets.length === 1 ? "" : "en"}
+                    </span>
+
+                    <strong>
+                        ${client.reservations.length}
+                        reservatie${client.reservations.length === 1 ? "" : "s"}
+                    </strong>
+
+                </div>
+            `;
+
+
+            clientsList.appendChild(
+                item
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   PET SEARCH
+========================================================= */
+
+petSearch.addEventListener(
+    "input",
+    renderPets
+);
+
+
+
+/* =========================================================
+   PETS RENDEREN
+========================================================= */
+
+function renderPets() {
+
+    if (
+        !directoriesLoaded
+    ) {
+
+        return;
+    }
+
+
+
+    const search =
+        petSearch
+            .value
+            .trim()
+            .toLowerCase();
+
+
+
+    const filtered =
+        pets.filter(
+            pet => {
+
+                if (
+                    !search
+                ) {
+
+                    return true;
+                }
+
+
+                const haystack =
+                    [
+                        pet.name,
+                        pet.breed,
+                        pet.owner?.name,
+                        pet.owner?.email
+                    ]
+                        .filter(
+                            Boolean
+                        )
+                        .join(
+                            " "
+                        )
+                        .toLowerCase();
+
+
+                return haystack.includes(
+                    search
+                );
+            }
+        );
+
+
+
+    petsList.innerHTML =
+        "";
+
+
+
+    if (
+        filtered.length ===
+        0
+    ) {
+
+        petsList.innerHTML = `
+            <div class="admin-empty-state">
+
+                <strong>
+                    Geen honden gevonden
+                </strong>
+
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    filtered.forEach(
+        pet => {
+
+            const item =
+                document.createElement(
+                    "article"
+                );
+
+
+            item.className =
+                "admin-pet-directory-card";
+
+
+            item.innerHTML = `
+                <div class="admin-pet-directory-top">
+
+                    <div class="admin-pet-avatar">
+                        ♢
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            ${escapeHtml(
+                pet.name
+                ||
+                "Hond"
+            )}
+                        </strong>
+
+                        <span>
+                            ${escapeHtml(
+                formatPetInfo(
+                    pet
+                )
+            )}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-pet-directory-owner">
+
+                    <span>
+                        Eigenaar
+                    </span>
+
+                    <strong>
+                        ${escapeHtml(
+                pet.owner?.name
+                ||
+                pet.owner?.email
+                ||
+                "Onbekend"
+            )}
+                    </strong>
+
+                </div>
+
+
+                <div class="admin-pet-directory-footer">
+
+                    <span>
+                        ${pet.reservations.length}
+                        reservatie${pet.reservations.length === 1 ? "" : "s"}
+                    </span>
+
+                </div>
+            `;
+
+
+            petsList.appendChild(
+                item
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   INITIALS
+========================================================= */
+
+function makeInitials(
+    name
+) {
+
+    if (
+        !name
+    ) {
+
+        return "K";
+    }
+
+
+    return name
+        .trim()
+        .split(
+            /\s+/
+        )
+        .slice(
+            0,
+            2
+        )
+        .map(
+            part =>
+                part.charAt(
+                    0
+                ).toUpperCase()
+        )
+        .join(
+            ""
+        )
+        ||
+        "K";
+}
+
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+
+/*
+    Nog tijdelijk lokaal.
+
+    Zodra we automatische capaciteit bouwen,
+    verhuizen we dit naar een beveiligd
+    Firestore settings-document.
+*/
+
+const SETTINGS_STORAGE_KEY =
+    "teckelweb-admin-settings";
+
+
+
+function loadLocalSettings() {
+
+    let stored =
+        null;
+
+
+    try {
+
+        stored =
+            JSON.parse(
+                localStorage.getItem(
+                    SETTINGS_STORAGE_KEY
+                )
+            );
+
+    } catch {
+
+        stored =
+            null;
+    }
+
+
+
+    if (
+        !stored
+    ) {
+
+        return;
+    }
+
+
+
+    if (
+        stored.maxCapacity
+    ) {
+
+        settingMaxCapacity.value =
+            stored.maxCapacity;
+    }
+
+
+    if (
+        stored.limitedCapacity
+    ) {
+
+        settingLimitedCapacity.value =
+            stored.limitedCapacity;
+    }
+
+
+    if (
+        stored.openingTime
+    ) {
+
+        settingOpeningTime.value =
+            stored.openingTime;
+    }
+
+
+    if (
+        stored.closingTime
+    ) {
+
+        settingClosingTime.value =
+            stored.closingTime;
+    }
+}
+
+
+
+saveSettingsButton.addEventListener(
+    "click",
+    () => {
+
+        const maxCapacity =
+            Number(
+                settingMaxCapacity
+                    .value
+            );
+
+
+        const limitedCapacity =
+            Number(
+                settingLimitedCapacity
+                    .value
+            );
+
+
+        const openingTime =
+            settingOpeningTime
+                .value;
+
+
+        const closingTime =
+            settingClosingTime
+                .value;
+
+
+
+        if (
+            !Number.isFinite(
+                maxCapacity
+            )
+            ||
+            maxCapacity <
+            1
+        ) {
+
+            alert(
+                "Geef een geldige maximale capaciteit in."
+            );
+
+
+            return;
+        }
+
+
+
+        if (
+            !Number.isFinite(
+                limitedCapacity
+            )
+            ||
+            limitedCapacity <
+            1
+            ||
+            limitedCapacity >
+            maxCapacity
+        ) {
+
+            alert(
+                "De grens voor beperkte beschikbaarheid moet tussen 1 en de maximale capaciteit liggen."
+            );
+
+
+            return;
+        }
+
+
+
+        if (
+            !openingTime
+            ||
+            !closingTime
+            ||
+            closingTime <=
+            openingTime
+        ) {
+
+            alert(
+                "Controleer het openings- en sluitingsuur."
+            );
+
+
+            return;
+        }
+
+
+
+        const settings = {
+
+            maxCapacity:
+                maxCapacity,
+
+            limitedCapacity:
+                limitedCapacity,
+
+            openingTime:
+                openingTime,
+
+            closingTime:
+                closingTime
+        };
+
+
+
+        localStorage.setItem(
+            SETTINGS_STORAGE_KEY,
+            JSON.stringify(
+                settings
+            )
+        );
+
+
+
+        const originalText =
+            saveSettingsButton
+                .textContent;
+
+
+        saveSettingsButton.textContent =
+            "Opgeslagen ✓";
+
+
+        saveSettingsButton.disabled =
+            true;
+
+
+        window.setTimeout(
+            () => {
+
+                saveSettingsButton.textContent =
+                    originalText;
+
+
+                saveSettingsButton.disabled =
+                    false;
+            },
+
+            1400
+        );
+    }
+);
+
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
 
 function escapeHtml(
     value
 ) {
 
     return String(
-        value ?? ""
+        value
+        ??
+        ""
     )
         .replaceAll(
             "&",
@@ -622,1138 +3909,8 @@ function escapeHtml(
 
 
 
-/* =========================================
-   BESCHIKBAARHEID LADEN
-========================================= */
-
-async function loadAvailability() {
-
-    message.textContent =
-        "Beschikbaarheid laden...";
-
-
-    try {
-
-        availabilityData =
-            await getAvailabilityForMonth(
-                displayedMonth.getFullYear(),
-                displayedMonth.getMonth()
-            );
-
-
-        renderCalendar();
-
-
-        if (
-            selectedDate
-        ) {
-
-            renderDayPlanning(
-                selectedDate
-            );
-        }
-
-
-        message.textContent =
-            "";
-
-
-    } catch (error) {
-
-        console.error(
-            "Beschikbaarheid laden mislukt:",
-            error
-        );
-
-
-        message.textContent =
-            "Beschikbaarheid kon niet geladen worden.";
-    }
-}
-
-
-
-/* =========================================
-   RESERVATIES VOOR PLANNING LADEN
-========================================= */
-
-async function loadReservationsForPlanning() {
-
-    try {
-
-        reservations =
-            await getReservations();
-
-
-        renderCalendar();
-
-
-        if (
-            selectedDate
-        ) {
-
-            renderDayPlanning(
-                selectedDate
-            );
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Reservaties voor planning laden mislukt:",
-            error
-        );
-    }
-}
-
-
-
-/* =========================================
-   KALENDER RENDEREN
-========================================= */
-
-function renderCalendar() {
-
-    const year =
-        displayedMonth.getFullYear();
-
-    const month =
-        displayedMonth.getMonth();
-
-
-
-    /* -------------------------------------
-       TITEL
-    ------------------------------------- */
-
-    let title =
-        new Intl.DateTimeFormat(
-            "nl-BE",
-            {
-                month:
-                    "long",
-
-                year:
-                    "numeric"
-            }
-        ).format(
-            displayedMonth
-        );
-
-
-    title =
-        title.charAt(0).toUpperCase()
-        +
-        title.slice(1);
-
-
-    calendarTitle.textContent =
-        title;
-
-
-
-    /* -------------------------------------
-       GRID LEEGMAKEN
-    ------------------------------------- */
-
-    calendarGrid.innerHTML =
-        "";
-
-
-
-    /* -------------------------------------
-       LEGE VAKKEN VOOR DAG 1
-    ------------------------------------- */
-
-    const firstDay =
-        new Date(
-            year,
-            month,
-            1
-        ).getDay();
-
-
-    const emptyCells =
-        (
-            firstDay + 6
-        ) % 7;
-
-
-    for (
-        let index = 0;
-        index < emptyCells;
-        index++
-    ) {
-
-        const empty =
-            document.createElement(
-                "div"
-            );
-
-
-        empty.className =
-            "admin-calendar-empty";
-
-
-        calendarGrid.appendChild(
-            empty
-        );
-    }
-
-
-
-    /* -------------------------------------
-       DAGEN
-    ------------------------------------- */
-
-    const daysInMonth =
-        new Date(
-            year,
-            month + 1,
-            0
-        ).getDate();
-
-
-    for (
-        let day = 1;
-        day <= daysInMonth;
-        day++
-    ) {
-
-        const dateString =
-            makeDateString(
-                year,
-                month,
-                day
-            );
-
-
-        const status =
-            getStatusForDate(
-                dateString
-            );
-
-
-        const confirmed =
-            getConfirmedCountForDate(
-                dateString
-            );
-
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-
-        button.type =
-            "button";
-
-
-        button.className =
-            `admin-calendar-day ${status}`;
-
-
-        button.dataset.date =
-            dateString;
-
-
-
-        /* ---------------------------------
-           DAGNUMMER
-        --------------------------------- */
-
-        const dayNumber =
-            document.createElement(
-                "span"
-            );
-
-
-        dayNumber.className =
-            "admin-calendar-day-number";
-
-
-        dayNumber.textContent =
-            day;
-
-
-        button.appendChild(
-            dayNumber
-        );
-
-
-
-        /* ---------------------------------
-           AANTAL BEVESTIGDE HONDEN
-        --------------------------------- */
-
-        if (
-            confirmed > 0
-        ) {
-
-            const bookingCount =
-                document.createElement(
-                    "span"
-                );
-
-
-            bookingCount.className =
-                "admin-calendar-booking-count";
-
-
-            bookingCount.textContent =
-                confirmed;
-
-
-            bookingCount.title =
-                `${confirmed} bevestigde hond${confirmed === 1 ? "" : "en"}`;
-
-
-            button.appendChild(
-                bookingCount
-            );
-        }
-
-
-
-        /* ---------------------------------
-           GESELECTEERDE DAG
-        --------------------------------- */
-
-        if (
-            selectedDate ===
-            dateString
-        ) {
-
-            button.classList.add(
-                "selected"
-            );
-        }
-
-
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                selectDate(
-                    dateString
-                );
-            }
-        );
-
-
-        calendarGrid.appendChild(
-            button
-        );
-    }
-}
-
-
-
-/* =========================================
-   DAG SELECTEREN
-========================================= */
-
-function selectDate(
-    dateString
-) {
-
-    selectedDate =
-        dateString;
-
-
-    selectedDateTitle.textContent =
-        formatSelectedDate(
-            dateString
-        );
-
-
-    const status =
-        getStatusForDate(
-            dateString
-        );
-
-
-    const radio =
-        document.querySelector(
-            `input[name="availability-status"][value="${status}"]`
-        );
-
-
-    if (
-        radio
-    ) {
-
-        radio.checked =
-            true;
-    }
-
-
-    saveButton.disabled =
-        false;
-
-
-    message.textContent =
-        "";
-
-
-    renderCalendar();
-
-
-    renderDayPlanning(
-        dateString
-    );
-}
-
-
-
-/* =========================================
-   DAGPLANNING TONEN
-========================================= */
-
-function renderDayPlanning(
-    dateString
-) {
-
-    const allForDay =
-        getReservationsForDate(
-            dateString
-        );
-
-
-    const accepted =
-        allForDay.filter(
-            reservation =>
-                reservation.status ===
-                "accepted"
-        );
-
-
-    const pending =
-        allForDay.filter(
-            reservation =>
-                reservation.status ===
-                "pending"
-        );
-
-
-
-    /* -------------------------------------
-       COUNTERS
-    ------------------------------------- */
-
-    confirmedCount.textContent =
-        accepted.length;
-
-
-    pendingCount.textContent =
-        pending.length;
-
-
-    daySummary.hidden =
-        false;
-
-
-    dayPlanning.hidden =
-        false;
-
-
-
-    /* =====================================
-       BEVESTIGDE RESERVATIES
-    ===================================== */
-
-    dayBookings.innerHTML =
-        "";
-
-
-    if (
-        accepted.length ===
-        0
-    ) {
-
-        dayBookings.innerHTML = `
-            <div class="admin-day-empty">
-
-                <strong>
-                    Geen honden gepland
-                </strong>
-
-                <span>
-                    Er zijn nog geen bevestigde reservaties voor deze dag.
-                </span>
-
-            </div>
-        `;
-
-    } else {
-
-        accepted
-            .sort(
-                (a, b) => {
-
-                    const timeA =
-                        getReservationTimesForDay(
-                            a,
-                            dateString
-                        ).start;
-
-
-                    const timeB =
-                        getReservationTimesForDay(
-                            b,
-                            dateString
-                        ).start;
-
-
-                    return (
-                        timeA.localeCompare(
-                            timeB
-                        )
-                    );
-                }
-            )
-            .forEach(
-                reservation => {
-
-                    createDayBooking(
-                        reservation,
-                        dateString
-                    );
-                }
-            );
-    }
-
-
-
-    /* =====================================
-       PENDING RESERVATIES
-    ===================================== */
-
-    if (
-        pending.length ===
-        0
-    ) {
-
-        dayPending.hidden =
-            true;
-
-
-        dayPendingList.innerHTML =
-            "";
-
-    } else {
-
-        dayPending.hidden =
-            false;
-
-
-        dayPendingList.innerHTML =
-            "";
-
-
-        pending
-            .sort(
-                (a, b) => {
-
-                    const timeA =
-                        getReservationTimesForDay(
-                            a,
-                            dateString
-                        ).start;
-
-
-                    const timeB =
-                        getReservationTimesForDay(
-                            b,
-                            dateString
-                        ).start;
-
-
-                    return (
-                        timeA.localeCompare(
-                            timeB
-                        )
-                    );
-                }
-            )
-            .forEach(
-                reservation => {
-
-                    createPendingBooking(
-                        reservation,
-                        dateString
-                    );
-                }
-            );
-    }
-}
-
-
-
-/* =========================================
-   BEVESTIGDE RESERVATIEKAART
-========================================= */
-
-function createDayBooking(
-    reservation,
-    dateString
-) {
-
-    const times =
-        getReservationTimesForDay(
-            reservation,
-            dateString
-        );
-
-
-    const position =
-        getTimelinePosition(
-            times.start,
-            times.end
-        );
-
-
-    const card =
-        document.createElement(
-            "article"
-        );
-
-
-    card.className =
-        "admin-day-booking";
-
-
-    const bookingType =
-        formatBookingType(
-            reservation.booking
-                ?.type
-        );
-
-
-    card.innerHTML = `
-        <div class="admin-day-booking-header">
-
-            <div class="admin-day-booking-name">
-
-                <strong>
-                    ${escapeHtml(
-        reservation.dog?.name
-        || "Hond"
-    )}
-                </strong>
-
-                <span>
-                    ${escapeHtml(
-        reservation.customer?.name
-        || "Onbekende klant"
-    )}
-                </span>
-
-            </div>
-
-
-            <span class="admin-day-booking-type">
-                ${escapeHtml(
-        bookingType
-    )}
-            </span>
-
-        </div>
-
-
-        <div class="admin-day-booking-meta">
-
-            <span>
-                ${escapeHtml(
-        times.start
-    )}
-                –
-                ${escapeHtml(
-        times.end
-    )}
-            </span>
-
-
-            ${reservation.customer?.phone
-            ? `
-                        <span>
-                            ${escapeHtml(
-                reservation.customer.phone
-            )}
-                        </span>
-                    `
-            : ""
-        }
-
-        </div>
-
-
-        <div class="admin-day-track">
-
-            <div
-                class="admin-day-track-bar"
-                style="
-                    left: ${position.left}%;
-                    width: ${position.width}%;
-                "
-            ></div>
-
-        </div>
-
-
-        <button
-            type="button"
-            class="admin-day-view-reservation"
-        >
-            Bekijk reservatie
-        </button>
-    `;
-
-
-    const viewButton =
-        card.querySelector(
-            ".admin-day-view-reservation"
-        );
-
-
-    viewButton.addEventListener(
-        "click",
-        () => {
-
-            scrollToReservation(
-                reservation.id
-            );
-        }
-    );
-
-
-    dayBookings.appendChild(
-        card
-    );
-}
-
-
-
-/* =========================================
-   PENDING RESERVATIEKAART
-========================================= */
-
-function createPendingBooking(
-    reservation,
-    dateString
-) {
-
-    const times =
-        getReservationTimesForDay(
-            reservation,
-            dateString
-        );
-
-
-    const card =
-        document.createElement(
-            "button"
-        );
-
-
-    card.type =
-        "button";
-
-
-    card.className =
-        "admin-day-pending-card";
-
-
-    card.innerHTML = `
-        <span class="admin-day-pending-main">
-
-            <strong>
-                ${escapeHtml(
-        reservation.dog?.name
-        || "Hond"
-    )}
-            </strong>
-
-            <small>
-                ${escapeHtml(
-        reservation.customer?.name
-        || "Onbekende klant"
-    )}
-            </small>
-
-        </span>
-
-
-        <span class="admin-day-pending-time">
-
-            ${escapeHtml(
-        times.start
-    )}
-
-            –
-
-            ${escapeHtml(
-        times.end
-    )}
-
-        </span>
-    `;
-
-
-    card.addEventListener(
-        "click",
-        () => {
-
-            scrollToReservation(
-                reservation.id
-            );
-        }
-    );
-
-
-    dayPendingList.appendChild(
-        card
-    );
-}
-
-
-
-/* =========================================
-   NAAR RESERVATIE SCROLLEN
-========================================= */
-
-function scrollToReservation(
-    reservationId
-) {
-
-    const reservationElement =
-        document.getElementById(
-            `reservation-${reservationId}`
-        );
-
-
-    if (
-        !reservationElement
-    ) {
-
-        return;
-    }
-
-
-    reservationElement.scrollIntoView(
-        {
-            behavior:
-                "smooth",
-
-            block:
-                "center"
-        }
-    );
-
-
-    reservationElement.classList.add(
-        "reservation-highlight"
-    );
-
-
-    window.setTimeout(
-        () => {
-
-            reservationElement.classList.remove(
-                "reservation-highlight"
-            );
-        },
-
-        1800
-    );
-}
-
-
-
-/* =========================================
-   VORIGE MAAND
-========================================= */
-
-previousMonthButton.addEventListener(
-    "click",
-    async () => {
-
-        displayedMonth =
-            new Date(
-                displayedMonth.getFullYear(),
-                displayedMonth.getMonth() - 1,
-                1
-            );
-
-
-        selectedDate =
-            null;
-
-
-        selectedDateTitle.textContent =
-            "Kies een dag";
-
-
-        daySummary.hidden =
-            true;
-
-
-        dayPlanning.hidden =
-            true;
-
-
-        dayPending.hidden =
-            true;
-
-
-        saveButton.disabled =
-            true;
-
-
-        await loadAvailability();
-    }
-);
-
-
-
-/* =========================================
-   VOLGENDE MAAND
-========================================= */
-
-nextMonthButton.addEventListener(
-    "click",
-    async () => {
-
-        displayedMonth =
-            new Date(
-                displayedMonth.getFullYear(),
-                displayedMonth.getMonth() + 1,
-                1
-            );
-
-
-        selectedDate =
-            null;
-
-
-        selectedDateTitle.textContent =
-            "Kies een dag";
-
-
-        daySummary.hidden =
-            true;
-
-
-        dayPlanning.hidden =
-            true;
-
-
-        dayPending.hidden =
-            true;
-
-
-        saveButton.disabled =
-            true;
-
-
-        await loadAvailability();
-    }
-);
-
-
-
-/* =========================================
-   BESCHIKBAARHEID OPSLAAN
-========================================= */
-
-saveButton.addEventListener(
-    "click",
-    async () => {
-
-        if (
-            !selectedDate
-        ) {
-
-            return;
-        }
-
-
-        const selectedStatus =
-            document.querySelector(
-                'input[name="availability-status"]:checked'
-            );
-
-
-        if (
-            !selectedStatus
-        ) {
-
-            message.textContent =
-                "Kies eerst een status.";
-
-
-            return;
-        }
-
-
-        const status =
-            selectedStatus.value;
-
-
-        saveButton.disabled =
-            true;
-
-
-        saveButton.textContent =
-            "Opslaan...";
-
-
-        message.textContent =
-            "";
-
-
-        try {
-
-            await saveAvailability(
-                selectedDate,
-                status
-            );
-
-
-            /*
-                Available wordt niet in Firestore opgeslagen.
-            */
-
-            if (
-                status ===
-                "available"
-            ) {
-
-                delete availabilityData[
-                    selectedDate
-                ];
-
-            } else {
-
-                availabilityData[
-                    selectedDate
-                ] = {
-                    date:
-                        selectedDate,
-
-                    status:
-                        status
-                };
-            }
-
-
-            renderCalendar();
-
-
-            message.textContent =
-                "Beschikbaarheid opgeslagen.";
-
-
-        } catch (error) {
-
-            console.error(
-                "Beschikbaarheid opslaan mislukt:",
-                error
-            );
-
-
-            message.textContent =
-                "Opslaan is mislukt.";
-        }
-
-
-        saveButton.disabled =
-            false;
-
-
-        saveButton.textContent =
-            "Beschikbaarheid opslaan";
-    }
-);
-
-
-
-/* =========================================
-   RESERVATIES VERANDERD
-========================================= */
-
-window.addEventListener(
-    "teckelweb:reservations-updated",
-    event => {
-
-        if (
-            !Array.isArray(
-                event.detail
-                    ?.reservations
-            )
-        ) {
-
-            return;
-        }
-
-
-        reservations =
-            event.detail
-                .reservations;
-
-
-        /*
-            Kalender opnieuw tekenen zodat
-            aantal honden per dag direct verandert.
-        */
-
-        renderCalendar();
-
-
-        if (
-            selectedDate
-        ) {
-
-            renderDayPlanning(
-                selectedDate
-            );
-        }
-    }
-);
-
-
-
-/* =========================================
-   START NA LOGIN
-========================================= */
-
-watchAuthState(
-    async user => {
-
-        if (
-            !user ||
-            !ADMIN_UIDS.includes(
-                user.uid
-            )
-        ) {
-
-            return;
-        }
-
-
-        /*
-            Availability en reservaties
-            tegelijk ophalen.
-        */
-
-        await Promise.all(
-            [
-                loadAvailability(),
-                loadReservationsForPlanning()
-            ]
-        );
-    }
-);
+/* =========================================================
+   START
+========================================================= */
+
+loadLocalSettings();

@@ -1,10 +1,18 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+/* =========================================================
+   FIREBASE SDK
+========================================================= */
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
 
 import {
     getFirestore,
     collection,
     addDoc,
     getDocs,
+    getDoc,
     query,
     where,
     orderBy,
@@ -14,6 +22,7 @@ import {
     deleteDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
 
 import {
     getAuth,
@@ -25,103 +34,354 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 
-/* =========================================
+
+/* =========================================================
    FIREBASE CONFIG
-========================================= */
+========================================================= */
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBIvAp40mYiAi9mB2P7CQG8Lw5xQ8m85hE",
-    authDomain: "teckelweb.firebaseapp.com",
-    projectId: "teckelweb",
-    storageBucket: "teckelweb.firebasestorage.app",
-    messagingSenderId: "710164290013",
-    appId: "1:710164290013:web:b0a4e6613dc4b3605e3e34"
+
+    apiKey:
+        "AIzaSyBIvAp40mYiAi9mB2P7CQG8Lw5xQ8m85hE",
+
+    authDomain:
+        "teckelweb.firebaseapp.com",
+
+    projectId:
+        "teckelweb",
+
+    storageBucket:
+        "teckelweb.firebasestorage.app",
+
+    messagingSenderId:
+        "710164290013",
+
+    appId:
+        "1:710164290013:web:b0a4e6613dc4b3605e3e34"
 };
 
 
-/* =========================================
-   FIREBASE STARTEN
-========================================= */
+
+/* =========================================================
+   FIREBASE INITIALISEREN
+========================================================= */
 
 const app =
-    initializeApp(firebaseConfig);
+    initializeApp(
+        firebaseConfig
+    );
+
 
 const db =
-    getFirestore(app);
+    getFirestore(
+        app
+    );
+
 
 const auth =
-    getAuth(app);
+    getAuth(
+        app
+    );
 
 
-/* =========================================
-   GOOGLE AUTHENTICATION
-========================================= */
+
+/* =========================================================
+   GOOGLE AUTH PROVIDER
+========================================================= */
 
 const googleProvider =
     new GoogleAuthProvider();
 
-/* =========================================
+
+/*
+    Altijd toelaten om een Google-account
+    te kiezen.
+
+    Handig indien iemand meerdere accounts
+    heeft.
+*/
+
+googleProvider.setCustomParameters(
+    {
+        prompt:
+            "select_account"
+    }
+);
+
+
+
+/* =========================================================
    CLOUDFLARE MAIL WORKER
-========================================= */
+========================================================= */
 
 const MAIL_WORKER_URL =
     "https://teckelweb-mailer.arthurwillekens.workers.dev";
 
 
+
+/* =========================================================
+   AUTH HELPERS
+========================================================= */
+
+
 /*
-    Laat bij een nieuwe login altijd toe
-    om een Google-account te kiezen.
+    Huidige ingelogde gebruiker.
 */
 
-googleProvider.setCustomParameters({
-    prompt: "select_account"
-});
+export function getCurrentUser() {
+
+    return auth.currentUser;
+}
 
 
 
-/* =========================================
+/*
+    Is iemand momenteel ingelogd?
+*/
+
+export function isLoggedIn() {
+
+    return Boolean(
+        auth.currentUser
+    );
+}
+
+
+
+/* =========================================================
+   GOOGLE LOGIN
+========================================================= */
+
+export async function loginWithGoogle() {
+
+    const result =
+        await signInWithPopup(
+            auth,
+            googleProvider
+        );
+
+
+    return result.user;
+}
+
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+export async function logout() {
+
+    await signOut(
+        auth
+    );
+}
+
+
+
+/* =========================================================
+   LOGINSTATUS VOLGEN
+========================================================= */
+
+export function watchAuthState(
+    callback
+) {
+
+    return onAuthStateChanged(
+        auth,
+        callback
+    );
+}
+
+
+
+/* =========================================================
+   AUTH TOKEN
+========================================================= */
+
+export async function getCurrentUserToken() {
+
+    const user =
+        auth.currentUser;
+
+
+    if (
+        !user
+    ) {
+
+        throw new Error(
+            "Geen ingelogde gebruiker."
+        );
+    }
+
+
+    return getIdToken(
+        user
+    );
+}
+
+
+
+/* =========================================================
    RESERVATIE OPSLAAN
-========================================= */
+========================================================= */
 
 export async function saveReservation(
     reservation
 ) {
 
-    const docRef =
+    /*
+        Online reservaties moeten altijd
+        gekoppeld zijn aan de echte
+        Firebase-gebruiker.
+
+        We vertrouwen dus niet blind op
+        uid/email uit JavaScript.
+    */
+
+    const user =
+        auth.currentUser;
+
+
+    if (
+        !user ||
+        !user.uid ||
+        !user.email
+    ) {
+
+        throw new Error(
+            "Log eerst in voordat u een reservatie maakt."
+        );
+    }
+
+
+
+    const normalizedEmail =
+        user.email
+            .trim()
+            .toLowerCase();
+
+
+
+    /*
+        Reservatie-object opbouwen.
+
+        customer.uid en customer.email worden
+        bewust overschreven met de Firebase-
+        identiteit.
+
+        Dit sluit aan op de huidige
+        Firestore Security Rules.
+    */
+
+    const reservationData = {
+
+        ...reservation,
+
+
+        customer: {
+
+            ...reservation.customer,
+
+            uid:
+                user.uid,
+
+            email:
+                normalizedEmail
+        },
+
+
+        status:
+            "pending",
+
+
+        createdAt:
+            serverTimestamp()
+    };
+
+
+
+    const reservationRef =
         await addDoc(
             collection(
                 db,
                 "reservations"
             ),
-            {
-                ...reservation,
 
-                status:
-                    "pending",
-
-                createdAt:
-                    serverTimestamp()
-            }
+            reservationData
         );
 
 
-    return docRef.id;
+    return reservationRef.id;
 }
 
 
 
-/* =========================================
-   ADMIN: ALLE RESERVATIES OPHALEN
-========================================= */
+/* =========================================================
+   ÉÉN RESERVATIE OPHALEN
+========================================================= */
+
+export async function getReservation(
+    reservationId
+) {
+
+    if (
+        !reservationId
+    ) {
+
+        throw new Error(
+            "Geen reservationId opgegeven."
+        );
+    }
+
+
+    const reservationRef =
+        doc(
+            db,
+            "reservations",
+            reservationId
+        );
+
+
+    const snapshot =
+        await getDoc(
+            reservationRef
+        );
+
+
+    if (
+        !snapshot.exists()
+    ) {
+
+        return null;
+    }
+
+
+    return {
+
+        id:
+            snapshot.id,
+
+        ...snapshot.data()
+    };
+}
+
+
+
+/* =========================================================
+   ADMIN — ALLE RESERVATIES
+========================================================= */
 
 export async function getReservations() {
 
     const reservationsQuery =
         query(
+
             collection(
                 db,
                 "reservations"
             ),
+
             orderBy(
                 "createdAt",
                 "desc"
@@ -139,6 +399,7 @@ export async function getReservations() {
         document => {
 
             return {
+
                 id:
                     document.id,
 
@@ -150,74 +411,184 @@ export async function getReservations() {
 
 
 
-/* =========================================
-   KLANT: EIGEN RESERVATIES OPHALEN
-========================================= */
+/* =========================================================
+   KLANT — RESERVATIES
+========================================================= */
 
 export async function getCustomerReservations(
-    email
+    email = ""
 ) {
 
-    const normalizedEmail =
-        email
-            .trim()
-            .toLowerCase();
+    const user =
+        auth.currentUser;
 
 
-    const reservationsQuery =
+    if (
+        !user
+    ) {
+
+        throw new Error(
+            "Log eerst in om reservaties te bekijken."
+        );
+    }
+
+
+
+    /*
+        Nieuwe reservaties hebben customer.uid.
+
+        Dat is betrouwbaarder dan e-mail
+        en wordt daarom eerst gebruikt.
+    */
+
+    const uidQuery =
         query(
+
             collection(
                 db,
                 "reservations"
             ),
 
             where(
-                "customer.email",
+                "customer.uid",
                 "==",
-                normalizedEmail
+                user.uid
             )
         );
 
 
-    const snapshot =
+    const uidSnapshot =
         await getDocs(
-            reservationsQuery
+            uidQuery
         );
 
 
-    const reservations =
-        snapshot.docs.map(
-            document => {
 
-                return {
+    const reservationsMap =
+        new Map();
+
+
+
+    uidSnapshot.docs.forEach(
+        document => {
+
+            reservationsMap.set(
+                document.id,
+
+                {
                     id:
                         document.id,
 
                     ...document.data()
-                };
-            }
-        );
+                }
+            );
+        }
+    );
+
 
 
     /*
-        Nieuwste eerst.
+        Legacy fallback.
+
+        Oude reservaties kunnen nog bestaan
+        zonder customer.uid.
+
+        Daarom zoeken we ook op het
+        ingelogde e-mailadres.
+    */
+
+    const normalizedEmail =
+        (
+            user.email
+            ||
+            email
+            ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+
+    if (
+        normalizedEmail
+    ) {
+
+        const emailQuery =
+            query(
+
+                collection(
+                    db,
+                    "reservations"
+                ),
+
+                where(
+                    "customer.email",
+                    "==",
+                    normalizedEmail
+                )
+            );
+
+
+        const emailSnapshot =
+            await getDocs(
+                emailQuery
+            );
+
+
+        emailSnapshot.docs.forEach(
+            document => {
+
+                reservationsMap.set(
+                    document.id,
+
+                    {
+                        id:
+                            document.id,
+
+                        ...document.data()
+                    }
+                );
+            }
+        );
+    }
+
+
+
+    const reservations =
+        Array.from(
+            reservationsMap.values()
+        );
+
+
+
+    /*
+        Nieuwste aanvraag eerst.
     */
 
     reservations.sort(
-        (a, b) => {
+        (
+            a,
+            b
+        ) => {
 
-            const dateA =
+            const createdA =
                 a.createdAt
-                    ?.toMillis?.() || 0;
+                    ?.toMillis?.()
+                ||
+                0;
 
-            const dateB =
+
+            const createdB =
                 b.createdAt
-                    ?.toMillis?.() || 0;
+                    ?.toMillis?.()
+                ||
+                0;
 
 
             return (
-                dateB -
-                dateA
+                createdB -
+                createdA
             );
         }
     );
@@ -228,13 +599,24 @@ export async function getCustomerReservations(
 
 
 
-/* =========================================
-   KLANT: RESERVATIE ANNULEREN
-========================================= */
+/* =========================================================
+   KLANT — RESERVATIE ANNULEREN
+========================================================= */
 
 export async function cancelCustomerReservation(
     reservationId
 ) {
+
+    if (
+        !reservationId
+    ) {
+
+        throw new Error(
+            "Geen reservatie opgegeven."
+        );
+    }
+
+
 
     const reservationRef =
         doc(
@@ -243,6 +625,15 @@ export async function cancelCustomerReservation(
             reservationId
         );
 
+
+
+    /*
+        Huidige Security Rules laten de klant
+        alleen het veld status veranderen.
+
+        Daarom voegen we hier bewust nog
+        GEEN statusUpdatedAt toe.
+    */
 
     await updateDoc(
         reservationRef,
@@ -255,9 +646,9 @@ export async function cancelCustomerReservation(
 
 
 
-/* =========================================
-   ADMIN: STATUS AANPASSEN
-========================================= */
+/* =========================================================
+   ADMIN — STATUS WIJZIGEN
+========================================================= */
 
 export async function updateReservationStatus(
     reservationId,
@@ -265,11 +656,24 @@ export async function updateReservationStatus(
 ) {
 
     const allowedStatuses = [
+
         "pending",
         "accepted",
         "rejected",
         "cancelled"
     ];
+
+
+
+    if (
+        !reservationId
+    ) {
+
+        throw new Error(
+            "Geen reservatie opgegeven."
+        );
+    }
+
 
 
     if (
@@ -284,6 +688,7 @@ export async function updateReservationStatus(
     }
 
 
+
     const reservationRef =
         doc(
             db,
@@ -292,9 +697,11 @@ export async function updateReservationStatus(
         );
 
 
+
     await updateDoc(
         reservationRef,
         {
+
             status:
                 newStatus,
 
@@ -303,33 +710,35 @@ export async function updateReservationStatus(
         }
     );
 }
-/* =========================================
-   BESCHIKBAARHEID
-========================================= */
+
+
+
+/* =========================================================
+   AVAILABILITY MODEL
+========================================================= */
+
 
 /*
-    In Firestore bewaren we alleen uitzonderingen.
+    Firestore bevat alleen uitzonderingen.
 
-    Geen document:
-        → beschikbaar
+    GEEN DOCUMENT
+        = available
 
-    Document met:
-        status = "limited"
-        → beperkt beschikbaar
+    status = limited
+        = beperkt beschikbaar
 
-    Document met:
-        status = "full"
-        → volzet
+    status = full
+        = volzet
 
-    Als admin een dag opnieuw op
-    "available" zet, verwijderen we
-    het Firestore-document opnieuw.
+    Hierdoor hoeven we niet elke dag
+    van elk jaar op te slaan.
 */
 
 
-/* -----------------------------------------
-   BESCHIKBAARHEID VAN EEN MAAND
------------------------------------------ */
+
+/* =========================================================
+   AVAILABILITY — MAAND
+========================================================= */
 
 export async function getAvailabilityForMonth(
     year,
@@ -337,9 +746,10 @@ export async function getAvailabilityForMonth(
 ) {
 
     /*
-        month:
-        JavaScript gebruikt 0 = januari,
-        1 = februari, ...
+        JavaScript:
+            januari = 0
+            februari = 1
+            ...
     */
 
     const monthNumber =
@@ -355,6 +765,7 @@ export async function getAvailabilityForMonth(
         `${year}-${monthNumber}-01`;
 
 
+
     const lastDay =
         new Date(
             year,
@@ -363,8 +774,15 @@ export async function getAvailabilityForMonth(
         ).getDate();
 
 
+
     const endDate =
-        `${year}-${monthNumber}-${String(lastDay).padStart(2, "0")}`;
+        `${year}-${monthNumber}-${String(
+            lastDay
+        ).padStart(
+            2,
+            "0"
+        )}`;
+
 
 
     return getAvailabilityBetween(
@@ -375,17 +793,61 @@ export async function getAvailabilityForMonth(
 
 
 
-/* -----------------------------------------
-   BESCHIKBAARHEID TUSSEN TWEE DATUMS
------------------------------------------ */
+/* =========================================================
+   AVAILABILITY — RANGE
+========================================================= */
 
 export async function getAvailabilityBetween(
     startDate,
     endDate
 ) {
 
+    if (
+        !startDate ||
+        !endDate
+    ) {
+
+        return {};
+    }
+
+
+
+    /*
+        Vermijd een query zoals:
+
+        start >= 2026-10-10
+        end   <= 2026-10-01
+    */
+
+    let firstDate =
+        startDate;
+
+
+    let lastDate =
+        endDate;
+
+
+
+    if (
+        firstDate >
+        lastDate
+    ) {
+
+        [
+            firstDate,
+            lastDate
+        ] =
+            [
+                lastDate,
+                firstDate
+            ];
+    }
+
+
+
     const availabilityQuery =
         query(
+
             collection(
                 db,
                 "availability"
@@ -394,13 +856,13 @@ export async function getAvailabilityBetween(
             where(
                 "date",
                 ">=",
-                startDate
+                firstDate
             ),
 
             where(
                 "date",
                 "<=",
-                endDate
+                lastDate
             ),
 
             orderBy(
@@ -410,14 +872,17 @@ export async function getAvailabilityBetween(
         );
 
 
+
     const snapshot =
         await getDocs(
             availabilityQuery
         );
 
 
+
     const availability =
         {};
+
 
 
     snapshot.docs.forEach(
@@ -425,6 +890,7 @@ export async function getAvailabilityBetween(
 
             const data =
                 document.data();
+
 
 
             availability[
@@ -441,14 +907,15 @@ export async function getAvailabilityBetween(
     );
 
 
+
     return availability;
 }
 
 
 
-/* -----------------------------------------
-   ADMIN: STATUS VAN DAG OPSLAAN
------------------------------------------ */
+/* =========================================================
+   ADMIN — AVAILABILITY OPSLAAN
+========================================================= */
 
 export async function saveAvailability(
     date,
@@ -456,10 +923,23 @@ export async function saveAvailability(
 ) {
 
     const allowedStatuses = [
+
         "available",
         "limited",
         "full"
     ];
+
+
+
+    if (
+        !date
+    ) {
+
+        throw new Error(
+            "Geen datum opgegeven."
+        );
+    }
+
 
 
     if (
@@ -474,10 +954,6 @@ export async function saveAvailability(
     }
 
 
-    /*
-        Document-ID is gewoon:
-        2026-09-15
-    */
 
     const availabilityRef =
         doc(
@@ -487,11 +963,13 @@ export async function saveAvailability(
         );
 
 
-    /*
-        Beschikbaar is de standaard.
 
-        Daarvoor hoeven we niets in
-        Firestore te bewaren.
+    /*
+        Available is standaard.
+
+        Indien admin een dag opnieuw
+        beschikbaar maakt, verwijderen we
+        het exception-document.
     */
 
     if (
@@ -508,14 +986,11 @@ export async function saveAvailability(
     }
 
 
-    /*
-        Alleen limited en full worden
-        echt opgeslagen.
-    */
 
     await setDoc(
         availabilityRef,
         {
+
             date:
                 date,
 
@@ -528,31 +1003,41 @@ export async function saveAvailability(
             updatedBy:
                 auth.currentUser
                     ?.uid
-                || null
+                ||
+                null
         }
     );
 }
-/* =========================================
-   RESERVATIEMAIL VERSTUREN
-========================================= */
+
+
+
+/* =========================================================
+   RESERVATIEMAIL
+========================================================= */
 
 export async function sendReservationEmail(
     reservationId
 ) {
 
-    /*
-        De Worker moet weten wie de huidige
-        Firebase-gebruiker is.
+    if (
+        !reservationId
+    ) {
 
-        Zonder login mag er geen mailrequest
-        worden uitgevoerd.
-    */
+        throw new Error(
+            "Geen reservatie opgegeven."
+        );
+    }
+
+
 
     const user =
         auth.currentUser;
 
 
-    if (!user) {
+
+    if (
+        !user
+    ) {
 
         throw new Error(
             "Geen ingelogde gebruiker gevonden."
@@ -560,14 +1045,13 @@ export async function sendReservationEmail(
     }
 
 
+
     /*
-        Firebase ID-token ophalen.
+        Firebase ID token.
 
-        De Cloudflare Worker stuurt dit token
-        door naar Firestore.
-
-        Daardoor blijven Firestore Security
-        Rules gewoon actief.
+        De Cloudflare Worker gebruikt dit
+        zodat de Firebase Security Rules
+        van kracht blijven.
     */
 
     const token =
@@ -576,10 +1060,12 @@ export async function sendReservationEmail(
         );
 
 
+
     const response =
         await fetch(
             MAIL_WORKER_URL,
             {
+
                 method:
                     "POST",
 
@@ -593,20 +1079,24 @@ export async function sendReservationEmail(
                 },
 
                 body:
-                    JSON.stringify({
-                        reservationId:
-                            reservationId
-                    })
+                    JSON.stringify(
+                        {
+                            reservationId:
+                                reservationId
+                        }
+                    )
             }
         );
 
 
+
     /*
-        Worker-response proberen lezen.
+        Worker response lezen.
     */
 
     let result =
         {};
+
 
 
     try {
@@ -621,19 +1111,25 @@ export async function sendReservationEmail(
     }
 
 
-    /*
-        Bij fout tonen we zoveel mogelijk
-        informatie in de browserconsole.
-    */
 
-    if (!response.ok) {
+    if (
+        !response.ok
+    ) {
 
         const errorMessage =
-            result?.resend?.message
+            result
+                ?.resend
+                ?.message
+
             ||
-            result?.error
+
+            result
+                ?.error
+
             ||
+
             `Mailer fout HTTP ${response.status}`;
+
 
 
         throw new Error(
@@ -642,48 +1138,501 @@ export async function sendReservationEmail(
     }
 
 
+
     return result;
 }
 
-/* =========================================
-   GOOGLE LOGIN
-========================================= */
 
-export async function loginWithGoogle() {
+
+/* =========================================================
+   ADMIN DIRECTORY — KLANTEN
+========================================================= */
+
+
+/*
+    Nog geen aparte clients-collection.
+
+    Voorlopig bouwen we het klantenoverzicht
+    uit de reservaties.
+
+    Hierdoor hoeven we nu nog geen nieuwe
+    Firestore Rules te publiceren.
+*/
+
+export async function getClientDirectory() {
+
+    const reservations =
+        await getReservations();
+
+
+
+    const clients =
+        new Map();
+
+
+
+    reservations.forEach(
+        reservation => {
+
+            const customer =
+                reservation.customer
+                ||
+                {};
+
+
+            const email =
+                customer.email
+                    ?.trim()
+                    .toLowerCase()
+                ||
+                "";
+
+
+            const uid =
+                customer.uid
+                ||
+                "";
+
+
+            /*
+                UID geniet voorkeur.
+
+                Voor oudere reservaties
+                gebruiken we email als key.
+            */
+
+            const key =
+                uid
+                ||
+                email;
+
+
+
+            if (
+                !key
+            ) {
+
+                return;
+            }
+
+
+
+            if (
+                !clients.has(
+                    key
+                )
+            ) {
+
+                clients.set(
+                    key,
+                    {
+
+                        id:
+                            key,
+
+                        uid:
+                            uid,
+
+                        name:
+                            customer.name
+                            ||
+                            "",
+
+                        email:
+                            email,
+
+                        phone:
+                            customer.phone
+                            ||
+                            "",
+
+                        reservations:
+                            [],
+
+                        pets:
+                            []
+                    }
+                );
+            }
+
+
+
+            const client =
+                clients.get(
+                    key
+                );
+
+
+
+            /*
+                Recentere reservaties kunnen
+                completere contactinfo bevatten.
+            */
+
+            if (
+                customer.name
+            ) {
+
+                client.name =
+                    customer.name;
+            }
+
+
+            if (
+                customer.phone
+            ) {
+
+                client.phone =
+                    customer.phone;
+            }
+
+
+
+            client.reservations.push(
+                reservation
+            );
+
+
+
+            const dogName =
+                reservation.dog
+                    ?.name
+                    ?.trim();
+
+
+            if (
+                dogName
+                &&
+                !client.pets.some(
+                    pet =>
+                        pet
+                            .toLowerCase()
+                        ===
+                        dogName
+                            .toLowerCase()
+                )
+            ) {
+
+                client.pets.push(
+                    dogName
+                );
+            }
+        }
+    );
+
+
 
     const result =
-        await signInWithPopup(
-            auth,
-            googleProvider
+        Array.from(
+            clients.values()
         );
 
 
-    return result.user;
+
+    /*
+        Klanten met meest recente
+        reservatie eerst.
+    */
+
+    result.sort(
+        (
+            a,
+            b
+        ) => {
+
+            const aNewest =
+                getNewestReservationMillis(
+                    a.reservations
+                );
+
+
+            const bNewest =
+                getNewestReservationMillis(
+                    b.reservations
+                );
+
+
+            return (
+                bNewest -
+                aNewest
+            );
+        }
+    );
+
+
+
+    return result;
 }
 
 
 
-/* =========================================
-   UITLOGGEN
-========================================= */
+/* =========================================================
+   ADMIN DIRECTORY — HONDEN
+========================================================= */
 
-export async function logout() {
+export async function getPetDirectory() {
 
-    await signOut(auth);
+    const reservations =
+        await getReservations();
+
+
+
+    const pets =
+        new Map();
+
+
+
+    reservations.forEach(
+        reservation => {
+
+            const dog =
+                reservation.dog;
+
+
+            if (
+                !dog?.name
+            ) {
+
+                return;
+            }
+
+
+
+            const ownerUid =
+                reservation.customer
+                    ?.uid
+                ||
+                "";
+
+
+            const ownerEmail =
+                reservation.customer
+                    ?.email
+                    ?.trim()
+                    .toLowerCase()
+                ||
+                "";
+
+
+
+            /*
+                Zelfde hondnaam bij twee klanten
+                mag uiteraard twee aparte honden
+                opleveren.
+            */
+
+            const ownerKey =
+                ownerUid
+                ||
+                ownerEmail
+                ||
+                "unknown";
+
+
+            const key =
+                `${ownerKey}|${dog.name.trim().toLowerCase()}`;
+
+
+
+            if (
+                !pets.has(
+                    key
+                )
+            ) {
+
+                pets.set(
+                    key,
+                    {
+
+                        id:
+                            key,
+
+                        name:
+                            dog.name
+                            ||
+                            "",
+
+                        breed:
+                            dog.breed
+                            ||
+                            "",
+
+                        age:
+                            dog.age
+                            ??
+                            null,
+
+                        weight:
+                            dog.weight
+                            ??
+                            null,
+
+                        notes:
+                            dog.notes
+                            ||
+                            "",
+
+                        owner: {
+
+                            uid:
+                                ownerUid,
+
+                            name:
+                                reservation.customer
+                                    ?.name
+                                ||
+                                "",
+
+                            email:
+                                ownerEmail,
+
+                            phone:
+                                reservation.customer
+                                    ?.phone
+                                ||
+                                ""
+                        },
+
+                        reservations:
+                            []
+                    }
+                );
+            }
+
+
+
+            const pet =
+                pets.get(
+                    key
+                );
+
+
+
+            /*
+                Nieuwste beschikbare gegevens
+                mogen oudere informatie
+                overschrijven.
+            */
+
+            if (
+                dog.breed
+            ) {
+
+                pet.breed =
+                    dog.breed;
+            }
+
+
+            if (
+                dog.age !==
+                undefined
+                &&
+                dog.age !==
+                null
+            ) {
+
+                pet.age =
+                    dog.age;
+            }
+
+
+            if (
+                dog.weight !==
+                undefined
+                &&
+                dog.weight !==
+                null
+            ) {
+
+                pet.weight =
+                    dog.weight;
+            }
+
+
+            if (
+                dog.notes
+            ) {
+
+                pet.notes =
+                    dog.notes;
+            }
+
+
+
+            pet.reservations.push(
+                reservation
+            );
+        }
+    );
+
+
+
+    const result =
+        Array.from(
+            pets.values()
+        );
+
+
+
+    result.sort(
+        (
+            a,
+            b
+        ) => {
+
+            return (
+                a.name
+                    .localeCompare(
+                        b.name,
+                        "nl"
+                    )
+            );
+        }
+    );
+
+
+
+    return result;
 }
 
 
 
-/* =========================================
-   LOGINSTATUS VOLGEN
-========================================= */
+/* =========================================================
+   HELPER — NIEUWSTE RESERVATIE
+========================================================= */
 
-export function watchAuthState(
-    callback
+function getNewestReservationMillis(
+    reservations
 ) {
 
-    return onAuthStateChanged(
-        auth,
-        callback
+    let newest =
+        0;
+
+
+
+    reservations.forEach(
+        reservation => {
+
+            const created =
+                reservation
+                    .createdAt
+                    ?.toMillis?.()
+                ||
+                0;
+
+
+            if (
+                created >
+                newest
+            ) {
+
+                newest =
+                    created;
+            }
+        }
     );
+
+
+
+    return newest;
 }

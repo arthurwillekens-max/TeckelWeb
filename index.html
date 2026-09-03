@@ -2,776 +2,2518 @@
 <html lang="nl">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>TeckelWeb | Hondenopvang</title>
+    <meta name="description" content="TeckelWeb - persoonlijke dagopvang en overnachting voor honden.">
+
+    <title>
+        TeckelWeb | Hondenopvang
+    </title>
 
     <link rel="stylesheet" href="css/style.css">
+
 </head>
+
 
 <body>
 
-    <header class="site-header">
-        <nav class="navbar">
 
-            <a href="#home" class="logo">
-                TeckelWeb
-            </a>
+    <!-- =====================================================
+         PUBLIEKE WEBSITE
+    ====================================================== -->
 
-            <div class="nav-links">
+    <div id="public-site">
 
-                <a href="#over">
-                    Over de opvang
-                </a>
 
-                <a href="#prijzen">
-                    Diensten & prijzen
-                </a>
+        <!-- =================================================
+             HEADER
+        ================================================== -->
 
-                <a href="#kalender">
-                    Beschikbaarheid
-                </a>
+        <header class="tw-header">
 
-                <a href="mijn-reservaties.html">
-                    Mijn reservaties
-                </a>
+            <div class="tw-header-inner">
 
-            </div>
 
-            <a href="#afspraak" class="nav-button">
-                Afspraak maken
-            </a>
+                <!-- BRAND -->
 
-        </nav>
-    </header>
+                <a href="#home" class="tw-brand">
 
-    <main>
+                    <span class="tw-brand-mark">
+                        T
+                    </span>
 
-        <!-- HERO -->
-        <section id="home" class="hero">
 
-            <div class="hero-content">
+                    <span class="tw-brand-text">
 
-                <p class="hero-label">
-                    Hondenopvang met persoonlijke zorg
-                </p>
-
-                <h2>
-                    Een rustige en vertrouwde plek voor uw hond
-                </h2>
-
-                <p class="hero-text">
-                    Dagopvang en overnachting in een veilige, huiselijke omgeving.
-                </p>
-
-                <div class="hero-buttons">
-
-                    <a href="#afspraak" class="button-primary">
-                        Afspraak maken
-                    </a>
-
-                    <a href="#kalender" class="button-secondary">
-                        Bekijk beschikbaarheid
-                    </a>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- OVER DE OPVANG -->
-        <section id="over" class="about">
-
-            <div class="about-content">
-
-                <p class="section-label">
-                    Over de opvang
-                </p>
-
-                <h2>
-                    Persoonlijke opvang in een rustige omgeving
-                </h2>
-
-                <p class="about-text">
-                    Elke hond krijgt hier de aandacht, rust en verzorging die hij nodig heeft.
-                    We zorgen voor een huiselijke omgeving waar uw hond zich veilig en comfortabel kan voelen.
-                </p>
-
-                <div class="about-features">
-
-                    <div class="about-feature">
-                        <h3>Persoonlijke zorg</h3>
-                        <p>Aandacht voor het karakter en de behoeften van elke hond.</p>
-                    </div>
-
-                    <div class="about-feature">
-                        <h3>Rustige omgeving</h3>
-                        <p>Een veilige en aangename plek voor dagopvang en overnachting.</p>
-                    </div>
-
-                    <div class="about-feature">
-                        <h3>Flexibele opvang</h3>
-                        <p>Bekijk eenvoudig de beschikbaarheid en kies zelf uw periode.</p>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- DIENSTEN EN PRIJZEN -->
-        <section id="prijzen" class="services">
-
-            <div class="services-content">
-
-                <p class="section-label">
-                    Diensten & prijzen
-                </p>
-
-                <h2>
-                    Kies de opvang die bij uw hond past
-                </h2>
-
-                <p class="services-intro">
-                    Eenvoudige en duidelijke formules voor dagopvang en overnachting.
-                </p>
-
-                <div class="services-grid">
-
-                    <div class="service-card">
-
-                        <div class="service-image-placeholder">
-                            Foto
-                        </div>
-
-                        <h3>Dagopvang</h3>
-
-                        <p>
-                            Uw hond verblijft overdag in een rustige en veilige omgeving.
-                        </p>
-
-                        <div class="service-price">
-                            Vanaf €25 / dag
-                        </div>
-
-                    </div>
-
-
-                    <div class="service-card">
-
-                        <div class="service-image-placeholder">
-                            Foto
-                        </div>
-
-                        <h3>Overnachting</h3>
-
-                        <p>
-                            Opvang met overnachting voor één of meerdere dagen.
-                        </p>
-
-                        <div class="service-price">
-                            Vanaf €35 / nacht
-                        </div>
-
-                    </div>
-
-
-                    <div class="service-card">
-
-                        <div class="service-image-placeholder">
-                            Foto
-                        </div>
-
-                        <h3>Lang verblijf</h3>
-
-                        <p>
-                            Voor langere verblijven bekijken we samen de beste formule.
-                        </p>
-
-                        <div class="service-price">
-                            Prijs op aanvraag
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- BESCHIKBAARHEID + AFSPRAAK -->
-        <section id="kalender" class="availability">
-
-            <div class="availability-content">
-
-                <p class="section-label">Beschikbaarheid</p>
-
-                <h2>Bekijk wanneer er nog plaats is</h2>
-
-                <p class="availability-intro">
-                    Bekijk de beschikbaarheid en kies daarna rechtstreeks uw periode.
-                </p>
-
-
-                <!-- KALENDER + DETAILS -->
-                <div class="calendar-layout">
-
-                    <div class="calendar">
-
-                        <div class="calendar-header">
-
-                            <h3 id="calendar-month-title">
-                                September 2026
-                            </h3>
-
-                            <div class="calendar-navigation">
-
-                                <button id="calendar-prev" class="calendar-arrow" type="button"
-                                    aria-label="Vorige maand">
-                                    ‹
-                                </button>
-
-                                <button id="calendar-next" class="calendar-arrow" type="button"
-                                    aria-label="Volgende maand">
-                                    ›
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="calendar-weekdays">
-                            <div>Ma</div>
-                            <div>Di</div>
-                            <div>Wo</div>
-                            <div>Do</div>
-                            <div>Vr</div>
-                            <div>Za</div>
-                            <div>Zo</div>
-                        </div>
-
-
-                        <div class="calendar-grid" id="calendar-grid">
-                        </div>
-
-
-                        <div class="calendar-legend">
-
-                            <div class="legend-item">
-                                <span class="legend-color legend-available"></span>
-                                Beschikbaar
-                            </div>
-
-                            <div class="legend-item">
-                                <span class="legend-color legend-limited"></span>
-                                Beperkt
-                            </div>
-
-                            <div class="legend-item">
-                                <span class="legend-color legend-full"></span>
-                                Vol
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- DETAILS VAN DE DAG -->
-                    <aside class="day-details">
-
-                        <p class="day-details-label">
-                            Geselecteerde dag
-                        </p>
-
-                        <h3 id="selected-date">
-                            Dinsdag 15 september
-                        </h3>
-
-                        <p class="day-status limited-status">
-                            Beperkt beschikbaar
-                        </p>
-
-
-                        <div class="time-slots">
-
-                            <div class="time-slot available-time">
-                                <div>
-                                    <strong>08:00 – 12:00</strong>
-                                    <span>Beschikbaar</span>
-                                </div>
-                            </div>
-
-                            <div class="time-slot unavailable-time">
-                                <div>
-                                    <strong>12:00 – 14:00</strong>
-                                    <span>Niet beschikbaar</span>
-                                </div>
-                            </div>
-
-                            <div class="time-slot available-time">
-                                <div>
-                                    <strong>14:00 – 18:00</strong>
-                                    <span>Beschikbaar</span>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <a href="#afspraak" class="button-primary day-select-button">
-                            Kies deze dag
-                        </a>
-
-                    </aside>
-
-                </div>
-
-
-                <!-- AFSPRAAK DIRECT ONDER KALENDER -->
-                <div id="afspraak" class="booking-controls">
-
-                    <div class="booking-controls-header">
-
-                        <div>
-                            <p class="booking-step">Afspraak maken</p>
-
-                            <h3>Kies uw verblijfsperiode</h3>
-
-                            <p>
-                                Selecteer uw data en vul daarna de gewenste uren in.
-                            </p>
-                        </div>
-
-                    </div>
-
-
-                    <div class="booking-period-grid">
-
-                        <div class="booking-field">
-                            <label for="start-date">Startdatum</label>
-                            <input type="date" id="start-date">
-                        </div>
-
-                        <div class="booking-field">
-                            <label for="end-date">Einddatum</label>
-                            <input type="date" id="end-date">
-                        </div>
-
-                        <div class="booking-field">
-                            <label for="arrival-time">Aankomstuur</label>
-                            <select id="arrival-time">
-                                <option value="">Kies aankomstuur</option>
-                                <option value="08:00">08:00</option>
-                                <option value="09:00">09:00</option>
-                                <option value="10:00">10:00</option>
-                                <option value="11:00">11:00</option>
-                                <option value="12:00">12:00</option>
-                                <option value="13:00">13:00</option>
-                                <option value="14:00">14:00</option>
-                                <option value="15:00">15:00</option>
-                                <option value="16:00">16:00</option>
-                                <option value="17:00">17:00</option>
-                                <option value="18:00">18:00</option>
-                            </select>
-                        </div>
-
-                        <div class="booking-field">
-                            <label for="departure-time">Vertrekuur</label>
-                            <select id="departure-time">
-                                <option value="">Kies vertrekuur</option>
-                                <option value="08:00">08:00</option>
-                                <option value="09:00">09:00</option>
-                                <option value="10:00">10:00</option>
-                                <option value="11:00">11:00</option>
-                                <option value="12:00">12:00</option>
-                                <option value="13:00">13:00</option>
-                                <option value="14:00">14:00</option>
-                                <option value="15:00">15:00</option>
-                                <option value="16:00">16:00</option>
-                                <option value="17:00">17:00</option>
-                                <option value="18:00">18:00</option>
-                            </select>
-                        </div>
-
-                    </div>
-
-
-                    <div class="booking-type-row">
-
-                        <label class="booking-choice">
-                            <input type="radio" name="booking-type" value="daycare">
-
-                            <span>
-                                <strong>Dagopvang</strong>
-                                <small>Zonder overnachting</small>
-                            </span>
-                        </label>
-
-
-                        <label class="booking-choice">
-                            <input type="radio" name="booking-type" value="overnight">
-
-                            <span>
-                                <strong>Met overnachting</strong>
-                                <small>Voor één of meerdere nachten</small>
-                            </span>
-                        </label>
-
-                    </div>
-
-
-                    <div class="booking-action">
-
-                        <div class="booking-selection">
-                            <span>Geselecteerde periode</span>
-
-                            <strong id="selected-period">
-                                Nog geen periode gekozen
-                            </strong>
-                        </div>
-
-
-                        <button type="button" id="calculate-price" class="calculate-button">
-                            Controleer & bereken prijs
-                        </button>
-
-                    </div>
-
-
-                    <!-- MELDING -->
-                    <div id="booking-message" class="booking-message">
-                    </div>
-
-
-                    <!-- PRIJS -->
-                    <!-- PRIJS -->
-                    <div id="price-result" class="price-result" hidden>
-
-                        <span>
-                            Geschatte prijs
-                        </span>
-
-                        <strong id="price-value">
-                            €0
+                        <strong>
+                            TeckelWeb
                         </strong>
 
+                        <small>
+                            Hondenopvang
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+
+                <!-- NAVIGATIE -->
+
+                <nav class="tw-navigation">
+
+                    <a href="#services">
+                        Diensten
+                    </a>
+
+                    <a href="#about">
+                        Over ons
+                    </a>
+
+                    <a href="#reviews">
+                        Ervaringen
+                    </a>
+
+                    <a href="#contact">
+                        Contact
+                    </a>
+
+                </nav>
+
+
+
+                <!-- RECHTS -->
+
+                <div class="tw-header-actions">
+
+                    <a href="mijn-reservaties.html" class="tw-account-link">
+                        Mijn account
+                    </a>
+
+
+                    <button type="button" id="open-booking" class="tw-book-button">
+                        Boek nu
+                    </button>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+
+        <!-- =================================================
+             MAIN WEBSITE
+        ================================================== -->
+
+        <main>
+
+
+            <!-- =================================================
+                 HERO
+            ================================================== -->
+
+            <section id="home" class="tw-hero">
+
+                <div class="tw-hero-inner">
+
+
+                    <!-- TEKST -->
+
+                    <div class="tw-hero-content">
+
+                        <span class="tw-eyebrow">
+                            Persoonlijke hondenopvang
+                        </span>
+
+
+                        <h1>
+                            Een vertrouwde plek voor uw hond.
+                        </h1>
+
+
+                        <p class="tw-hero-intro">
+
+                            Dagopvang en overnachting
+                            in een rustige, veilige en
+                            persoonlijke omgeving.
+
+                        </p>
+
+
+
+                        <div class="tw-hero-actions">
+
+                            <button type="button" class="tw-primary-button" data-open-booking>
+                                Boek een verblijf
+                            </button>
+
+
+                            <a href="#services" class="tw-secondary-button">
+                                Bekijk diensten
+                            </a>
+
+                        </div>
+
+
+
+                        <!-- TRUST -->
+
+                        <div class="tw-hero-trust">
+
+
+                            <div>
+
+                                <strong>
+                                    Persoonlijke zorg
+                                </strong>
+
+                                <span>
+                                    Aandacht voor iedere hond.
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    Rustige omgeving
+                                </strong>
+
+                                <span>
+                                    Veilig en huiselijk verblijf.
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    Online geregeld
+                                </strong>
+
+                                <span>
+                                    Aanvragen en opvolgen via uw account.
+                                </span>
+
+                            </div>
+
+                        </div>
+
                     </div>
 
 
-                    <!-- GEGEVENS VOOR RESERVATIE -->
-                    <div id="booking-details" class="booking-details" hidden>
 
-                        <div class="booking-details-header">
+                    <!-- FOTO -->
 
-                            <p class="booking-step">
-                                Stap 2
-                            </p>
+                    <div class="tw-hero-visual">
+
+                        <div class="tw-hero-photo-placeholder">
+
+                            <span>
+                                Foto van de opvang / honden
+                            </span>
+
+                        </div>
+
+
+                        <div class="tw-floating-card">
+
+                            <span class="tw-floating-icon">
+                                ✓
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Online reserveren
+                                </strong>
+
+                                <small>
+                                    In enkele stappen aangevraagd
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 DIENSTEN
+            ================================================== -->
+
+            <section id="services" class="tw-section tw-services-section">
+
+                <div class="tw-section-inner">
+
+
+                    <div class="tw-section-heading">
+
+                        <span class="tw-eyebrow">
+                            Onze opvang
+                        </span>
+
+
+                        <h2>
+                            Kies de opvang die bij uw hond past.
+                        </h2>
+
+
+                        <p>
+
+                            Boek eenvoudig dagopvang
+                            of een verblijf met overnachting.
+
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="tw-service-grid">
+
+
+                        <!-- DAGOPVANG -->
+
+                        <article class="tw-service-card">
+
+
+                            <div class="tw-service-icon">
+                                ☀
+                            </div>
+
+
+                            <div class="tw-service-content">
+
+                                <h3>
+                                    Dagopvang
+                                </h3>
+
+
+                                <p>
+
+                                    Uw hond verblijft overdag
+                                    bij ons en wordt dezelfde
+                                    dag opnieuw opgehaald.
+
+                                </p>
+
+
+                                <ul>
+
+                                    <li>
+                                        Flexibele opvangdagen
+                                    </li>
+
+                                    <li>
+                                        Persoonlijke aandacht
+                                    </li>
+
+                                    <li>
+                                        Rust- en speelmomenten
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+
+
+                            <div class="tw-service-footer">
+
+                                <div>
+
+                                    <span>
+                                        Vanaf
+                                    </span>
+
+                                    <strong>
+                                        €25
+                                    </strong>
+
+                                    <small>
+                                        / dag
+                                    </small>
+
+                                </div>
+
+
+                                <button type="button" class="tw-service-book" data-booking-type="daycare">
+                                    Boek dagopvang
+                                </button>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- OVERNACHTING -->
+
+                        <article class="tw-service-card featured">
+
+
+                            <div class="tw-service-badge">
+                                Populair
+                            </div>
+
+
+                            <div class="tw-service-icon">
+                                ☾
+                            </div>
+
+
+                            <div class="tw-service-content">
+
+                                <h3>
+                                    Overnachting
+                                </h3>
+
+
+                                <p>
+
+                                    Uw hond verblijft één
+                                    of meerdere nachten
+                                    in onze opvang.
+
+                                </p>
+
+
+                                <ul>
+
+                                    <li>
+                                        Huiselijke slaapplaats
+                                    </li>
+
+                                    <li>
+                                        Dagelijkse verzorging
+                                    </li>
+
+                                    <li>
+                                        Voeding volgens eigen schema
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+
+
+                            <div class="tw-service-footer">
+
+                                <div>
+
+                                    <span>
+                                        Vanaf
+                                    </span>
+
+                                    <strong>
+                                        €35
+                                    </strong>
+
+                                    <small>
+                                        / nacht
+                                    </small>
+
+                                </div>
+
+
+                                <button type="button" class="tw-service-book" data-booking-type="boarding">
+                                    Boek overnachting
+                                </button>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 HOE HET WERKT
+            ================================================== -->
+
+            <section class="tw-section tw-process-section">
+
+                <div class="tw-section-inner">
+
+
+                    <div class="tw-section-heading centered">
+
+                        <span class="tw-eyebrow">
+                            Online reserveren
+                        </span>
+
+
+                        <h2>
+                            In enkele stappen geregeld.
+                        </h2>
+
+                    </div>
+
+
+
+                    <div class="tw-process-grid">
+
+
+                        <article>
+
+                            <span class="tw-process-number">
+                                1
+                            </span>
 
                             <h3>
-                                Uw gegevens
+                                Kies de opvang
                             </h3>
 
                             <p>
-                                Koppel uw Google-account en vul daarna
-                                de gegevens van uzelf en uw hond in.
+                                Dagopvang of overnachting.
                             </p>
 
-                        </div>
-
-
-                        <!-- GOOGLE-ACCOUNT -->
-
-                        <div id="booking-google-account" class="booking-google-account">
-
-                            <div class="booking-google-info">
-
-                                <span class="booking-google-label">
-                                    Google-account
-                                </span>
-
-                                <strong id="booking-google-email">
-                                    Nog niet gekoppeld
-                                </strong>
-
-                                <small id="booking-google-help">
-                                    Log in met het Google-account waarmee u
-                                    later uw reservaties wilt bekijken.
-                                </small>
-
-                            </div>
-
-
-                            <button type="button" id="booking-google-login" class="booking-google-button">
-                                Doorgaan met Google
-                            </button>
-
-                        </div>
+                        </article>
 
 
 
-                        <div class="booking-details-grid">
+                        <article>
 
-                            <!-- NAAM -->
-                            <div class="booking-field">
+                            <span class="tw-process-number">
+                                2
+                            </span>
 
-                                <label for="customer-name">
-                                    Naam
-                                </label>
+                            <h3>
+                                Kies uw hond
+                            </h3>
 
-                                <input type="text" id="customer-name" placeholder="Voor- en achternaam">
+                            <p>
+                                Selecteer een bestaande hond
+                                of voeg een nieuwe toe.
+                            </p>
 
-                            </div>
-
-
-                            <!-- GOOGLE E-MAIL -->
-                            <div class="booking-field">
-
-                                <label for="customer-email">
-                                    E-mailadres
-                                </label>
-
-                                <input type="email" id="customer-email" placeholder="Log eerst in met Google" readonly>
-
-                                <small class="booking-field-help">
-                                    Wordt automatisch ingevuld via uw Google-account.
-                                </small>
-
-                            </div>
+                        </article>
 
 
-                            <!-- TELEFOON -->
-                            <div class="booking-field">
 
-                                <label for="customer-phone">
-                                    Telefoonnummer
-                                </label>
+                        <article>
 
-                                <input type="tel" id="customer-phone" placeholder="+32 ...">
+                            <span class="tw-process-number">
+                                3
+                            </span>
 
-                            </div>
+                            <h3>
+                                Kies uw data
+                            </h3>
 
+                            <p>
+                                Bekijk onmiddellijk
+                                de beschikbaarheid.
+                            </p>
 
-                            <!-- HOND -->
-                            <div class="booking-field">
-
-                                <label for="dog-name">
-                                    Naam hond
-                                </label>
-
-                                <input type="text" id="dog-name" placeholder="Naam van uw hond">
-
-                            </div>
-
-                        </div>
-
-                        <div class="booking-field booking-notes">
-
-                            <label for="booking-notes">
-                                Opmerkingen
-                            </label>
-
-                            <textarea id="booking-notes" rows="4"
-                                placeholder="Bijzonderheden, medicatie, voeding, gedrag..."></textarea>
-
-                        </div>
+                        </article>
 
 
-                        <button type="button" id="submit-booking" class="submit-booking-button">
-                            Reservatie aanvragen
-                        </button>
+
+                        <article>
+
+                            <span class="tw-process-number">
+                                4
+                            </span>
+
+                            <h3>
+                                Wij bevestigen
+                            </h3>
+
+                            <p>
+                                Uw aanvraag wordt door
+                                TeckelWeb gecontroleerd.
+                            </p>
+
+                        </article>
 
                     </div>
 
                 </div>
 
-            </div>
-
-        </section>
+            </section>
 
 
-        <!-- REVIEWS -->
-        <section id="reviews" class="reviews">
-
-            <div class="reviews-content">
-
-                <p class="section-label">
-                    Ervaringen
-                </p>
-
-                <h2>
-                    Wat baasjes over de opvang zeggen
-                </h2>
-
-                <p class="reviews-intro">
-                    Een vertrouwde plek voor hond én baasje.
-                </p>
 
 
-                <div class="reviews-grid">
+            <!-- =================================================
+                 OVER ONS
+            ================================================== -->
 
-                    <article class="review-card">
+            <section id="about" class="tw-section tw-about-section">
 
-                        <div class="review-stars">
-                            ★★★★★
+                <div class="tw-section-inner tw-about-layout">
+
+
+                    <div class="tw-about-photo">
+
+                        <div class="tw-about-photo-placeholder">
+
+                            Foto van de opvang
+
                         </div>
 
-                        <p class="review-text">
-                            “Hier komt later een korte review van een klant.”
+                    </div>
+
+
+
+                    <div class="tw-about-content">
+
+                        <span class="tw-eyebrow">
+                            Over TeckelWeb
+                        </span>
+
+
+                        <h2>
+                            Persoonlijke opvang in plaats van massale kennelopvang.
+                        </h2>
+
+
+                        <p>
+
+                            Elke hond heeft zijn eigen karakter,
+                            gewoonten en behoeften. Daarom houden
+                            we de opvang bewust persoonlijk
+                            en overzichtelijk.
+
                         </p>
 
-                        <p class="review-author">
-                            — Naam klant
-                        </p>
-
-                    </article>
 
 
-                    <article class="review-card">
+                        <div class="tw-about-points">
 
-                        <div class="review-stars">
-                            ★★★★★
+
+                            <div>
+
+                                <strong>
+                                    Rust
+                                </strong>
+
+                                <span>
+                                    Een rustige omgeving met voldoende
+                                    momenten om te ontspannen.
+                                </span>
+
+                            </div>
+
+
+
+                            <div>
+
+                                <strong>
+                                    Zorg op maat
+                                </strong>
+
+                                <span>
+                                    Voeding, medicatie en bijzonderheden
+                                    worden vooraf meegegeven.
+                                </span>
+
+                            </div>
+
+
+
+                            <div>
+
+                                <strong>
+                                    Transparantie
+                                </strong>
+
+                                <span>
+                                    U kunt aanvragen en reservaties
+                                    eenvoudig online opvolgen.
+                                </span>
+
+                            </div>
+
                         </div>
 
-                        <p class="review-text">
-                            “Hier komt later een korte review van een klant.”
-                        </p>
-
-                        <p class="review-author">
-                            — Naam klant
-                        </p>
-
-                    </article>
-
-
-                    <article class="review-card">
-
-                        <div class="review-stars">
-                            ★★★★★
-                        </div>
-
-                        <p class="review-text">
-                            “Hier komt later een korte review van een klant.”
-                        </p>
-
-                        <p class="review-author">
-                            — Naam klant
-                        </p>
-
-                    </article>
+                    </div>
 
                 </div>
 
-            </div>
-
-        </section>
-
-    </main>
+            </section>
 
 
-    <footer class="site-footer">
 
-        <div class="footer-content">
 
-            <div class="footer-main">
+            <!-- =================================================
+                 REVIEWS
+            ================================================== -->
 
-                <div class="footer-about">
+            <section id="reviews" class="tw-section tw-review-section">
 
-                    <h3>TeckelWeb</h3>
+                <div class="tw-section-inner">
+
+
+                    <div class="tw-section-heading centered">
+
+                        <span class="tw-eyebrow">
+                            Ervaringen
+                        </span>
+
+
+                        <h2>
+                            Vertrouwd door honden en hun baasjes.
+                        </h2>
+
+                    </div>
+
+
+
+                    <div class="tw-review-grid">
+
+
+                        <article>
+
+                            <div class="tw-stars">
+                                ★★★★★
+                            </div>
+
+
+                            <p>
+
+                                “Hier komt later een echte
+                                beoordeling van een klant.”
+
+                            </p>
+
+
+                            <strong>
+                                Naam klant
+                            </strong>
+
+                        </article>
+
+
+
+                        <article>
+
+                            <div class="tw-stars">
+                                ★★★★★
+                            </div>
+
+
+                            <p>
+
+                                “Hier komt later een echte
+                                beoordeling van een klant.”
+
+                            </p>
+
+
+                            <strong>
+                                Naam klant
+                            </strong>
+
+                        </article>
+
+
+
+                        <article>
+
+                            <div class="tw-stars">
+                                ★★★★★
+                            </div>
+
+
+                            <p>
+
+                                “Hier komt later een echte
+                                beoordeling van een klant.”
+
+                            </p>
+
+
+                            <strong>
+                                Naam klant
+                            </strong>
+
+                        </article>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 CALL TO ACTION
+            ================================================== -->
+
+            <section class="tw-final-cta">
+
+                <div class="tw-final-cta-inner">
+
+
+                    <div>
+
+                        <span>
+                            Klaar om te reserveren?
+                        </span>
+
+
+                        <h2>
+                            Vind een geschikt moment voor uw hond.
+                        </h2>
+
+                    </div>
+
+
+                    <button type="button" class="tw-cta-button" data-open-booking>
+                        Boek een verblijf
+                    </button>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer id="contact" class="tw-footer">
+
+            <div class="tw-footer-inner">
+
+
+                <div class="tw-footer-brand">
+
+                    <strong>
+                        TeckelWeb
+                    </strong>
 
                     <p>
-                        Persoonlijke hondenopvang in een rustige en vertrouwde omgeving.
+                        Persoonlijke dagopvang en
+                        overnachting voor honden.
                     </p>
 
                 </div>
 
 
-                <div class="footer-contact">
 
-                    <h4>Contact</h4>
+                <div>
+
+                    <strong>
+                        Contact
+                    </strong>
 
                     <p>
                         Adres nog in te vullen
                     </p>
 
                     <p>
-                        0470 00 00 00
-                    </p>
-
-                    <p>
                         info@teckelweb.be
                     </p>
 
-                </div>
-
-
-                <div class="footer-hours">
-
-                    <h4>Openingsuren</h4>
-
                     <p>
-                        Ma – Vr: 08:00 – 18:00
-                    </p>
-
-                    <p>
-                        Weekend: op afspraak
+                        0470 00 00 00
                     </p>
 
                 </div>
 
 
-                <div class="footer-links">
 
-                    <h4>Snel naar</h4>
+                <div>
 
-                    <a href="#over">
-                        Over de opvang
-                    </a>
+                    <strong>
+                        Openingsuren
+                    </strong>
 
-                    <a href="#prijzen">
-                        Diensten & prijzen
-                    </a>
+                    <p>
+                        Maandag – vrijdag
+                    </p>
 
-                    <a href="#kalender">
-                        Beschikbaarheid
-                    </a>
+                    <p>
+                        08:00 – 18:00
+                    </p>
 
-                    <a href="#afspraak">
-                        Afspraak maken
-                    </a>
+                    <p>
+                        Weekend op afspraak
+                    </p>
+
+                </div>
+
+
+
+                <div>
+
+                    <strong>
+                        Account
+                    </strong>
+
 
                     <a href="mijn-reservaties.html">
                         Mijn reservaties
                     </a>
 
+
+                    <button type="button" data-open-booking>
+                        Nieuwe reservatie
+                    </button>
+
                 </div>
 
             </div>
 
 
-            <div class="footer-bottom">
 
-                <p>
+            <div class="tw-footer-bottom">
+
+                <span>
                     © 2026 TeckelWeb
-                </p>
+                </span>
 
-                <p>
-                    Alle rechten voorbehouden
-                </p>
+                <span>
+                    Privacy · Voorwaarden
+                </span>
 
             </div>
 
+        </footer>
+
+    </div>
+
+
+
+
+
+    <!-- =====================================================
+         ONLINE BOOKING APP
+    ====================================================== -->
+
+    <div id="booking-app" class="booking-app" hidden>
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="booking-app-header">
+
+
+            <div class="booking-app-header-inner">
+
+
+                <button type="button" id="booking-close" class="booking-close" aria-label="Sluiten">
+                    ×
+                </button>
+
+
+
+                <div class="booking-business">
+
+                    <span class="booking-business-logo">
+                        T
+                    </span>
+
+
+                    <div>
+
+                        <strong>
+                            TeckelWeb
+                        </strong>
+
+                        <small>
+                            Online reserveren
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="booking-progress-info">
+
+                    <span id="booking-progress-text">
+                        Aanmelden
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="booking-progress-bar">
+
+                <span id="booking-progress-fill" style="width: 5%;"></span>
+
+            </div>
+
+        </header>
+
+
+
+
+        <!-- =================================================
+             BOOKING CONTENT
+        ================================================== -->
+
+        <main class="booking-app-main">
+
+
+
+
+            <!-- =================================================
+                 STEP 0 — LOGIN
+            ================================================== -->
+
+            <section class="booking-step-screen active" data-step="0">
+
+                <div class="booking-step-container narrow">
+
+
+                    <div class="booking-step-heading">
+
+                        <span class="booking-step-label">
+                            Welkom
+                        </span>
+
+
+                        <h1>
+                            Reserveer bij TeckelWeb
+                        </h1>
+
+
+                        <p>
+
+                            Meld u aan zodat uw hondengegevens
+                            en reservaties aan uw account
+                            gekoppeld kunnen worden.
+
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="booking-login-card">
+
+
+                        <div class="booking-login-icon">
+                            T
+                        </div>
+
+
+                        <h2>
+                            Uw TeckelWeb-account
+                        </h2>
+
+
+                        <p>
+
+                            Gebruik uw Google-account om
+                            reservaties later opnieuw
+                            te bekijken en beheren.
+
+                        </p>
+
+
+
+                        <div class="booking-account-state">
+
+                            <span>
+                                Account
+                            </span>
+
+
+                            <strong id="booking-google-email">
+                                Nog niet ingelogd
+                            </strong>
+
+
+                            <small id="booking-google-help">
+                                Log in met Google om verder te gaan.
+                            </small>
+
+                        </div>
+
+
+
+                        <button type="button" id="booking-google-login" class="booking-google-login">
+
+                            <span class="google-icon">
+                                G
+                            </span>
+
+                            Doorgaan met Google
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 STEP 1 — TYPE
+            ================================================== -->
+
+            <section class="booking-step-screen" data-step="1" hidden>
+
+                <div class="booking-step-container">
+
+
+                    <div class="booking-step-heading">
+
+                        <span class="booking-step-label">
+                            Stap 1
+                        </span>
+
+
+                        <h1>
+                            Wat wilt u boeken?
+                        </h1>
+
+
+                        <p>
+                            Kies het type opvang.
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="booking-choice-grid">
+
+
+                        <!-- DAYCARE -->
+
+                        <button type="button" class="booking-care-card" data-care-type="daycare">
+
+                            <span class="booking-care-icon">
+                                ☀
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Dagopvang
+                                </strong>
+
+
+                                <p>
+
+                                    Kies één of meerdere dagen.
+                                    De dagen hoeven niet
+                                    opeenvolgend te zijn.
+
+                                </p>
+
+
+                                <small>
+                                    Vanaf €25 per dag
+                                </small>
+
+                            </div>
+
+
+                            <span class="booking-card-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+
+
+                        <!-- BOARDING -->
+
+                        <button type="button" class="booking-care-card" data-care-type="boarding">
+
+                            <span class="booking-care-icon">
+                                ☾
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Overnachting
+                                </strong>
+
+
+                                <p>
+
+                                    Kies een aankomstdatum
+                                    en een vertrekdatum.
+
+                                </p>
+
+
+                                <small>
+                                    Vanaf €35 per nacht
+                                </small>
+
+                            </div>
+
+
+                            <span class="booking-card-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 STEP 2 — HOND
+            ================================================== -->
+
+            <section class="booking-step-screen" data-step="2" hidden>
+
+                <div class="booking-step-container">
+
+
+                    <div class="booking-step-heading">
+
+                        <span class="booking-step-label">
+                            Stap 2
+                        </span>
+
+
+                        <h1>
+                            Voor welke hond boekt u?
+                        </h1>
+
+
+                        <p>
+
+                            Kies een hond uit uw eerdere
+                            reservaties of voeg een nieuwe hond toe.
+
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- BEKENDE HONDEN -->
+
+                    <div id="booking-pets-list" class="booking-pets-list">
+
+                        <div class="booking-pets-empty">
+
+                            <span class="booking-pet-placeholder">
+                                🐾
+                            </span>
+
+
+                            <strong>
+                                Nog geen hond gevonden
+                            </strong>
+
+
+                            <p>
+                                Voeg hieronder uw hond toe.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <button type="button" id="show-add-pet" class="booking-outline-button">
+                        + Nieuwe hond toevoegen
+                    </button>
+
+
+
+                    <!-- PET FORM -->
+
+                    <div id="booking-add-pet" class="booking-form-card">
+
+
+                        <div class="booking-form-card-header">
+
+                            <h2>
+                                Hondgegevens
+                            </h2>
+
+
+                            <p>
+                                Vul de belangrijkste gegevens in.
+                            </p>
+
+                        </div>
+
+
+
+                        <div class="booking-form-grid">
+
+
+                            <div class="booking-field">
+
+                                <label for="dog-name">
+                                    Naam hond *
+                                </label>
+
+
+                                <input type="text" id="dog-name" placeholder="Bobby">
+
+                            </div>
+
+
+
+                            <div class="booking-field">
+
+                                <label for="dog-breed">
+                                    Ras
+                                </label>
+
+
+                                <input type="text" id="dog-breed" placeholder="Bijvoorbeeld Teckel">
+
+                            </div>
+
+
+
+                            <div class="booking-field">
+
+                                <label for="dog-age">
+                                    Leeftijd
+                                </label>
+
+
+                                <input type="number" id="dog-age" min="0" max="30" placeholder="3">
+
+                            </div>
+
+
+
+                            <div class="booking-field">
+
+                                <label for="dog-weight">
+                                    Gewicht
+                                </label>
+
+
+                                <div class="booking-input-unit">
+
+                                    <input type="number" id="dog-weight" min="0" step="0.1" placeholder="8.5">
+
+                                    <span>
+                                        kg
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="booking-field full">
+
+                                <label for="dog-notes">
+                                    Belangrijke informatie
+                                </label>
+
+
+                                <textarea id="dog-notes" rows="4"
+                                    placeholder="Allergieën, gedrag, bijzonderheden..."></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 STEP 3 — DATUM
+            ================================================== -->
+
+            <section class="booking-step-screen" data-step="3" hidden>
+
+                <div class="booking-step-container wide">
+
+
+                    <div class="booking-step-heading">
+
+                        <span class="booking-step-label">
+                            Stap 3
+                        </span>
+
+
+                        <h1>
+                            Kies uw verblijf
+                        </h1>
+
+
+                        <p>
+                            Alleen beschikbare dagen kunnen geselecteerd worden.
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="booking-date-layout">
+
+
+                        <!-- KALENDER -->
+
+                        <div class="booking-calendar-card">
+
+
+                            <div class="booking-calendar-header">
+
+
+                                <button type="button" id="calendar-prev" class="booking-calendar-arrow"
+                                    aria-label="Vorige maand">
+                                    ‹
+                                </button>
+
+
+                                <h2 id="calendar-month-title">
+                                    Kalender
+                                </h2>
+
+
+                                <button type="button" id="calendar-next" class="booking-calendar-arrow"
+                                    aria-label="Volgende maand">
+                                    ›
+                                </button>
+
+                            </div>
+
+
+
+                            <div class="booking-calendar-weekdays">
+
+                                <span>Ma</span>
+                                <span>Di</span>
+                                <span>Wo</span>
+                                <span>Do</span>
+                                <span>Vr</span>
+                                <span>Za</span>
+                                <span>Zo</span>
+
+                            </div>
+
+
+
+                            <div id="calendar-grid" class="booking-calendar-grid"></div>
+
+
+
+                            <div class="booking-calendar-legend">
+
+
+                                <span>
+
+                                    <i class="available"></i>
+
+                                    Beschikbaar
+
+                                </span>
+
+
+                                <span>
+
+                                    <i class="limited"></i>
+
+                                    Beperkt
+
+                                </span>
+
+
+                                <span>
+
+                                    <i class="full"></i>
+
+                                    Volzet
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- RECHTER SAMENVATTING -->
+
+                        <aside class="booking-date-summary">
+
+
+                            <span class="booking-summary-label">
+                                Uw selectie
+                            </span>
+
+
+                            <h3 id="selected-period">
+                                Nog geen datum gekozen
+                            </h3>
+
+
+
+                            <div class="booking-date-summary-row">
+
+                                <span>
+                                    Start
+                                </span>
+
+
+                                <strong id="booking-summary-start">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <div class="booking-date-summary-row">
+
+                                <span>
+                                    Einde
+                                </span>
+
+
+                                <strong id="booking-summary-end">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- DATABASE COMPATIBILITEIT -->
+
+                            <input type="date" id="start-date" hidden>
+
+
+                            <input type="date" id="end-date" hidden>
+
+                        </aside>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 STEP 4 — SERVICE
+            ================================================== -->
+
+            <section class="booking-step-screen" data-step="4" hidden>
+
+                <div class="booking-step-container">
+
+
+                    <div class="booking-step-heading">
+
+                        <span class="booking-step-label">
+                            Stap 4
+                        </span>
+
+
+                        <h1>
+                            Kies de opvangformule
+                        </h1>
+
+
+                        <p>
+                            Selecteer de formule voor deze reservatie.
+                        </p>
+
+                    </div>
+
+
+
+                    <div id="booking-service-options" class="booking-service-options">
+
+
+                        <!-- DAYCARE SERVICE -->
+
+                        <label class="booking-service-option" data-service-for="daycare">
+
+
+                            <input type="radio" name="booking-type" value="daycare">
+
+
+                            <div class="booking-service-radio">
+                            </div>
+
+
+                            <div class="booking-service-info">
+
+                                <strong>
+                                    Dagopvang
+                                </strong>
+
+
+                                <p>
+
+                                    Dagopvang met verzorging,
+                                    rust- en speelmomenten.
+
+                                </p>
+
+                            </div>
+
+
+                            <div class="booking-service-price">
+
+                                <strong>
+                                    €25
+                                </strong>
+
+                                <span>
+                                    / dag
+                                </span>
+
+                            </div>
+
+                        </label>
+
+
+
+                        <!-- BOARDING SERVICE -->
+
+                        <label class="booking-service-option" data-service-for="boarding">
+
+
+                            <input type="radio" name="booking-type" value="overnight">
+
+
+                            <div class="booking-service-radio">
+                            </div>
+
+
+                            <div class="booking-service-info">
+
+                                <strong>
+                                    Overnachting
+                                </strong>
+
+
+                                <p>
+
+                                    Verblijf met overnachting
+                                    en dagelijkse verzorging.
+
+                                </p>
+
+                            </div>
+
+
+                            <div class="booking-service-price">
+
+                                <strong>
+                                    €35
+                                </strong>
+
+                                <span>
+                                    / nacht
+                                </span>
+
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 STEP 5 — EXTRA'S
+            ================================================== -->
+
+            <section class="booking-step-screen" data-step="5" hidden>
+
+                <div class="booking-step-container">
+
+
+                    <div class="booking-step-heading">
+
+                        <span class="booking-step-label">
+                            Stap 5
+                        </span>
+
+
+                        <h1>
+                            Wilt u iets extra toevoegen?
+                        </h1>
+
+
+                        <p>
+                            Deze opties zijn volledig facultatief.
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="booking-addon-list">
+
+
+                        <!-- EXTRA WANDELING -->
+
+                        <label class="booking-addon-card">
+
+
+                            <input type="checkbox" name="booking-addon" value="extra-walk">
+
+
+                            <span class="booking-addon-check">
+                                ✓
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Extra wandeling
+                                </strong>
+
+                                <p>
+                                    Een extra individuele wandeling.
+                                </p>
+
+                            </div>
+
+
+                            <span class="booking-addon-price">
+                                + €8
+                            </span>
+
+                        </label>
+
+
+
+                        <!-- FOTO -->
+
+                        <label class="booking-addon-card">
+
+
+                            <input type="checkbox" name="booking-addon" value="photo-update">
+
+
+                            <span class="booking-addon-check">
+                                ✓
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Foto-update
+                                </strong>
+
+                                <p>
+                                    Een korte foto-update tijdens het verblijf.
+                                </p>
+
+                            </div>
+
+
+                            <span class="booking-addon-price">
+                                + €3
+                            </span>
+
+                        </label>
+
+
+
+                        <!-- SPEELMOMENT -->
+
+                        <label class="booking-addon-card">
+
+
+                            <input type="checkbox" name="booking-addon" value="individual-play">
+
+
+                            <span class="booking-addon-check">
+                                ✓
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Individueel speelmoment
+                                </strong>
+
+                                <p>
+                                    Extra persoonlijke activiteit.
+                                </p>
+
+                            </div>
+
+
+                            <span class="booking-addon-price">
+                                + €7
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+
+                    <button type="button" id="skip-addons" class="booking-text-button">
+                        Geen extra's toevoegen
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 STEP 6 — TIJDEN EN VERZORGING
+            ================================================== -->
+
+            <section class="booking-step-screen" data-step="6" hidden>
+
+                <div class="booking-step-container">
+
+
+                    <div class="booking-step-heading">
+
+                        <span class="booking-step-label">
+                            Stap 6
+                        </span>
+
+
+                        <h1>
+                            Aankomst en verzorging
+                        </h1>
+
+
+                        <p>
+                            Geef praktische informatie voor het verblijf.
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="booking-form-card">
+
+
+                        <!-- TIJDEN -->
+
+                        <div class="booking-form-section">
+
+                            <h2>
+                                Aankomst & vertrek
+                            </h2>
+
+
+                            <div class="booking-form-grid">
+
+
+                                <div class="booking-field">
+
+                                    <label for="arrival-time">
+                                        Aankomstuur *
+                                    </label>
+
+
+                                    <select id="arrival-time">
+
+                                        <option value="">
+                                            Kies een tijd
+                                        </option>
+
+                                        <option value="08:00">08:00</option>
+                                        <option value="09:00">09:00</option>
+                                        <option value="10:00">10:00</option>
+                                        <option value="11:00">11:00</option>
+                                        <option value="12:00">12:00</option>
+                                        <option value="13:00">13:00</option>
+                                        <option value="14:00">14:00</option>
+                                        <option value="15:00">15:00</option>
+                                        <option value="16:00">16:00</option>
+                                        <option value="17:00">17:00</option>
+                                        <option value="18:00">18:00</option>
+
+                                    </select>
+
+                                </div>
+
+
+
+                                <div class="booking-field">
+
+                                    <label for="departure-time">
+                                        Vertrekuur *
+                                    </label>
+
+
+                                    <select id="departure-time">
+
+                                        <option value="">
+                                            Kies een tijd
+                                        </option>
+
+                                        <option value="08:00">08:00</option>
+                                        <option value="09:00">09:00</option>
+                                        <option value="10:00">10:00</option>
+                                        <option value="11:00">11:00</option>
+                                        <option value="12:00">12:00</option>
+                                        <option value="13:00">13:00</option>
+                                        <option value="14:00">14:00</option>
+                                        <option value="15:00">15:00</option>
+                                        <option value="16:00">16:00</option>
+                                        <option value="17:00">17:00</option>
+                                        <option value="18:00">18:00</option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="booking-form-divider">
+                        </div>
+
+
+
+                        <!-- VOEDING -->
+
+                        <div class="booking-form-section">
+
+                            <h2>
+                                Voeding
+                            </h2>
+
+
+                            <div class="booking-form-grid">
+
+
+                                <div class="booking-field">
+
+                                    <label for="feeding-frequency">
+                                        Maaltijden
+                                    </label>
+
+
+                                    <select id="feeding-frequency">
+
+                                        <option value="">
+                                            Geen informatie
+                                        </option>
+
+                                        <option value="1">
+                                            1× per dag
+                                        </option>
+
+                                        <option value="2">
+                                            2× per dag
+                                        </option>
+
+                                        <option value="3">
+                                            3× per dag
+                                        </option>
+
+                                        <option value="custom">
+                                            Ander schema
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+
+                                <div class="booking-field">
+
+                                    <label for="food-source">
+                                        Voeding
+                                    </label>
+
+
+                                    <select id="food-source">
+
+                                        <option value="">
+                                            Kies
+                                        </option>
+
+                                        <option value="owner">
+                                            Eigen voeding meegebracht
+                                        </option>
+
+                                        <option value="facility">
+                                            Voeding van opvang
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+
+                                <div class="booking-field full">
+
+                                    <label for="feeding-notes">
+                                        Voedingsinstructies
+                                    </label>
+
+
+                                    <textarea id="feeding-notes" rows="3"
+                                        placeholder="Hoeveelheden, tijdstippen..."></textarea>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="booking-form-divider">
+                        </div>
+
+
+
+                        <!-- MEDICATIE -->
+
+                        <div class="booking-form-section">
+
+
+                            <div class="booking-toggle-heading">
+
+                                <div>
+
+                                    <h2>
+                                        Medicatie
+                                    </h2>
+
+                                    <p>
+                                        Heeft uw hond medicatie nodig?
+                                    </p>
+
+                                </div>
+
+
+                                <label class="booking-toggle">
+
+                                    <input type="checkbox" id="needs-medication">
+
+                                    <span>
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+
+                            <div id="medication-fields" class="booking-medication-fields" hidden>
+
+                                <div class="booking-field">
+
+                                    <label for="medication-notes">
+                                        Medicatie-instructies
+                                    </label>
+
+
+                                    <textarea id="medication-notes" rows="4"
+                                        placeholder="Naam, dosis, tijdstippen..."></textarea>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="booking-form-divider">
+                        </div>
+
+
+
+                        <!-- ALGEMENE OPMERKING -->
+
+                        <div class="booking-form-section">
+
+                            <h2>
+                                Extra opmerkingen
+                            </h2>
+
+
+                            <div class="booking-field">
+
+                                <label for="booking-notes">
+                                    Is er nog iets dat we moeten weten?
+                                </label>
+
+
+                                <textarea id="booking-notes" rows="4"
+                                    placeholder="Gedrag, gewoonten of andere bijzonderheden..."></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 STEP 7 — REVIEW
+            ================================================== -->
+
+            <section class="booking-step-screen" data-step="7" hidden>
+
+                <div class="booking-step-container wide">
+
+
+                    <div class="booking-step-heading">
+
+                        <span class="booking-step-label">
+                            Stap 7
+                        </span>
+
+
+                        <h1>
+                            Controleer uw aanvraag
+                        </h1>
+
+
+                        <p>
+                            Controleer alles voordat u de aanvraag verstuurt.
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="booking-review-layout">
+
+
+                        <!-- CONTACT -->
+
+                        <div>
+
+
+                            <div class="booking-form-card">
+
+
+                                <div class="booking-form-card-header">
+
+                                    <h2>
+                                        Uw gegevens
+                                    </h2>
+
+                                </div>
+
+
+
+                                <div class="booking-form-grid">
+
+
+                                    <div class="booking-field">
+
+                                        <label for="customer-name">
+                                            Naam *
+                                        </label>
+
+
+                                        <input type="text" id="customer-name" placeholder="Voor- en achternaam">
+
+                                    </div>
+
+
+
+                                    <div class="booking-field">
+
+                                        <label for="customer-email">
+                                            E-mailadres
+                                        </label>
+
+
+                                        <input type="email" id="customer-email" readonly>
+
+                                    </div>
+
+
+
+                                    <div class="booking-field full">
+
+                                        <label for="customer-phone">
+                                            Telefoonnummer *
+                                        </label>
+
+
+                                        <input type="tel" id="customer-phone" placeholder="+32 ...">
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <label class="booking-policy-check">
+
+                                <input type="checkbox" id="booking-policy">
+
+
+                                <span>
+
+                                    Ik ga akkoord met de
+                                    <a href="#">
+                                        reservatie- en annuleringsvoorwaarden
+                                    </a>.
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+
+                        <!-- RESERVATIE SAMENVATTING -->
+
+                        <aside class="booking-review-card">
+
+
+                            <div class="booking-review-header">
+
+                                <span>
+                                    Reservatieoverzicht
+                                </span>
+
+
+                                <strong>
+                                    TeckelWeb
+                                </strong>
+
+                            </div>
+
+
+
+                            <div id="booking-review-content">
+
+
+                                <div class="booking-review-row">
+
+                                    <span>
+                                        Hond
+                                    </span>
+
+                                    <strong id="review-dog">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+
+                                <div class="booking-review-row">
+
+                                    <span>
+                                        Dienst
+                                    </span>
+
+                                    <strong id="review-service">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+
+                                <div class="booking-review-row">
+
+                                    <span>
+                                        Periode
+                                    </span>
+
+                                    <strong id="review-dates">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+
+                                <div class="booking-review-row">
+
+                                    <span>
+                                        Tijden
+                                    </span>
+
+                                    <strong id="review-times">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+
+                                <div class="booking-review-row">
+
+                                    <span>
+                                        Extra's
+                                    </span>
+
+                                    <strong id="review-addons">
+                                        Geen
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="booking-review-total">
+
+                                <span>
+                                    Geschatte totaalprijs
+                                </span>
+
+
+                                <strong id="price-value">
+                                    €0
+                                </strong>
+
+                            </div>
+
+
+
+                            <button type="button" id="submit-booking" class="booking-submit-button">
+                                Reservatie aanvragen
+                            </button>
+
+
+
+                            <p class="booking-review-note">
+
+                                De reservatie is pas definitief
+                                wanneer TeckelWeb uw aanvraag
+                                heeft goedgekeurd.
+
+                            </p>
+
+                        </aside>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 STEP 8 — SUCCESS
+            ================================================== -->
+
+            <section class="booking-step-screen" data-step="8" hidden>
+
+                <div class="booking-step-container narrow">
+
+
+                    <div class="booking-confirmation">
+
+
+                        <div class="booking-confirmation-icon">
+                            ✓
+                        </div>
+
+
+                        <span class="booking-confirmation-status">
+                            Wacht op bevestiging
+                        </span>
+
+
+                        <h1>
+                            Uw aanvraag is ontvangen
+                        </h1>
+
+
+                        <p>
+
+                            TeckelWeb heeft uw aanvraag ontvangen.
+                            Na controle ontvangt u een definitieve
+                            bevestiging.
+
+                        </p>
+
+
+
+                        <div class="booking-confirmation-card">
+
+                            <span>
+                                Reservatie
+                            </span>
+
+
+                            <strong id="confirmation-summary">
+                                —
+                            </strong>
+
+                        </div>
+
+
+
+                        <div class="booking-confirmation-actions">
+
+
+                            <a href="mijn-reservaties.html" class="tw-primary-button">
+                                Mijn reservaties
+                            </a>
+
+
+                            <button type="button" id="finish-booking" class="tw-secondary-button">
+                                Terug naar website
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+
+
+        <!-- =================================================
+             ALGEMENE BOOKING MELDING
+        ================================================== -->
+
+        <div class="booking-step-container wide">
+
+            <div id="booking-message" class="booking-message" aria-live="polite"></div>
+
         </div>
 
-    </footer>
 
+
+
+        <!-- =================================================
+             BOTTOM NAVIGATION
+        ================================================== -->
+
+        <footer id="booking-navigation" class="booking-app-footer">
+
+            <div class="booking-app-footer-inner">
+
+
+                <button type="button" id="booking-back" class="booking-back-button" disabled>
+                    ← Terug
+                </button>
+
+
+
+                <div class="booking-footer-summary">
+
+                    <span id="booking-footer-label">
+                        Account
+                    </span>
+
+
+                    <strong id="booking-footer-value">
+                        Log in om te starten
+                    </strong>
+
+                </div>
+
+
+
+                <button type="button" id="booking-next" class="booking-next-button">
+                    Verder
+                </button>
+
+            </div>
+
+        </footer>
+
+    </div>
+
+
+
+
+    <!-- =====================================================
+         SCRIPT
+    ====================================================== -->
 
     <script type="module" src="js/script.js"></script>
 
