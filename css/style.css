@@ -16116,3 +16116,480 @@ a {
     }
 }
 
+
+
+/* =========================================================
+   =========================================================
+   TECKELWEB ADMIN V7
+   ENTITY DRAWERS / COMPLETION / SAFE TRASH
+   =========================================================
+   ========================================================= */
+
+
+/* =========================================================
+   CLIENTS + DOGS — FULL WIDTH WITH SLIDE-OUT DETAIL
+========================================================= */
+
+.tw-admin-body .admin-entity-layout {
+    display: block;
+    min-height: 0;
+    overflow: visible;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    background: white;
+    box-shadow: var(--admin-shadow);
+}
+
+.tw-admin-body .admin-entity-layout > .admin-directory-panel {
+    width: 100%;
+}
+
+.tw-admin-body .admin-entity-detail-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 880;
+    display: block;
+    border: 0;
+    background: rgba(35, 35, 40, 0.26);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.tw-admin-body .admin-entity-detail-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tw-admin-body .admin-entity-detail {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    width: min(540px, calc(100vw - 28px));
+    overflow-y: auto;
+    border: 0;
+    border-left: 1px solid var(--admin-border);
+    background: white;
+    box-shadow: -18px 0 45px rgba(30, 30, 35, 0.13);
+    transform: translateX(102%);
+    visibility: hidden;
+    transition:
+        transform 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.tw-admin-body .admin-entity-detail.open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.tw-admin-body .admin-entity-detail-close {
+    position: sticky;
+    top: 12px;
+    z-index: 12;
+    float: right;
+    width: 36px;
+    height: 36px;
+    margin: 12px 12px -48px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: white;
+    color: var(--admin-text-soft);
+    font-size: 23px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tw-admin-body .admin-entity-detail-close:hover {
+    border-color: var(--admin-orange-border);
+    background: var(--admin-orange-soft);
+    color: var(--admin-orange);
+}
+
+.tw-admin-body .admin-entity-detail-empty {
+    min-height: 100vh;
+    padding: 70px 40px;
+}
+
+.tw-admin-body .admin-entity-detail-header {
+    padding-top: 58px;
+}
+
+.tw-admin-body .admin-client-row {
+    min-height: 76px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+
+.tw-admin-body .admin-client-row:hover {
+    background: #fafafa;
+}
+
+.tw-admin-body .admin-client-row.selected {
+    background: #fff8f4;
+    box-shadow: inset 4px 0 0 var(--admin-orange);
+}
+
+.tw-admin-body .admin-pets-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tw-admin-body .admin-pet-profile-button {
+    min-height: 185px;
+}
+
+.tw-admin-body .admin-pet-profile-button:hover {
+    border-color: var(--admin-orange-border);
+    background: #fffdfb;
+}
+
+
+/* =========================================================
+   HISTORIEK — PENDING COMPLETION
+========================================================= */
+
+.tw-admin-body .admin-completion-panel {
+    overflow: hidden;
+    margin-bottom: 22px;
+    border: 1px solid #f0d5a6;
+    border-radius: 10px;
+    background: white;
+    box-shadow: var(--admin-shadow);
+}
+
+.tw-admin-body .admin-completion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 17px 19px;
+    border-bottom: 1px solid #f2dfbd;
+    background: #fffaf0;
+}
+
+.tw-admin-body .admin-completion-header h3,
+.tw-admin-body .admin-history-section-heading h3,
+.tw-admin-body .admin-trash-header h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 750;
+}
+
+.tw-admin-body .admin-completion-header p,
+.tw-admin-body .admin-trash-header p {
+    margin: 5px 0 0;
+    color: var(--admin-text-soft);
+    font-size: 11px;
+}
+
+.tw-admin-body .admin-completion-count,
+.tw-admin-body .admin-trash-count {
+    min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 17px;
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.tw-admin-body .admin-completion-count {
+    background: #f4c96f;
+    color: #704d0f;
+}
+
+.tw-admin-body .admin-completion-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.tw-admin-body .admin-completion-row {
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 1.2fr)
+        minmax(190px, 1fr)
+        90px
+        auto;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 17px;
+    border-bottom: 1px solid var(--admin-border);
+    background: white;
+}
+
+.tw-admin-body .admin-completion-row:last-child {
+    border-bottom: 0;
+}
+
+.tw-admin-body .admin-completion-row:hover {
+    background: #fffdf8;
+}
+
+.tw-admin-body .admin-completion-dog {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+}
+
+.tw-admin-body .admin-completion-dog > div:last-child,
+.tw-admin-body .admin-completion-customer {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.tw-admin-body .admin-completion-dog strong,
+.tw-admin-body .admin-completion-customer strong {
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-admin-body .admin-completion-dog span,
+.tw-admin-body .admin-completion-customer span {
+    overflow: hidden;
+    color: var(--admin-text-soft);
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-admin-body .admin-completion-price {
+    font-size: 12px;
+    text-align: right;
+}
+
+.tw-admin-body .admin-completion-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.tw-admin-body .admin-completion-confirm,
+.tw-admin-body .admin-completion-delete {
+    min-height: 36px;
+    padding: 0 11px;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.tw-admin-body .admin-completion-confirm {
+    border: 1px solid #75a985;
+    background: #edf8f0;
+    color: #4e825e;
+}
+
+.tw-admin-body .admin-completion-confirm:hover {
+    background: #e4f4e8;
+}
+
+.tw-admin-body .admin-completion-delete {
+    border: 1px solid #e3c3bd;
+    background: white;
+    color: var(--admin-red);
+}
+
+.tw-admin-body .admin-completion-delete:hover {
+    background: var(--admin-red-soft);
+}
+
+
+/* =========================================================
+   HISTORIEK — CONFIRMED MONTH
+========================================================= */
+
+.tw-admin-body .admin-history-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 25px;
+    margin: 27px 0 12px;
+}
+
+.tw-admin-body .admin-history-row-v7 {
+    grid-template-columns:
+        minmax(300px, 1.2fr)
+        minmax(240px, 0.9fr)
+        110px
+        95px;
+}
+
+.tw-admin-body .admin-history-list-head {
+    grid-template-columns:
+        minmax(300px, 1.2fr)
+        minmax(240px, 0.9fr)
+        110px;
+}
+
+.tw-admin-body .admin-history-undo {
+    min-height: 31px;
+    padding: 0 9px;
+    border: 1px solid var(--admin-border-strong);
+    border-radius: 6px;
+    background: white;
+    color: var(--admin-text-soft);
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tw-admin-body .admin-history-undo:hover {
+    border-color: var(--admin-orange);
+    color: var(--admin-orange);
+}
+
+
+/* =========================================================
+   PRULLENBAK
+========================================================= */
+
+.tw-admin-body .admin-trash-panel {
+    overflow: hidden;
+    margin-top: 24px;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    background: white;
+    box-shadow: var(--admin-shadow);
+}
+
+.tw-admin-body .admin-trash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 17px 19px;
+    border-bottom: 1px solid var(--admin-border);
+    background: #f8f8f9;
+}
+
+.tw-admin-body .admin-trash-count {
+    background: #e9e9eb;
+    color: #66666c;
+}
+
+.tw-admin-body .admin-trash-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.tw-admin-body .admin-trash-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 62px;
+    padding: 12px 17px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.tw-admin-body .admin-trash-row:last-child {
+    border-bottom: 0;
+}
+
+.tw-admin-body .admin-trash-row > div:first-child {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.tw-admin-body .admin-trash-row strong {
+    font-size: 11px;
+}
+
+.tw-admin-body .admin-trash-row span {
+    overflow: hidden;
+    color: var(--admin-text-soft);
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-admin-body .admin-trash-restore {
+    min-height: 34px;
+    padding: 0 11px;
+    border: 1px solid #bfd4c5;
+    border-radius: 7px;
+    background: #f2f9f4;
+    color: #4d815e;
+    font-size: 10px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.tw-admin-body .admin-trash-restore:hover {
+    background: #e8f5eb;
+}
+
+
+/* =========================================================
+   RESPONSIVE V7
+========================================================= */
+
+@media (max-width: 1150px) {
+
+    .tw-admin-body .admin-pets-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tw-admin-body .admin-completion-row {
+        grid-template-columns:
+            minmax(180px, 1fr)
+            minmax(160px, 0.9fr)
+            auto;
+    }
+
+    .tw-admin-body .admin-completion-price {
+        display: none;
+    }
+}
+
+@media (max-width: 780px) {
+
+    .tw-admin-body .admin-pets-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tw-admin-body .admin-completion-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .tw-admin-body .admin-completion-actions {
+        justify-content: flex-start;
+    }
+
+    .tw-admin-body .admin-history-section-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .tw-admin-body .admin-history-month-picker {
+        width: 100%;
+    }
+
+    .tw-admin-body .admin-history-row-v7 {
+        grid-template-columns: 1fr auto;
+    }
+
+    .tw-admin-body .admin-history-undo {
+        grid-column: 1 / -1;
+        width: fit-content;
+    }
+}
+
