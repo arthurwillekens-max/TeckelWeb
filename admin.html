@@ -16,133 +16,688 @@
 </head>
 
 
-<body>
+<body class="tw-admin-body">
 
 
-    <main class="admin-page">
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
 
+    <section class="admin-login">
 
-        <!-- =================================
-             LOGIN
-        ================================== -->
+        <div class="admin-login-card">
 
-        <section class="admin-login">
+            <div class="admin-login-brand">
 
-            <div class="admin-login-card">
-
-                <p class="section-label">
-                    Beheer
-                </p>
-
-                <h1>
-                    TeckelWeb beheer
-                </h1>
-
-                <p>
-                    Log in om reservaties en beschikbaarheid te beheren.
-                </p>
-
-
-                <button type="button" id="google-login" class="admin-login-button">
-                    Inloggen met Google
-                </button>
-
-
-                <p id="admin-message" class="admin-message"></p>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================
-             DASHBOARD
-        ================================== -->
-
-        <section id="admin-dashboard" class="admin-dashboard" hidden>
-
-
-            <!-- HEADER -->
-
-            <div class="admin-dashboard-header">
+                <div class="admin-login-logo">
+                    T
+                </div>
 
                 <div>
 
-                    <p class="section-label">
-                        Dashboard
-                    </p>
+                    <strong>
+                        TeckelWeb
+                    </strong>
 
-                    <h1>
-                        TeckelWeb beheer
-                    </h1>
+                    <span>
+                        Beheer
+                    </span>
 
-                    <p id="admin-user"></p>
+                </div>
+
+            </div>
+
+
+            <h1>
+                Welkom terug
+            </h1>
+
+
+            <p>
+                Meld u aan om reservaties, honden,
+                klanten en beschikbaarheid te beheren.
+            </p>
+
+
+            <button type="button" id="google-login" class="admin-login-button">
+                Inloggen met Google
+            </button>
+
+
+            <p id="admin-message" class="admin-message"></p>
+
+        </div>
+
+    </section>
+
+
+
+
+    <!-- =====================================================
+         ADMIN APP
+    ====================================================== -->
+
+    <div id="admin-dashboard" class="admin-app" hidden>
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="admin-sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="admin-sidebar-brand">
+
+                <div class="admin-brand-logo">
+                    T
+                </div>
+
+
+                <div class="admin-brand-copy">
+
+                    <strong>
+                        TeckelWeb
+                    </strong>
+
+                    <span>
+                        Hondenopvang
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- HOOFDNAVIGATIE -->
+
+            <nav class="admin-sidebar-navigation">
+
+
+                <div class="admin-nav-group">
+
+                    <span class="admin-nav-label">
+                        Beheer
+                    </span>
+
+
+                    <button type="button" class="admin-nav-item active" data-admin-view="overview">
+
+                        <span class="admin-nav-icon">
+                            ◫
+                        </span>
+
+                        <span>
+                            Overzicht
+                        </span>
+
+                    </button>
+
+
+                    <button type="button" class="admin-nav-item" data-admin-view="calendar">
+
+                        <span class="admin-nav-icon">
+                            □
+                        </span>
+
+                        <span>
+                            Kalender
+                        </span>
+
+                    </button>
+
+
+                    <button type="button" class="admin-nav-item" data-admin-view="requests">
+
+                        <span class="admin-nav-icon">
+                            ≡
+                        </span>
+
+                        <span>
+                            Reservatieaanvragen
+                        </span>
+
+
+                        <span id="sidebar-pending-count" class="admin-nav-badge">
+                            0
+                        </span>
+
+                    </button>
 
                 </div>
 
 
-                <button type="button" id="logout-button" class="admin-logout-button">
-                    Uitloggen
+
+                <div class="admin-nav-group">
+
+                    <span class="admin-nav-label">
+                        Klanten
+                    </span>
+
+
+                    <button type="button" class="admin-nav-item" data-admin-view="clients">
+
+                        <span class="admin-nav-icon">
+                            ♙
+                        </span>
+
+                        <span>
+                            Klanten
+                        </span>
+
+                    </button>
+
+
+                    <button type="button" class="admin-nav-item" data-admin-view="pets">
+
+                        <span class="admin-nav-icon">
+                            ♢
+                        </span>
+
+                        <span>
+                            Honden
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+
+                <div class="admin-nav-group">
+
+                    <span class="admin-nav-label">
+                        Configuratie
+                    </span>
+
+
+                    <button type="button" class="admin-nav-item" data-admin-view="settings">
+
+                        <span class="admin-nav-icon">
+                            ⚙
+                        </span>
+
+                        <span>
+                            Instellingen
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </nav>
+
+
+
+            <!-- ACCOUNT -->
+
+            <div class="admin-sidebar-account">
+
+                <div class="admin-account-avatar">
+                    A
+                </div>
+
+
+                <div class="admin-account-copy">
+
+                    <span>
+                        Beheerder
+                    </span>
+
+                    <strong id="admin-user">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <button type="button" id="logout-button" class="admin-account-logout" title="Uitloggen">
+                    ↗
                 </button>
 
             </div>
 
+        </aside>
 
 
-            <!-- =================================
-                 BESCHIKBAARHEID
-            ================================== -->
 
-            <div class="admin-availability">
 
-                <div class="admin-availability-header">
+        <!-- =================================================
+             MAIN
+        ================================================== -->
 
-                    <div>
+        <main class="admin-main">
 
-                        <h2>
-                            Beschikbaarheid
-                        </h2>
 
-                        <p>
-                            Stel hier in wanneer de opvang
-                            beschikbaar, beperkt beschikbaar
-                            of volzet is.
-                        </p>
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
+
+            <header class="admin-topbar">
+
+                <div>
+
+                    <span id="admin-page-eyebrow" class="admin-page-eyebrow">
+                        TeckelWeb
+                    </span>
+
+
+                    <h1 id="admin-page-title">
+                        Overzicht
+                    </h1>
+
+                </div>
+
+
+                <div class="admin-topbar-actions">
+
+
+                    <button type="button" id="admin-refresh" class="admin-topbar-secondary">
+                        Vernieuwen
+                    </button>
+
+
+                    <button type="button" id="admin-new-booking" class="admin-topbar-primary">
+                        + Nieuwe reservatie
+                    </button>
+
+                </div>
+
+            </header>
+
+
+
+
+            <!-- =================================================
+                 VIEW — OVERZICHT
+            ================================================== -->
+
+            <section class="admin-view active" data-view="overview">
+
+
+                <!-- KPI'S -->
+
+                <div class="admin-kpi-grid">
+
+
+                    <article class="admin-kpi-card">
+
+                        <div class="admin-kpi-header">
+
+                            <span>
+                                Nieuwe aanvragen
+                            </span>
+
+                            <span class="admin-kpi-icon pending">
+                                ≡
+                            </span>
+
+                        </div>
+
+
+                        <strong id="stat-pending">
+                            0
+                        </strong>
+
+
+                        <small>
+                            Wachten op beoordeling
+                        </small>
+
+                    </article>
+
+
+
+                    <article class="admin-kpi-card">
+
+                        <div class="admin-kpi-header">
+
+                            <span>
+                                Honden vandaag
+                            </span>
+
+                            <span class="admin-kpi-icon dogs">
+                                ♢
+                            </span>
+
+                        </div>
+
+
+                        <strong id="stat-today">
+                            0
+                        </strong>
+
+
+                        <small>
+                            Bevestigde verblijven
+                        </small>
+
+                    </article>
+
+
+
+                    <article class="admin-kpi-card">
+
+                        <div class="admin-kpi-header">
+
+                            <span>
+                                Aankomsten
+                            </span>
+
+                            <span class="admin-kpi-icon arrivals">
+                                ↓
+                            </span>
+
+                        </div>
+
+
+                        <strong id="stat-arrivals">
+                            0
+                        </strong>
+
+
+                        <small>
+                            Verwacht vandaag
+                        </small>
+
+                    </article>
+
+
+
+                    <article class="admin-kpi-card">
+
+                        <div class="admin-kpi-header">
+
+                            <span>
+                                Vertrekken
+                            </span>
+
+                            <span class="admin-kpi-icon departures">
+                                ↑
+                            </span>
+
+                        </div>
+
+
+                        <strong id="stat-departures">
+                            0
+                        </strong>
+
+
+                        <small>
+                            Ophalen vandaag
+                        </small>
+
+                    </article>
+
+                </div>
+
+
+
+                <!-- VANDAAG -->
+
+                <div class="admin-dashboard-grid">
+
+
+                    <!-- DAGOPERATIES -->
+
+                    <section class="admin-panel admin-today-panel">
+
+
+                        <div class="admin-panel-header">
+
+                            <div>
+
+                                <span class="admin-panel-label">
+                                    Vandaag
+                                </span>
+
+                                <h2 id="overview-today-title">
+                                    Dagoverzicht
+                                </h2>
+
+                            </div>
+
+
+                            <button type="button" class="admin-panel-link" data-go-view="calendar">
+                                Open kalender →
+                            </button>
+
+                        </div>
+
+
+
+                        <div class="admin-today-columns">
+
+
+                            <!-- AANKOMSTEN -->
+
+                            <div class="admin-today-column">
+
+                                <div class="admin-today-column-header">
+
+                                    <div>
+
+                                        <span class="admin-operation-dot arrival"></span>
+
+                                        <strong>
+                                            Aankomsten
+                                        </strong>
+
+                                    </div>
+
+
+                                    <span id="today-arrivals-count">
+                                        0
+                                    </span>
+
+                                </div>
+
+
+                                <div id="today-arrivals-list" class="admin-operation-list">
+
+                                    <div class="admin-empty-small">
+                                        Geen aankomsten.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- AANWEZIG -->
+
+                            <div class="admin-today-column">
+
+                                <div class="admin-today-column-header">
+
+                                    <div>
+
+                                        <span class="admin-operation-dot staying"></span>
+
+                                        <strong>
+                                            Aanwezig
+                                        </strong>
+
+                                    </div>
+
+
+                                    <span id="today-staying-count">
+                                        0
+                                    </span>
+
+                                </div>
+
+
+                                <div id="today-staying-list" class="admin-operation-list">
+
+                                    <div class="admin-empty-small">
+                                        Geen honden aanwezig.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- VERTREKKEN -->
+
+                            <div class="admin-today-column">
+
+                                <div class="admin-today-column-header">
+
+                                    <div>
+
+                                        <span class="admin-operation-dot departure"></span>
+
+                                        <strong>
+                                            Vertrekken
+                                        </strong>
+
+                                    </div>
+
+
+                                    <span id="today-departures-count">
+                                        0
+                                    </span>
+
+                                </div>
+
+
+                                <div id="today-departures-list" class="admin-operation-list">
+
+                                    <div class="admin-empty-small">
+                                        Geen vertrekken.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- PENDING -->
+
+                    <aside class="admin-panel admin-pending-preview">
+
+
+                        <div class="admin-panel-header">
+
+                            <div>
+
+                                <span class="admin-panel-label">
+                                    Online booking
+                                </span>
+
+                                <h2>
+                                    Nieuwe aanvragen
+                                </h2>
+
+                            </div>
+
+
+                            <button type="button" class="admin-panel-link" data-go-view="requests">
+                                Alles bekijken →
+                            </button>
+
+                        </div>
+
+
+                        <div id="overview-pending-list" class="admin-pending-preview-list">
+
+                            <div class="admin-empty-small">
+                                Geen nieuwe aanvragen.
+                            </div>
+
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 VIEW — KALENDER
+            ================================================== -->
+
+            <section class="admin-view" data-view="calendar" hidden>
+
+
+                <div class="admin-calendar-toolbar">
+
+
+                    <div class="admin-calendar-view-tabs">
+
+                        <button type="button" class="active" data-calendar-mode="day">
+                            Dag
+                        </button>
+
+
+                        <button type="button" data-calendar-mode="week">
+                            Week
+                        </button>
+
+
+                        <button type="button" data-calendar-mode="month">
+                            Maand
+                        </button>
+
+                    </div>
+
+
+                    <div class="admin-calendar-toolbar-actions">
+
+                        <button type="button" id="admin-calendar-today">
+                            Vandaag
+                        </button>
 
                     </div>
 
                 </div>
 
 
-                <div class="admin-availability-layout">
+
+                <div class="admin-calendar-workspace">
 
 
-                    <!-- KALENDER -->
+                    <!-- =========================================
+                         LINKER MINI-KALENDER
+                    ========================================== -->
 
-                    <div class="admin-calendar">
+                    <aside class="admin-calendar-sidebar">
+
 
                         <div class="admin-calendar-header">
+
+                            <button type="button" id="admin-calendar-prev" aria-label="Vorige maand">
+                                ‹
+                            </button>
+
 
                             <h3 id="admin-calendar-title">
                                 Kalender
                             </h3>
 
 
-                            <div class="admin-calendar-navigation">
-
-                                <button type="button" id="admin-calendar-prev" aria-label="Vorige maand">
-                                    ‹
-                                </button>
-
-
-                                <button type="button" id="admin-calendar-next" aria-label="Volgende maand">
-                                    ›
-                                </button>
-
-                            </div>
+                            <button type="button" id="admin-calendar-next" aria-label="Volgende maand">
+                                ›
+                            </button>
 
                         </div>
+
 
 
                         <div class="admin-calendar-weekdays">
@@ -161,233 +716,79 @@
                         <div id="admin-calendar-grid" class="admin-calendar-grid"></div>
 
 
-                        <div class="admin-availability-legend">
+
+                        <div class="admin-calendar-legend">
 
                             <span>
-                                <i class="admin-legend-dot available"></i>
+
+                                <i class="available"></i>
+
                                 Beschikbaar
+
                             </span>
 
+
                             <span>
-                                <i class="admin-legend-dot limited"></i>
+
+                                <i class="limited"></i>
+
                                 Beperkt
+
                             </span>
+
 
                             <span>
-                                <i class="admin-legend-dot full"></i>
+
+                                <i class="full"></i>
+
                                 Volzet
+
                             </span>
 
                         </div>
 
-                    </div>
 
 
+                        <!-- BESCHIKBAARHEID -->
 
-                    <!-- DAG AANPASSEN -->
+                        <div class="admin-availability-control">
 
-                    <aside class="admin-availability-editor">
-
-                        <!-- =====================================
-         GESELECTEERDE DAG
-    ====================================== -->
-
-                        <div class="admin-day-header">
-
-                            <div>
-
-                                <p class="section-label">
-                                    Geselecteerde dag
-                                </p>
-
-                                <h3 id="admin-selected-date">
-                                    Kies een dag
-                                </h3>
-
-                            </div>
-
-                        </div>
+                            <span class="admin-control-label">
+                                Beschikbaarheid
+                            </span>
 
 
-                        <!-- =====================================
-         DAGOVERZICHT
-    ====================================== -->
-
-                        <div id="admin-day-summary" class="admin-day-summary" hidden>
-
-                            <div class="admin-day-summary-item">
-
-                                <strong id="admin-day-confirmed-count">
-                                    0
-                                </strong>
-
-                                <span>
-                                    bevestigd
-                                </span>
-
-                            </div>
+                            <div class="admin-availability-segments">
 
 
-                            <div class="admin-day-summary-item pending">
-
-                                <strong id="admin-day-pending-count">
-                                    0
-                                </strong>
-
-                                <span>
-                                    aanvragen
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- =====================================
-         PLANNING
-    ====================================== -->
-
-                        <div id="admin-day-planning" class="admin-day-planning" hidden>
-
-                            <div class="admin-day-planning-header">
-
-                                <div>
-
-                                    <strong>
-                                        Dagplanning
-                                    </strong>
-
-                                    <span>
-                                        Bevestigde reservaties
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- TIJDAS -->
-
-                            <div class="admin-day-time-axis">
-
-                                <span>08</span>
-                                <span>09</span>
-                                <span>10</span>
-                                <span>11</span>
-                                <span>12</span>
-                                <span>13</span>
-                                <span>14</span>
-                                <span>15</span>
-                                <span>16</span>
-                                <span>17</span>
-                                <span>18</span>
-
-                            </div>
-
-
-                            <div id="admin-day-bookings" class="admin-day-bookings"></div>
-
-                        </div>
-
-
-                        <!-- =====================================
-         PENDING AANVRAGEN
-    ====================================== -->
-
-                        <div id="admin-day-pending" class="admin-day-pending" hidden>
-
-                            <div class="admin-day-pending-header">
-
-                                <strong>
-                                    Nog te beoordelen
-                                </strong>
-
-                                <span>
-                                    Aanvragen voor deze dag
-                                </span>
-
-                            </div>
-
-
-                            <div id="admin-day-pending-list" class="admin-day-pending-list"></div>
-
-                        </div>
-
-
-                        <!-- =====================================
-         BESCHIKBAARHEID
-    ====================================== -->
-
-                        <div class="admin-day-availability-settings">
-
-                            <div class="admin-day-section-title">
-
-                                <strong>
-                                    Beschikbaarheid
-                                </strong>
-
-                                <span>
-                                    Wat klanten op de kalender zien
-                                </span>
-
-                            </div>
-
-
-                            <div class="admin-status-options">
-
-
-                                <label class="admin-status-option">
+                                <label>
 
                                     <input type="radio" name="availability-status" value="available">
 
                                     <span>
-
-                                        <strong>
-                                            Beschikbaar
-                                        </strong>
-
-                                        <small>
-                                            Klanten kunnen deze dag aanvragen.
-                                        </small>
-
+                                        Beschikbaar
                                     </span>
 
                                 </label>
 
 
-                                <label class="admin-status-option">
+                                <label>
 
                                     <input type="radio" name="availability-status" value="limited">
 
                                     <span>
-
-                                        <strong>
-                                            Beperkt beschikbaar
-                                        </strong>
-
-                                        <small>
-                                            Er is nog plaats, maar beperkt.
-                                        </small>
-
+                                        Beperkt
                                     </span>
 
                                 </label>
 
 
-                                <label class="admin-status-option">
+                                <label>
 
                                     <input type="radio" name="availability-status" value="full">
 
                                     <span>
-
-                                        <strong>
-                                            Volzet
-                                        </strong>
-
-                                        <small>
-                                            Klanten kunnen deze dag niet selecteren.
-                                        </small>
-
+                                        Volzet
                                     </span>
 
                                 </label>
@@ -396,7 +797,7 @@
 
 
                             <button type="button" id="admin-save-availability" class="admin-save-availability" disabled>
-                                Beschikbaarheid opslaan
+                                Opslaan
                             </button>
 
 
@@ -406,163 +807,803 @@
 
                     </aside>
 
+
+
+                    <!-- =========================================
+                         DAGPLANNING
+                    ========================================== -->
+
+                    <section class="admin-schedule">
+
+
+                        <!-- HEADER -->
+
+                        <div class="admin-schedule-header">
+
+                            <div>
+
+                                <span class="admin-schedule-label">
+                                    Dagplanning
+                                </span>
+
+
+                                <h2 id="admin-selected-date">
+                                    Kies een dag
+                                </h2>
+
+                            </div>
+
+
+                            <div id="admin-day-summary" class="admin-schedule-summary" hidden>
+
+                                <span>
+
+                                    <strong id="admin-day-confirmed-count">
+                                        0
+                                    </strong>
+
+                                    bevestigd
+
+                                </span>
+
+
+                                <span class="pending">
+
+                                    <strong id="admin-day-pending-count">
+                                        0
+                                    </strong>
+
+                                    aanvragen
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- DAGPLANNING -->
+
+                        <div id="admin-day-planning" class="admin-day-planning" hidden>
+
+
+                            <div class="admin-schedule-legend">
+
+                                <span>
+
+                                    <i class="confirmed"></i>
+
+                                    Bevestigd
+
+                                </span>
+
+
+                                <span>
+
+                                    <i class="pending"></i>
+
+                                    Aanvraag
+
+                                </span>
+
+
+                                <span>
+
+                                    <i class="overnight"></i>
+
+                                    Overnachting
+
+                                </span>
+
+                            </div>
+
+
+
+                            <!-- VERTICALE DAG -->
+
+                            <div class="admin-day-agenda">
+
+
+                                <div class="admin-day-hours">
+
+                                    <span>08:00</span>
+                                    <span>09:00</span>
+                                    <span>10:00</span>
+                                    <span>11:00</span>
+                                    <span>12:00</span>
+                                    <span>13:00</span>
+                                    <span>14:00</span>
+                                    <span>15:00</span>
+                                    <span>16:00</span>
+                                    <span>17:00</span>
+                                    <span>18:00</span>
+
+                                </div>
+
+
+                                <div id="admin-day-bookings" class="admin-day-bookings"></div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- COMPATIBILITEIT -->
+
+                        <div id="admin-day-pending" hidden>
+
+                            <div id="admin-day-pending-list"></div>
+
+                        </div>
+
+                    </section>
+
                 </div>
 
-            </div>
+            </section>
 
 
 
-            <!-- =================================
-                 RESERVATIES
-            ================================== -->
 
-            <!-- =================================
-     RESERVATIE OVERZICHT
-================================== -->
+            <!-- =================================================
+                 VIEW — BOOKING REQUESTS
+            ================================================== -->
 
-            <div class="admin-stats">
+            <section class="admin-view" data-view="requests" hidden>
 
-                <div class="admin-stat-card">
 
-                    <span class="admin-stat-label">
-                        Nieuwe aanvragen
-                    </span>
+                <div class="admin-requests-layout">
 
-                    <strong id="stat-pending">
-                        0
-                    </strong>
 
-                    <small>
-                        Wachten op beslissing
-                    </small>
+                    <!-- LIJST -->
+
+                    <section class="admin-requests-list-panel">
+
+
+                        <div class="admin-requests-toolbar">
+
+
+                            <div class="admin-request-tabs">
+
+                                <button type="button" class="active" data-request-filter="pending">
+                                    Nieuw
+
+                                    <span id="request-tab-pending">
+                                        0
+                                    </span>
+
+                                </button>
+
+
+                                <button type="button" data-request-filter="accepted">
+                                    Goedgekeurd
+                                </button>
+
+
+                                <button type="button" data-request-filter="rejected">
+                                    Geweigerd
+                                </button>
+
+
+                                <button type="button" data-request-filter="all">
+                                    Alles
+                                </button>
+
+                            </div>
+
+
+
+                            <div class="admin-request-search">
+
+                                <input type="search" id="reservation-search"
+                                    placeholder="Zoek klant, hond of telefoon..." autocomplete="off">
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div id="reservations-list" class="admin-request-list">
+
+                            <div class="reservations-loading">
+                                Reservaties laden...
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- DETAILPANEEL -->
+
+                    <aside id="request-detail-panel" class="admin-request-detail">
+
+
+                        <div id="request-detail-empty" class="admin-request-detail-empty">
+
+                            <div class="admin-request-empty-icon">
+                                ≡
+                            </div>
+
+
+                            <strong>
+                                Selecteer een aanvraag
+                            </strong>
+
+
+                            <p>
+                                Kies links een reservatie om alle
+                                details van de klant, hond en het
+                                verblijf te bekijken.
+                            </p>
+
+                        </div>
+
+
+
+                        <div id="request-detail-content" hidden>
+
+
+                            <!-- DETAIL HEADER -->
+
+                            <div class="admin-request-detail-header">
+
+                                <div>
+
+                                    <span class="admin-request-detail-label">
+                                        Reservatieaanvraag
+                                    </span>
+
+
+                                    <h2 id="request-detail-dog">
+                                        Hond
+                                    </h2>
+
+
+                                    <p id="request-detail-customer">
+                                        Klant
+                                    </p>
+
+                                </div>
+
+
+                                <span id="request-detail-status" class="reservation-status pending">
+                                    In afwachting
+                                </span>
+
+                            </div>
+
+
+
+                            <!-- VERBLIJF -->
+
+                            <div class="admin-request-detail-section">
+
+                                <h3>
+                                    Verblijf
+                                </h3>
+
+
+                                <div class="admin-request-detail-grid">
+
+
+                                    <div>
+
+                                        <span>
+                                            Type
+                                        </span>
+
+                                        <strong id="request-detail-type">
+                                            —
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Periode
+                                        </span>
+
+                                        <strong id="request-detail-period">
+                                            —
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Aankomst
+                                        </span>
+
+                                        <strong id="request-detail-arrival">
+                                            —
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Vertrek
+                                        </span>
+
+                                        <strong id="request-detail-departure">
+                                            —
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- KLANT -->
+
+                            <div class="admin-request-detail-section">
+
+                                <h3>
+                                    Klant
+                                </h3>
+
+
+                                <div class="admin-contact-card">
+
+                                    <div class="admin-contact-avatar">
+                                        K
+                                    </div>
+
+
+                                    <div>
+
+                                        <strong id="request-detail-client-name">
+                                            —
+                                        </strong>
+
+                                        <span id="request-detail-email">
+                                            —
+                                        </span>
+
+                                        <span id="request-detail-phone">
+                                            —
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- HOND -->
+
+                            <div class="admin-request-detail-section">
+
+                                <h3>
+                                    Hond
+                                </h3>
+
+
+                                <div class="admin-pet-card">
+
+                                    <div class="admin-pet-avatar">
+                                        ♢
+                                    </div>
+
+
+                                    <div>
+
+                                        <strong id="request-pet-name">
+                                            —
+                                        </strong>
+
+                                        <span id="request-pet-info">
+                                            Hond
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- NOTITIES -->
+
+                            <div id="request-notes-section" class="admin-request-detail-section">
+
+                                <h3>
+                                    Opmerkingen
+                                </h3>
+
+
+                                <p id="request-detail-notes">
+                                    Geen opmerkingen.
+                                </p>
+
+                            </div>
+
+
+
+                            <!-- PRIJS -->
+
+                            <div class="admin-request-price">
+
+                                <span>
+                                    Geschatte prijs
+                                </span>
+
+                                <strong id="request-detail-price">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- ACTIES -->
+
+                            <div id="request-detail-actions" class="admin-request-actions">
+
+                                <button type="button" id="request-reject" class="admin-request-reject">
+                                    Weigeren
+                                </button>
+
+
+                                <button type="button" id="request-accept" class="admin-request-accept">
+                                    Accepteren
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </aside>
 
                 </div>
 
-
-                <div class="admin-stat-card">
-
-                    <span class="admin-stat-label">
-                        Bevestigd
-                    </span>
-
-                    <strong id="stat-accepted">
-                        0
-                    </strong>
-
-                    <small>
-                        Goedgekeurde reservaties
-                    </small>
-
-                </div>
-
-
-                <div class="admin-stat-card">
-
-                    <span class="admin-stat-label">
-                        Komende verblijven
-                    </span>
-
-                    <strong id="stat-upcoming">
-                        0
-                    </strong>
-
-                    <small>
-                        Bevestigd vanaf vandaag
-                    </small>
-
-                </div>
-
-            </div>
+            </section>
 
 
 
-            <!-- =================================
-     RESERVATIES
-================================== -->
 
-            <div class="admin-reservations">
+            <!-- =================================================
+                 VIEW — KLANTEN
+            ================================================== -->
+
+            <section class="admin-view" data-view="clients" hidden>
 
 
-                <div class="admin-reservations-header">
+                <div class="admin-directory-panel">
 
-                    <div>
 
-                        <h2>
-                            Reservaties
-                        </h2>
+                    <div class="admin-directory-header">
 
-                        <p>
-                            Bekijk, zoek en beheer alle reservaties.
-                        </p>
+                        <div>
+
+                            <span class="admin-panel-label">
+                                Relaties
+                            </span>
+
+                            <h2>
+                                Klanten
+                            </h2>
+
+                        </div>
+
+
+                        <div class="admin-directory-actions">
+
+                            <input type="search" id="client-search" placeholder="Zoek klant...">
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="clients-list" class="admin-directory-list">
+
+                        <div class="admin-empty-state">
+
+                            <strong>
+                                Klanten laden...
+                            </strong>
+
+                        </div>
 
                     </div>
 
                 </div>
 
+            </section>
 
 
-                <!-- FILTERS -->
-
-                <div class="admin-reservation-tools">
 
 
-                    <div class="admin-reservation-filters">
+            <!-- =================================================
+                 VIEW — HONDEN
+            ================================================== -->
 
-                        <button type="button" class="admin-filter-button active" data-filter="all">
-                            Alles
-                        </button>
-
-
-                        <button type="button" class="admin-filter-button" data-filter="pending">
-                            In afwachting
-                        </button>
+            <section class="admin-view" data-view="pets" hidden>
 
 
-                        <button type="button" class="admin-filter-button" data-filter="accepted">
-                            Goedgekeurd
-                        </button>
+                <div class="admin-directory-panel">
 
 
-                        <button type="button" class="admin-filter-button" data-filter="rejected">
-                            Geweigerd
-                        </button>
+                    <div class="admin-directory-header">
+
+                        <div>
+
+                            <span class="admin-panel-label">
+                                Huisdieren
+                            </span>
+
+                            <h2>
+                                Honden
+                            </h2>
+
+                        </div>
 
 
-                        <button type="button" class="admin-filter-button" data-filter="cancelled">
-                            Geannuleerd
-                        </button>
+                        <div class="admin-directory-actions">
+
+                            <input type="search" id="pet-search" placeholder="Zoek hond...">
+
+                        </div>
 
                     </div>
 
 
+                    <div id="pets-list" class="admin-pets-grid">
 
-                    <div class="admin-reservation-search">
+                        <div class="admin-empty-state">
 
-                        <input type="search" id="reservation-search" placeholder="Zoek klant, hond of e-mail..."
-                            autocomplete="off">
+                            <strong>
+                                Honden laden...
+                            </strong>
+
+                        </div>
 
                     </div>
 
                 </div>
 
+            </section>
 
 
-                <div id="reservations-list" class="reservations-list">
 
-                    <p class="reservations-loading">
-                        Reservaties laden...
-                    </p>
+
+            <!-- =================================================
+                 VIEW — INSTELLINGEN
+            ================================================== -->
+
+            <section class="admin-view" data-view="settings" hidden>
+
+
+                <div class="admin-settings-layout">
+
+
+                    <nav class="admin-settings-navigation">
+
+                        <button type="button" class="active">
+                            Opvang & capaciteit
+                        </button>
+
+                        <button type="button">
+                            Diensten & prijzen
+                        </button>
+
+                        <button type="button">
+                            Online booking
+                        </button>
+
+                        <button type="button">
+                            Meldingen
+                        </button>
+
+                    </nav>
+
+
+
+                    <section class="admin-settings-content">
+
+
+                        <div class="admin-settings-heading">
+
+                            <span class="admin-panel-label">
+                                Instellingen
+                            </span>
+
+                            <h2>
+                                Opvang & capaciteit
+                            </h2>
+
+                            <p>
+                                Bepaal hoeveel honden u tegelijk
+                                kunt opvangen.
+                            </p>
+
+                        </div>
+
+
+
+                        <div class="admin-settings-card">
+
+
+                            <div class="admin-setting-row">
+
+                                <div>
+
+                                    <strong>
+                                        Maximale dagcapaciteit
+                                    </strong>
+
+                                    <span>
+                                        Maximum aantal honden dat tegelijk
+                                        aanwezig mag zijn.
+                                    </span>
+
+                                </div>
+
+
+                                <div class="admin-setting-input">
+
+                                    <input type="number" id="setting-max-capacity" min="1" value="6">
+
+                                    <span>
+                                        honden
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="admin-setting-row">
+
+                                <div>
+
+                                    <strong>
+                                        Beperkte beschikbaarheid vanaf
+                                    </strong>
+
+                                    <span>
+                                        Vanaf dit aantal wordt een dag
+                                        als beperkt weergegeven.
+                                    </span>
+
+                                </div>
+
+
+                                <div class="admin-setting-input">
+
+                                    <input type="number" id="setting-limited-capacity" min="1" value="4">
+
+                                    <span>
+                                        honden
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="admin-setting-row">
+
+                                <div>
+
+                                    <strong>
+                                        Openingsuur
+                                    </strong>
+
+                                    <span>
+                                        Eerste mogelijke drop-off.
+                                    </span>
+
+                                </div>
+
+
+                                <input type="time" id="setting-opening-time" value="08:00">
+
+                            </div>
+
+
+
+                            <div class="admin-setting-row">
+
+                                <div>
+
+                                    <strong>
+                                        Sluitingsuur
+                                    </strong>
+
+                                    <span>
+                                        Laatste mogelijke pick-up.
+                                    </span>
+
+                                </div>
+
+
+                                <input type="time" id="setting-closing-time" value="18:00">
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-settings-footer">
+
+                            <button type="button" id="save-admin-settings" class="admin-settings-save">
+                                Wijzigingen opslaan
+                            </button>
+
+                        </div>
+
+                    </section>
 
                 </div>
+
+            </section>
+
+
+
+
+            <!-- =================================================
+                 LEGACY FILTER ELEMENTEN
+
+                 Deze blijven tijdelijk bestaan zodat we tijdens
+                 de migratie geen oude JS breken.
+            ================================================== -->
+
+            <div hidden>
+
+                <button class="admin-filter-button active" data-filter="all"></button>
+
+                <button class="admin-filter-button" data-filter="pending"></button>
+
+                <button class="admin-filter-button" data-filter="accepted"></button>
+
+                <button class="admin-filter-button" data-filter="rejected"></button>
+
+                <button class="admin-filter-button" data-filter="cancelled"></button>
+
+
+                <strong id="stat-accepted">
+                    0
+                </strong>
+
+                <strong id="stat-upcoming">
+                    0
+                </strong>
 
             </div>
 
-        </section>
+        </main>
 
-    </main>
+    </div>
 
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
 
     <script type="module" src="js/admin.js"></script>
+
 
     <script type="module" src="js/admin-availability.js"></script>
 
