@@ -24,6 +24,10 @@ import {
     watchAuthState,
     getReservations,
     updateReservationStatus,
+    confirmReservationCompleted,
+    reopenCompletedReservation,
+    softDeleteReservation,
+    restoreReservation,
     sendReservationEmail,
     getAvailabilityForMonth,
     saveAvailability
@@ -278,6 +282,15 @@ const clientsList =
 const clientSearch =
     byId("client-search");
 
+const clientDetailDrawer =
+    byId("client-detail-drawer");
+
+const clientDetailBackdrop =
+    byId("client-detail-backdrop");
+
+const clientDetailClose =
+    byId("client-detail-close");
+
 
 
 /* =========================================================
@@ -289,6 +302,15 @@ const petsList =
 
 const petSearch =
     byId("pet-search");
+
+const petDetailDrawer =
+    byId("pet-detail-drawer");
+
+const petDetailBackdrop =
+    byId("pet-detail-backdrop");
+
+const petDetailClose =
+    byId("pet-detail-close");
 
 
 
@@ -1122,6 +1144,11 @@ function getReservationsForDate(
 
     return reservations.filter(
         reservation =>
+
+            reservation.isDeleted !==
+                true
+
+            &&
 
             reservationTouchesDate(
                 reservation,
@@ -2191,16 +2218,22 @@ function renderOverview() {
     const pending =
         reservations.filter(
             reservation =>
+                reservation.isDeleted !==
+                    true
+                &&
                 reservation.status ===
-                "pending"
+                    "pending"
         );
 
 
     const accepted =
         reservations.filter(
             reservation =>
+                reservation.isDeleted !==
+                    true
+                &&
                 reservation.status ===
-                "accepted"
+                    "accepted"
         );
 
 
@@ -2654,8 +2687,11 @@ function renderRequestCounters() {
     const pending =
         reservations.filter(
             reservation =>
+                reservation.isDeleted !==
+                    true
+                &&
                 reservation.status ===
-                "pending"
+                    "pending"
         ).length;
 
 
@@ -3774,6 +3810,15 @@ function deriveDirectories() {
 
     reservations.forEach(
         reservation => {
+
+            if (
+                reservation.isDeleted ===
+                true
+            ) {
+
+                return;
+            }
+
 
             const customer =
                 reservation.customer
@@ -7695,9 +7740,11 @@ function renderManagementStatsV5() {
 function getVisibleRequests() {
 
     let result =
-        [
-            ...reservations
-        ];
+        reservations.filter(
+            reservation =>
+                reservation.isDeleted !==
+                true
+        );
 
 
 
@@ -8279,6 +8326,16 @@ function showClientDetailV5(
         clientId;
 
 
+    clientDetailDrawer?.classList.add(
+        "open"
+    );
+
+
+    clientDetailBackdrop?.classList.add(
+        "open"
+    );
+
+
     renderClients();
 
 
@@ -8331,16 +8388,14 @@ function showClientDetailV5(
         );
 
 
-    const accepted =
+    const completed =
         sorted.filter(
-            reservation =>
-                reservation.status ===
-                "accepted"
+            isCompletedReservationV7
         );
 
 
     const revenue =
-        accepted.reduce(
+        completed.reduce(
             (
                 sum,
                 reservation
@@ -8387,7 +8442,7 @@ function showClientDetailV5(
 
         "client-detail-past":
             client.reservations.filter(
-                isPastAcceptedReservation
+                isCompletedReservationV7
             ).length,
 
         "client-detail-revenue":
@@ -8759,6 +8814,16 @@ function showPetDetailV5(
 
     selectedPetIdV5 =
         petId;
+
+
+    petDetailDrawer?.classList.add(
+        "open"
+    );
+
+
+    petDetailBackdrop?.classList.add(
+        "open"
+    );
 
 
     renderPets();
@@ -9201,6 +9266,286 @@ async function openCalendarDateV5(
 
 
 /* =========================================================
+   COMPLETION / DELETE HELPERS V7
+========================================================= */
+
+function isCompletedReservationV7(
+    reservation
+) {
+
+    return (
+        reservation?.isDeleted !==
+            true
+        &&
+        reservation?.status ===
+            "accepted"
+        &&
+        reservation?.completionStatus ===
+            "completed"
+    );
+}
+
+
+
+function needsCompletionConfirmationV7(
+    reservation
+) {
+
+    const finalDate =
+        getReservationFinalDate(
+            reservation
+        );
+
+
+    return (
+        reservation?.isDeleted !==
+            true
+        &&
+        reservation?.status ===
+            "accepted"
+        &&
+        reservation?.completionStatus !==
+            "completed"
+        &&
+        Boolean(
+            finalDate
+        )
+        &&
+        finalDate <
+            dateToString(
+                new Date()
+            )
+    );
+}
+
+
+
+function getCompletedMonthKeyV7(
+    reservation
+) {
+
+    return (
+        reservation?.completedDate
+        ||
+        getReservationFinalDate(
+            reservation
+        )
+        ||
+        ""
+    ).slice(
+        0,
+        7
+    );
+}
+
+
+
+async function refreshAdminAfterLifecycleChangeV7() {
+
+    await loadReservations();
+
+    deriveDirectories();
+
+    renderEverything();
+}
+
+
+
+async function confirmCompletedReservationV7(
+    reservation
+) {
+
+    const finalDate =
+        getReservationFinalDate(
+            reservation
+        );
+
+
+    if (
+        !finalDate
+    ) {
+
+        showToast(
+            "Geen einddatum gevonden voor deze reservatie.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        !window.confirm(
+            "Bevestigen dat dit verblijf effectief is afgerond? Het bedrag telt daarna mee in de omzet."
+        )
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        await confirmReservationCompleted(
+            reservation.id,
+            finalDate
+        );
+
+
+        await refreshAdminAfterLifecycleChangeV7();
+
+
+        showToast(
+            "Verblijf bevestigd en toegevoegd aan de historiek.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Afronden mislukt:",
+            error
+        );
+
+
+        showToast(
+            "Het verblijf kon niet worden bevestigd.",
+            "error"
+        );
+    }
+}
+
+
+
+async function deletePastReservationV7(
+    reservation
+) {
+
+    if (
+        !window.confirm(
+            "Deze reservatie naar de prullenbak verplaatsen? Ze wordt niet definitief verwijderd en kan later worden hersteld."
+        )
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        await softDeleteReservation(
+            reservation.id
+        );
+
+
+        await refreshAdminAfterLifecycleChangeV7();
+
+
+        showToast(
+            "Reservatie naar de prullenbak verplaatst.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Verwijderen mislukt:",
+            error
+        );
+
+
+        showToast(
+            "De reservatie kon niet worden verwijderd.",
+            "error"
+        );
+    }
+}
+
+
+
+async function restoreReservationV7(
+    reservation
+) {
+
+    try {
+
+        await restoreReservation(
+            reservation.id
+        );
+
+
+        await refreshAdminAfterLifecycleChangeV7();
+
+
+        showToast(
+            "Reservatie hersteld.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Herstellen mislukt:",
+            error
+        );
+
+
+        showToast(
+            "De reservatie kon niet worden hersteld.",
+            "error"
+        );
+    }
+}
+
+
+
+async function undoCompletionV7(
+    reservation
+) {
+
+    if (
+        !window.confirm(
+            "Afronding terugdraaien? De reservatie verdwijnt dan uit de omzet en komt opnieuw bij te bevestigen verblijven."
+        )
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        await reopenCompletedReservation(
+            reservation.id
+        );
+
+
+        await refreshAdminAfterLifecycleChangeV7();
+
+
+        showToast(
+            "Afronding teruggedraaid.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Terugdraaien mislukt:",
+            error
+        );
+
+
+        showToast(
+            "De afronding kon niet worden teruggedraaid.",
+            "error"
+        );
+    }
+}
+
+
+
+/* =========================================================
    HISTORY
 ========================================================= */
 
@@ -9229,6 +9574,198 @@ function renderHistoryV5() {
     }
 
 
+    const pendingCompletion =
+        reservations
+            .filter(
+                needsCompletionConfirmationV7
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+                    getReservationSortDate(
+                        b
+                    ).localeCompare(
+                        getReservationSortDate(
+                            a
+                        )
+                    )
+            );
+
+
+    const pendingCount =
+        byId(
+            "history-pending-count"
+        );
+
+
+    if (
+        pendingCount
+    ) {
+
+        pendingCount.textContent =
+            pendingCompletion.length;
+    }
+
+
+    const pendingList =
+        byId(
+            "history-pending-list"
+        );
+
+
+    if (
+        pendingList
+    ) {
+
+        pendingList.innerHTML =
+            "";
+
+
+        if (
+            !pendingCompletion.length
+        ) {
+
+            pendingList.innerHTML = `
+                <div class="admin-empty-state compact">
+                    <strong>
+                        Geen voorbije verblijven te bevestigen
+                    </strong>
+                    <span>
+                        Alles is bijgewerkt.
+                    </span>
+                </div>
+            `;
+
+        } else {
+
+            pendingCompletion.forEach(
+                reservation => {
+
+                    const row =
+                        document.createElement(
+                            "article"
+                        );
+
+
+                    row.className =
+                        "admin-completion-row";
+
+
+                    row.innerHTML = `
+                        <div class="admin-completion-dog">
+
+                            <div class="admin-history-dog-icon">
+                                ♢
+                            </div>
+
+                            <div>
+                                <strong>
+                                    ${escapeHtml(
+                                        reservation.dog
+                                            ?.name
+                                        ||
+                                        "Hond"
+                                    )}
+                                </strong>
+                                <span>
+                                    ${escapeHtml(
+                                        formatReservationPeriod(
+                                            reservation
+                                        )
+                                    )}
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="admin-completion-customer">
+                            <strong>
+                                ${escapeHtml(
+                                    reservation.customer
+                                        ?.name
+                                    ||
+                                    "Onbekende klant"
+                                )}
+                            </strong>
+                            <span>
+                                ${escapeHtml(
+                                    reservation.customer
+                                        ?.phone
+                                    ||
+                                    reservation.customer
+                                        ?.email
+                                    ||
+                                    ""
+                                )}
+                            </span>
+                        </div>
+
+                        <strong class="admin-completion-price">
+                            ${formatCurrency(
+                                getReservationAmount(
+                                    reservation
+                                )
+                            )}
+                        </strong>
+
+                        <div class="admin-completion-actions">
+
+                            <button
+                                type="button"
+                                class="admin-completion-delete"
+                            >
+                                Verwijderen
+                            </button>
+
+                            <button
+                                type="button"
+                                class="admin-completion-confirm"
+                            >
+                                ✓ Verblijf afgerond
+                            </button>
+
+                        </div>
+                    `;
+
+
+                    row
+                        .querySelector(
+                            ".admin-completion-confirm"
+                        )
+                        ?.addEventListener(
+                            "click",
+                            () =>
+                                confirmCompletedReservationV7(
+                                    reservation
+                                )
+                        );
+
+
+                    row
+                        .querySelector(
+                            ".admin-completion-delete"
+                        )
+                        ?.addEventListener(
+                            "click",
+                            () =>
+                                deletePastReservationV7(
+                                    reservation
+                                )
+                        );
+
+
+                    pendingList.appendChild(
+                        row
+                    );
+                }
+            );
+        }
+    }
+
+
+
     const monthKey =
         input.value;
 
@@ -9237,11 +9774,11 @@ function renderHistoryV5() {
         reservations
             .filter(
                 reservation =>
-                    isPastAcceptedReservation(
+                    isCompletedReservationV7(
                         reservation
                     )
                     &&
-                    getReservationMonthKey(
+                    getCompletedMonthKeyV7(
                         reservation
                     ) ===
                     monthKey
@@ -9346,133 +9883,281 @@ function renderHistoryV5() {
 
 
     if (
-        !list
+        list
     ) {
 
-        return;
-    }
+        list.innerHTML =
+            "";
 
 
-    list.innerHTML =
-        "";
+        if (
+            !monthReservations.length
+        ) {
 
-
-    if (
-        !monthReservations.length
-    ) {
-
-        list.innerHTML = `
-            <div class="admin-empty-state">
-                <strong>
-                    Geen afgeronde reservaties in deze maand
-                </strong>
-                <span>
-                    Kies een andere maand om oudere verblijven te bekijken.
-                </span>
-            </div>
-        `;
-
-
-        return;
-    }
-
-
-
-    monthReservations.forEach(
-        reservation => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.type =
-                "button";
-
-
-            button.className =
-                "admin-history-row";
-
-
-            button.innerHTML = `
-                <div class="admin-history-stay">
-
-                    <div class="admin-history-dog-icon">
-                        ♢
-                    </div>
-
-                    <div>
-                        <strong>
-                            ${escapeHtml(
-                                reservation.dog
-                                    ?.name
-                                ||
-                                "Hond"
-                            )}
-                        </strong>
-                        <span>
-                            ${escapeHtml(
-                                formatBookingType(
-                                    reservation
-                                )
-                            )}
-                            ·
-                            ${escapeHtml(
-                                formatReservationPeriod(
-                                    reservation
-                                )
-                            )}
-                        </span>
-                    </div>
-
-                </div>
-
-                <div class="admin-history-client">
+            list.innerHTML = `
+                <div class="admin-empty-state">
                     <strong>
-                        ${escapeHtml(
-                            reservation.customer
-                                ?.name
-                            ||
-                            "Onbekende klant"
-                        )}
+                        Geen bevestigde verblijven in deze maand
                     </strong>
                     <span>
-                        ${escapeHtml(
-                            reservation.customer
-                                ?.email
-                            ||
-                            ""
-                        )}
+                        Een verblijf verschijnt hier pas nadat u het als afgerond bevestigt.
                     </span>
                 </div>
-
-                <strong class="admin-history-price">
-                    ${formatCurrency(
-                        getReservationAmount(
-                            reservation
-                        )
-                    )}
-                </strong>
             `;
 
+        } else {
 
-            button.addEventListener(
-                "click",
-                async () => {
+            monthReservations.forEach(
+                reservation => {
 
-                    await openReservation(
-                        reservation.id
+                    const row =
+                        document.createElement(
+                            "article"
+                        );
+
+
+                    row.className =
+                        "admin-history-row admin-history-row-v7";
+
+
+                    row.innerHTML = `
+                        <div class="admin-history-stay">
+
+                            <div class="admin-history-dog-icon">
+                                ♢
+                            </div>
+
+                            <div>
+                                <strong>
+                                    ${escapeHtml(
+                                        reservation.dog
+                                            ?.name
+                                        ||
+                                        "Hond"
+                                    )}
+                                </strong>
+                                <span>
+                                    ${escapeHtml(
+                                        formatBookingType(
+                                            reservation
+                                        )
+                                    )}
+                                    ·
+                                    ${escapeHtml(
+                                        formatReservationPeriod(
+                                            reservation
+                                        )
+                                    )}
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="admin-history-client">
+                            <strong>
+                                ${escapeHtml(
+                                    reservation.customer
+                                        ?.name
+                                    ||
+                                    "Onbekende klant"
+                                )}
+                            </strong>
+                            <span>
+                                ${escapeHtml(
+                                    reservation.customer
+                                        ?.email
+                                    ||
+                                    ""
+                                )}
+                            </span>
+                        </div>
+
+                        <strong class="admin-history-price">
+                            ${formatCurrency(
+                                getReservationAmount(
+                                    reservation
+                                )
+                            )}
+                        </strong>
+
+                        <button
+                            type="button"
+                            class="admin-history-undo"
+                        >
+                            Terugzetten
+                        </button>
+                    `;
+
+
+                    row
+                        .querySelector(
+                            ".admin-history-undo"
+                        )
+                        ?.addEventListener(
+                            "click",
+                            () =>
+                                undoCompletionV7(
+                                    reservation
+                                )
+                        );
+
+
+                    list.appendChild(
+                        row
                     );
+                }
+            );
+        }
+    }
+
+
+
+    const deletedReservations =
+        reservations
+            .filter(
+                reservation =>
+                    reservation.isDeleted ===
+                    true
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) => {
+
+                    const timeA =
+                        a.deletedAt
+                            ?.toMillis?.()
+                        ||
+                        0;
+
+
+                    const timeB =
+                        b.deletedAt
+                            ?.toMillis?.()
+                        ||
+                        0;
+
+
+                    return timeB - timeA;
                 }
             );
 
 
-            list.appendChild(
-                button
+    const trashCount =
+        byId(
+            "trash-count"
+        );
+
+
+    if (
+        trashCount
+    ) {
+
+        trashCount.textContent =
+            deletedReservations.length;
+    }
+
+
+    const trashList =
+        byId(
+            "trash-list"
+        );
+
+
+    if (
+        trashList
+    ) {
+
+        trashList.innerHTML =
+            "";
+
+
+        if (
+            !deletedReservations.length
+        ) {
+
+            trashList.innerHTML = `
+                <div class="admin-empty-state compact">
+                    <strong>
+                        Prullenbak is leeg
+                    </strong>
+                </div>
+            `;
+
+        } else {
+
+            deletedReservations.forEach(
+                reservation => {
+
+                    const row =
+                        document.createElement(
+                            "article"
+                        );
+
+
+                    row.className =
+                        "admin-trash-row";
+
+
+                    row.innerHTML = `
+                        <div>
+
+                            <strong>
+                                ${escapeHtml(
+                                    reservation.dog
+                                        ?.name
+                                    ||
+                                    "Hond"
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHtml(
+                                    reservation.customer
+                                        ?.name
+                                    ||
+                                    "Onbekende klant"
+                                )}
+                                ·
+                                ${escapeHtml(
+                                    formatReservationPeriod(
+                                        reservation
+                                    )
+                                )}
+                            </span>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="admin-trash-restore"
+                        >
+                            ↶ Herstellen
+                        </button>
+                    `;
+
+
+                    row
+                        .querySelector(
+                            ".admin-trash-restore"
+                        )
+                        ?.addEventListener(
+                            "click",
+                            () =>
+                                restoreReservationV7(
+                                    reservation
+                                )
+                        );
+
+
+                    trashList.appendChild(
+                        row
+                    );
+                }
             );
         }
-    );
+    }
 }
 
 
@@ -9548,6 +10233,112 @@ document.addEventListener(
         ) {
 
             clearRequestDetail();
+        }
+    }
+);
+
+
+
+/* =========================================================
+   CLIENT / PET DETAIL DRAWERS V7
+========================================================= */
+
+function closeClientDetailV7() {
+
+    selectedClientIdV5 =
+        null;
+
+
+    clientDetailDrawer?.classList.remove(
+        "open"
+    );
+
+
+    clientDetailBackdrop?.classList.remove(
+        "open"
+    );
+
+
+    renderClients();
+}
+
+
+
+function closePetDetailV7() {
+
+    selectedPetIdV5 =
+        null;
+
+
+    petDetailDrawer?.classList.remove(
+        "open"
+    );
+
+
+    petDetailBackdrop?.classList.remove(
+        "open"
+    );
+
+
+    renderPets();
+}
+
+
+
+clientDetailClose?.addEventListener(
+    "click",
+    closeClientDetailV7
+);
+
+
+clientDetailBackdrop?.addEventListener(
+    "click",
+    closeClientDetailV7
+);
+
+
+petDetailClose?.addEventListener(
+    "click",
+    closePetDetailV7
+);
+
+
+petDetailBackdrop?.addEventListener(
+    "click",
+    closePetDetailV7
+);
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key !==
+            "Escape"
+        ) {
+
+            return;
+        }
+
+
+        if (
+            clientDetailDrawer?.classList.contains(
+                "open"
+            )
+        ) {
+
+            closeClientDetailV7();
+        }
+
+
+        if (
+            petDetailDrawer?.classList.contains(
+                "open"
+            )
+        ) {
+
+            closePetDetailV7();
         }
     }
 );
