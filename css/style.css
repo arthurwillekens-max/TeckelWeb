@@ -16593,3 +16593,206 @@ a {
     }
 }
 
+
+
+/* =========================================================
+   =========================================================
+   TECKELWEB ADMIN V8
+   CONTINUOUS + COLLAPSIBLE SIDEBAR
+   =========================================================
+   ========================================================= */
+
+
+/* =========================================================
+   SIDEBAR — CLEAN CONTINUOUS NAV
+========================================================= */
+
+.tw-admin-body .admin-sidebar-brand {
+    position: relative;
+}
+
+.tw-admin-body .admin-sidebar-toggle {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 0;
+    border: 1px solid var(--admin-border);
+    border-radius: 7px;
+    background: white;
+    color: var(--admin-text-soft);
+    font-size: 21px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.tw-admin-body .admin-sidebar-toggle:hover {
+    border-color: var(--admin-orange-border);
+    background: var(--admin-orange-soft);
+    color: var(--admin-orange);
+}
+
+.tw-admin-body .admin-sidebar-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 4px;
+}
+
+.tw-admin-body .admin-nav-group {
+    gap: 2px;
+}
+
+.tw-admin-body .admin-nav-group + .admin-nav-group {
+    margin-top: 2px;
+}
+
+
+/* =========================================================
+   DESKTOP COLLAPSED MODE
+========================================================= */
+
+@media (min-width: 951px) {
+
+    .tw-admin-body .admin-app-v4 {
+        transition: grid-template-columns 0.2s ease;
+    }
+
+    .tw-admin-body .admin-app-v4.sidebar-collapsed {
+        grid-template-columns: 72px minmax(0, 1fr);
+    }
+
+    .tw-admin-body .admin-sidebar-v4 {
+        transition: width 0.2s ease;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-sidebar-brand {
+        min-height: 72px;
+        gap: 4px;
+        padding: 0 7px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-brand-logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-brand-copy {
+        display: none;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-sidebar-toggle {
+        width: 24px;
+        height: 30px;
+        margin-left: 0;
+        border-color: transparent;
+        background: transparent;
+        font-size: 19px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-sidebar-create-wrap {
+        padding: 4px 10px 14px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-create-button {
+        width: 44px;
+        min-height: 42px;
+        margin: 0 auto;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: none;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-create-button > span:last-child {
+        display: none;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-create-plus {
+        font-size: 20px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-sidebar-navigation {
+        align-items: center;
+        padding: 4px 8px 18px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-nav-group {
+        width: 100%;
+        align-items: center;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-nav-item {
+        width: 46px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        gap: 0;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-nav-item > span:not(.admin-nav-icon):not(.admin-nav-badge) {
+        display: none;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-nav-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 17px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-nav-item.active::before {
+        left: -8px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-nav-badge {
+        position: absolute;
+        top: 3px;
+        right: 2px;
+        min-width: 17px;
+        height: 17px;
+        padding: 0 4px;
+        border: 2px solid white;
+        border-radius: 10px;
+        font-size: 8px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-sidebar-account {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 5px;
+        padding: 9px 6px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-account-copy {
+        display: none;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-account-avatar {
+        width: 33px;
+        height: 33px;
+    }
+
+    .tw-admin-body .sidebar-collapsed .admin-account-logout {
+        width: 33px;
+        height: 29px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE — KEEP NORMAL HORIZONTAL NAV
+========================================================= */
+
+@media (max-width: 950px) {
+
+    .tw-admin-body .admin-sidebar-toggle {
+        display: none;
+    }
+}
+
