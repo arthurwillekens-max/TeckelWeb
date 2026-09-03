@@ -236,6 +236,27 @@ async function loadReservations() {
         renderReservations();
 
 
+        /*
+            Andere adminmodules laten weten
+            dat de reservaties veranderd zijn.
+        
+            De dagkalender kan daardoor meteen
+            opnieuw berekenen wie aanwezig is.
+        */
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "teckelweb:reservations-updated",
+                {
+                    detail: {
+                        reservations:
+                            allReservations
+                    }
+                }
+            )
+        );
+
+
     } catch (error) {
 
         console.error(
@@ -512,6 +533,10 @@ function createReservationCard(
 
     card.className =
         `reservation-card reservation-${reservation.status || "pending"}`;
+
+
+    card.id =
+        `reservation-${reservation.id}`;
 
 
 

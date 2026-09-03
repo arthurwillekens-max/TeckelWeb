@@ -188,92 +188,221 @@
 
                     <aside class="admin-availability-editor">
 
-                        <p class="section-label">
-                            Geselecteerde dag
-                        </p>
+                        <!-- =====================================
+         GESELECTEERDE DAG
+    ====================================== -->
 
+                        <div class="admin-day-header">
 
-                        <h3 id="admin-selected-date">
-                            Kies een dag
-                        </h3>
+                            <div>
 
+                                <p class="section-label">
+                                    Geselecteerde dag
+                                </p>
 
-                        <p class="admin-availability-editor-help">
-                            Kies de status die klanten
-                            op de publieke kalender moeten zien.
-                        </p>
+                                <h3 id="admin-selected-date">
+                                    Kies een dag
+                                </h3>
 
-
-                        <div class="admin-status-options">
-
-
-                            <label class="admin-status-option">
-
-                                <input type="radio" name="availability-status" value="available">
-
-                                <span>
-
-                                    <strong>
-                                        Beschikbaar
-                                    </strong>
-
-                                    <small>
-                                        Klanten kunnen deze dag aanvragen.
-                                    </small>
-
-                                </span>
-
-                            </label>
-
-
-
-                            <label class="admin-status-option">
-
-                                <input type="radio" name="availability-status" value="limited">
-
-                                <span>
-
-                                    <strong>
-                                        Beperkt beschikbaar
-                                    </strong>
-
-                                    <small>
-                                        Er is nog plaats, maar beperkt.
-                                    </small>
-
-                                </span>
-
-                            </label>
-
-
-
-                            <label class="admin-status-option">
-
-                                <input type="radio" name="availability-status" value="full">
-
-                                <span>
-
-                                    <strong>
-                                        Volzet
-                                    </strong>
-
-                                    <small>
-                                        Klanten kunnen deze dag niet selecteren.
-                                    </small>
-
-                                </span>
-
-                            </label>
+                            </div>
 
                         </div>
 
 
-                        <button type="button" id="admin-save-availability" class="admin-save-availability" disabled>
-                            Beschikbaarheid opslaan
-                        </button>
+                        <!-- =====================================
+         DAGOVERZICHT
+    ====================================== -->
+
+                        <div id="admin-day-summary" class="admin-day-summary" hidden>
+
+                            <div class="admin-day-summary-item">
+
+                                <strong id="admin-day-confirmed-count">
+                                    0
+                                </strong>
+
+                                <span>
+                                    bevestigd
+                                </span>
+
+                            </div>
 
 
-                        <p id="admin-availability-message" class="admin-availability-message"></p>
+                            <div class="admin-day-summary-item pending">
+
+                                <strong id="admin-day-pending-count">
+                                    0
+                                </strong>
+
+                                <span>
+                                    aanvragen
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =====================================
+         PLANNING
+    ====================================== -->
+
+                        <div id="admin-day-planning" class="admin-day-planning" hidden>
+
+                            <div class="admin-day-planning-header">
+
+                                <div>
+
+                                    <strong>
+                                        Dagplanning
+                                    </strong>
+
+                                    <span>
+                                        Bevestigde reservaties
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TIJDAS -->
+
+                            <div class="admin-day-time-axis">
+
+                                <span>08</span>
+                                <span>09</span>
+                                <span>10</span>
+                                <span>11</span>
+                                <span>12</span>
+                                <span>13</span>
+                                <span>14</span>
+                                <span>15</span>
+                                <span>16</span>
+                                <span>17</span>
+                                <span>18</span>
+
+                            </div>
+
+
+                            <div id="admin-day-bookings" class="admin-day-bookings"></div>
+
+                        </div>
+
+
+                        <!-- =====================================
+         PENDING AANVRAGEN
+    ====================================== -->
+
+                        <div id="admin-day-pending" class="admin-day-pending" hidden>
+
+                            <div class="admin-day-pending-header">
+
+                                <strong>
+                                    Nog te beoordelen
+                                </strong>
+
+                                <span>
+                                    Aanvragen voor deze dag
+                                </span>
+
+                            </div>
+
+
+                            <div id="admin-day-pending-list" class="admin-day-pending-list"></div>
+
+                        </div>
+
+
+                        <!-- =====================================
+         BESCHIKBAARHEID
+    ====================================== -->
+
+                        <div class="admin-day-availability-settings">
+
+                            <div class="admin-day-section-title">
+
+                                <strong>
+                                    Beschikbaarheid
+                                </strong>
+
+                                <span>
+                                    Wat klanten op de kalender zien
+                                </span>
+
+                            </div>
+
+
+                            <div class="admin-status-options">
+
+
+                                <label class="admin-status-option">
+
+                                    <input type="radio" name="availability-status" value="available">
+
+                                    <span>
+
+                                        <strong>
+                                            Beschikbaar
+                                        </strong>
+
+                                        <small>
+                                            Klanten kunnen deze dag aanvragen.
+                                        </small>
+
+                                    </span>
+
+                                </label>
+
+
+                                <label class="admin-status-option">
+
+                                    <input type="radio" name="availability-status" value="limited">
+
+                                    <span>
+
+                                        <strong>
+                                            Beperkt beschikbaar
+                                        </strong>
+
+                                        <small>
+                                            Er is nog plaats, maar beperkt.
+                                        </small>
+
+                                    </span>
+
+                                </label>
+
+
+                                <label class="admin-status-option">
+
+                                    <input type="radio" name="availability-status" value="full">
+
+                                    <span>
+
+                                        <strong>
+                                            Volzet
+                                        </strong>
+
+                                        <small>
+                                            Klanten kunnen deze dag niet selecteren.
+                                        </small>
+
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                            <button type="button" id="admin-save-availability" class="admin-save-availability" disabled>
+                                Beschikbaarheid opslaan
+                            </button>
+
+
+                            <p id="admin-availability-message" class="admin-availability-message"></p>
+
+                        </div>
 
                     </aside>
 

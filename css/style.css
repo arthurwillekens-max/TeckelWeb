@@ -4482,3 +4482,668 @@ body {
     }
 
 }
+
+/* =========================================================
+   ADMIN DAGPLANNING
+========================================================= */
+
+/*
+    Iets bredere rechterkolom,
+    zodat de planning comfortabel past.
+*/
+
+.admin-availability-layout {
+    grid-template-columns:
+        minmax(0, 1.2fr) minmax(390px, 0.85fr);
+}
+
+
+
+/* ---------------------------------------------------------
+   EDITOR
+--------------------------------------------------------- */
+
+.admin-availability-editor {
+    overflow: hidden;
+}
+
+
+.admin-day-header {
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #e8e5de;
+}
+
+
+.admin-day-header .section-label {
+    margin-bottom: 7px;
+}
+
+
+.admin-day-header h3 {
+    font-size: 19px;
+}
+
+
+
+/* =========================================================
+   SAMENVATTING
+========================================================= */
+
+.admin-day-summary {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 8px;
+
+    margin-top: 18px;
+}
+
+
+.admin-day-summary[hidden] {
+    display: none;
+}
+
+
+.admin-day-summary-item {
+    display: flex;
+    flex-direction: column;
+
+    padding: 13px 14px;
+
+    background: #eef3ec;
+
+    border: 1px solid #d9e4d6;
+    border-radius: 9px;
+}
+
+
+.admin-day-summary-item.pending {
+    background: #fff8e8;
+
+    border-color: #eee0bb;
+}
+
+
+.admin-day-summary-item strong {
+    font-size: 22px;
+    line-height: 1;
+
+    color: var(--green-dark);
+}
+
+
+.admin-day-summary-item.pending strong {
+    color: #976f27;
+}
+
+
+.admin-day-summary-item span {
+    margin-top: 5px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    color: var(--text-light);
+}
+
+
+
+/* =========================================================
+   DAGPLANNING
+========================================================= */
+
+.admin-day-planning {
+    margin-top: 24px;
+}
+
+
+.admin-day-planning[hidden] {
+    display: none;
+}
+
+
+.admin-day-planning-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.admin-day-planning-header div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.admin-day-planning-header strong {
+    font-size: 13px;
+
+    color: var(--text);
+}
+
+
+.admin-day-planning-header span {
+    font-size: 11px;
+
+    color: var(--text-light);
+}
+
+
+
+/* ---------------------------------------------------------
+   TIJDAS
+--------------------------------------------------------- */
+
+.admin-day-time-axis {
+    display: grid;
+
+    grid-template-columns: repeat(11, 1fr);
+
+    margin-top: 18px;
+    margin-bottom: 5px;
+}
+
+
+.admin-day-time-axis span {
+    text-align: center;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    color: #9c9d97;
+}
+
+
+.admin-day-time-axis span:first-child {
+    text-align: left;
+}
+
+
+.admin-day-time-axis span:last-child {
+    text-align: right;
+}
+
+
+
+/* =========================================================
+   RESERVATIE OP DAG
+========================================================= */
+
+.admin-day-bookings {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.admin-day-booking {
+    padding: 13px 14px;
+
+    background: white;
+
+    border: 1px solid #e1ded6;
+    border-radius: 10px;
+}
+
+
+.admin-day-booking-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+
+.admin-day-booking-name {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 2px;
+}
+
+
+.admin-day-booking-name strong {
+    overflow: hidden;
+
+    font-size: 13px;
+
+    color: var(--text);
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.admin-day-booking-name span {
+    overflow: hidden;
+
+    font-size: 10px;
+
+    color: var(--text-light);
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.admin-day-booking-type {
+    flex-shrink: 0;
+
+    padding: 4px 7px;
+
+    background: #eef3ec;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    color: var(--green-dark);
+}
+
+
+
+/* META */
+
+.admin-day-booking-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+
+.admin-day-booking-meta span {
+    font-size: 9px;
+    font-weight: 600;
+
+    color: #82847e;
+}
+
+
+
+/* =========================================================
+   TIJDLIJN
+========================================================= */
+
+.admin-day-track {
+    position: relative;
+
+    height: 14px;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    border: 1px solid #e3e0d8;
+    border-radius: 5px;
+
+    background:
+        repeating-linear-gradient(to right,
+            #f8f7f4 0,
+            #f8f7f4 calc(10% - 1px),
+            #e8e5de calc(10% - 1px),
+            #e8e5de 10%);
+}
+
+
+.admin-day-track-bar {
+    position: absolute;
+
+    top: 2px;
+    bottom: 2px;
+
+    min-width: 5px;
+
+    border-radius: 3px;
+
+    background: var(--green);
+}
+
+
+
+/* ---------------------------------------------------------
+   BEKIJK RESERVATIE
+--------------------------------------------------------- */
+
+.admin-day-view-reservation {
+    margin-top: 9px;
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    color: var(--green-dark);
+
+    cursor: pointer;
+}
+
+
+.admin-day-view-reservation:hover {
+    text-decoration: underline;
+}
+
+
+
+/* =========================================================
+   LEGE DAG
+========================================================= */
+
+.admin-day-empty {
+    padding: 22px 14px;
+
+    text-align: center;
+
+    border: 1px dashed #dcd9d1;
+    border-radius: 9px;
+}
+
+
+.admin-day-empty strong {
+    display: block;
+
+    font-size: 12px;
+
+    color: var(--text);
+}
+
+
+.admin-day-empty span {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 10px;
+    line-height: 1.4;
+
+    color: var(--text-light);
+}
+
+
+
+/* =========================================================
+   PENDING
+========================================================= */
+
+.admin-day-pending {
+    margin-top: 24px;
+    padding-top: 20px;
+
+    border-top: 1px solid #e8e5de;
+}
+
+
+.admin-day-pending[hidden] {
+    display: none;
+}
+
+
+.admin-day-pending-header {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    margin-bottom: 10px;
+}
+
+
+.admin-day-pending-header strong {
+    font-size: 12px;
+
+    color: #8b641e;
+}
+
+
+.admin-day-pending-header span {
+    font-size: 10px;
+
+    color: var(--text-light);
+}
+
+
+.admin-day-pending-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.admin-day-pending-card {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 10px 11px;
+
+    text-align: left;
+
+    background: #fff9ea;
+
+    border: 1px solid #eadcb8;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+
+.admin-day-pending-card:hover {
+    border-color: #d5b96f;
+}
+
+
+.admin-day-pending-main {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 2px;
+}
+
+
+.admin-day-pending-main strong {
+    overflow: hidden;
+
+    font-size: 11px;
+
+    color: var(--text);
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.admin-day-pending-main small {
+    overflow: hidden;
+
+    font-size: 9px;
+
+    color: var(--text-light);
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.admin-day-pending-time {
+    flex-shrink: 0;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    color: #8b641e;
+}
+
+
+
+/* =========================================================
+   BESCHIKBAARHEIDSINSTELLINGEN
+========================================================= */
+
+.admin-day-availability-settings {
+    margin-top: 26px;
+    padding-top: 22px;
+
+    border-top: 1px solid #e8e5de;
+}
+
+
+.admin-day-section-title {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.admin-day-section-title strong {
+    font-size: 13px;
+
+    color: var(--text);
+}
+
+
+.admin-day-section-title span {
+    font-size: 10px;
+
+    color: var(--text-light);
+}
+
+
+
+/* =========================================================
+   KALENDER AANTAL HONDEN
+========================================================= */
+
+.admin-calendar-day {
+    overflow: hidden;
+}
+
+
+.admin-calendar-day-number {
+    position: relative;
+
+    z-index: 2;
+}
+
+
+.admin-calendar-booking-count {
+    position: absolute;
+
+    top: 4px;
+    right: 4px;
+
+    min-width: 15px;
+    height: 15px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 4px;
+
+    border-radius: 20px;
+
+    background: var(--green-dark);
+
+    color: white;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    z-index: 3;
+}
+
+
+.admin-calendar-day.selected .admin-calendar-booking-count {
+    background: white;
+
+    color: var(--green-dark);
+}
+
+
+
+/* =========================================================
+   RESERVATIE HIGHLIGHT
+========================================================= */
+
+.reservation-card {
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+.reservation-card.reservation-highlight {
+    border-color: var(--green);
+
+    box-shadow:
+        0 0 0 3px rgba(85, 107, 88, 0.12);
+
+    transform:
+        translateY(-2px);
+}
+
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .admin-availability-layout {
+        grid-template-columns: 1fr;
+    }
+
+
+    .admin-calendar {
+        border-right: none;
+        border-bottom: 1px solid #e8e5de;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .admin-day-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+
+    .admin-calendar-booking-count {
+        top: 2px;
+        right: 2px;
+
+        min-width: 13px;
+        height: 13px;
+
+        font-size: 7px;
+    }
+
+}
