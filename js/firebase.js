@@ -1607,6 +1607,12 @@ export async function registerAdminPushDevice() {
     );
 
 
+    localStorage.setItem(
+        "teckelweb-admin-push-enabled",
+        "1"
+    );
+
+
     return token;
 }
 
