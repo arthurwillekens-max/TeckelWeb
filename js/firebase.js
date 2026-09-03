@@ -1439,6 +1439,167 @@ export function isAdminPushConfigured() {
 
 
 /* =========================================================
+   ADMIN PUSH — SERVICE WORKER ACTIEF AFWACHTEN
+========================================================= */
+
+async function waitForActiveServiceWorker(
+    registration,
+    timeoutMs = 12000
+) {
+
+    if (
+        registration.active
+    ) {
+
+        return registration;
+    }
+
+
+    const worker =
+        registration.installing
+        ||
+        registration.waiting;
+
+
+    if (
+        !worker
+    ) {
+
+        /*
+            Heel kort wachten: Chromium kan register() al resolven
+            voordat installing/waiting/active zichtbaar is.
+        */
+
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    250
+                )
+        );
+
+
+        if (
+            registration.active
+        ) {
+
+            return registration;
+        }
+    }
+
+
+    await new Promise(
+        (
+            resolve,
+            reject
+        ) => {
+
+            let finished =
+                false;
+
+
+            const finish =
+                callback => {
+
+                    if (
+                        finished
+                    ) {
+
+                        return;
+                    }
+
+
+                    finished =
+                        true;
+
+
+                    clearTimeout(
+                        timer
+                    );
+
+
+                    callback();
+                };
+
+
+            const check =
+                () => {
+
+                    if (
+                        registration.active
+                    ) {
+
+                        finish(
+                            resolve
+                        );
+                    }
+                };
+
+
+            const currentWorker =
+                registration.installing
+                ||
+                registration.waiting;
+
+
+            currentWorker
+                ?.addEventListener(
+                    "statechange",
+                    check
+                );
+
+
+            navigator.serviceWorker
+                .addEventListener(
+                    "controllerchange",
+                    check,
+                    {
+                        once:
+                            true
+                    }
+                );
+
+
+            const timer =
+                setTimeout(
+                    () => {
+
+                        if (
+                            registration.active
+                        ) {
+
+                            finish(
+                                resolve
+                            );
+
+                            return;
+                        }
+
+
+                        finish(
+                            () =>
+                                reject(
+                                    new Error(
+                                        "De TeckelWeb service worker werd niet actief. Herlaad de pagina en probeer opnieuw."
+                                    )
+                                )
+                        );
+                    },
+                    timeoutMs
+                );
+
+
+            check();
+        }
+    );
+
+
+    return registration;
+}
+
+
+
+/* =========================================================
    ADMIN PUSH — TOESTEL REGISTREREN
 ========================================================= */
 
@@ -1526,7 +1687,7 @@ export async function registerAdminPushDevice() {
 
     let serviceWorkerRegistration =
         await navigator.serviceWorker.register(
-            serviceWorkerUrl.pathname,
+            serviceWorkerUrl.href,
             {
                 updateViaCache:
                     "none"
@@ -1541,7 +1702,9 @@ export async function registerAdminPushDevice() {
         );
 
 
-    await navigator.serviceWorker.ready;
+    await waitForActiveServiceWorker(
+        serviceWorkerRegistration
+    );
 
 
     async function requestFirebaseToken(
@@ -1637,7 +1800,7 @@ export async function registerAdminPushDevice() {
 
             serviceWorkerRegistration =
                 await navigator.serviceWorker.register(
-                    serviceWorkerUrl.pathname,
+                    serviceWorkerUrl.href,
                     {
                         updateViaCache:
                             "none"
@@ -1645,7 +1808,9 @@ export async function registerAdminPushDevice() {
                 );
 
 
-            await navigator.serviceWorker.ready;
+            await waitForActiveServiceWorker(
+                serviceWorkerRegistration
+            );
 
 
             token =
