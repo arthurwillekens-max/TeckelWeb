@@ -479,6 +479,16 @@ const VIEW_CONFIG = {
     },
 
 
+    history: {
+
+        eyebrow:
+            "Archief",
+
+        title:
+            "Historiek"
+    },
+
+
     settings: {
 
         eyebrow:
@@ -7212,3 +7222,2241 @@ function saveNotificationSettings() {
 ========================================================= */
 
 renderSettingsSection(0);
+
+/* =========================================================
+   =========================================================
+   TECKELWEB ADMIN V5
+   MANAGEMENT INSIGHTS / CLIENT & PET PROFILES / HISTORY
+   =========================================================
+   ========================================================= */
+
+
+let selectedClientIdV5 =
+    null;
+
+
+let selectedPetIdV5 =
+    null;
+
+
+/* =========================================================
+   MONEY + RESERVATION STATE HELPERS
+========================================================= */
+
+function getReservationAmount(
+    reservation
+) {
+
+    const estimated =
+        Number(
+            reservation?.estimatedPrice
+        );
+
+
+    if (
+        Number.isFinite(
+            estimated
+        )
+    ) {
+
+        return estimated;
+    }
+
+
+    const raw =
+        String(
+            reservation?.price
+            ??
+            ""
+        );
+
+
+    const cleaned =
+        raw
+            .replace(
+                /[^0-9,.-]/g,
+                ""
+            )
+            .replace(
+                ",",
+                "."
+            );
+
+
+    const parsed =
+        Number(
+            cleaned
+        );
+
+
+    return Number.isFinite(
+        parsed
+    )
+        ? parsed
+        : 0;
+}
+
+
+
+function formatCurrency(
+    amount
+) {
+
+    return new Intl.NumberFormat(
+        "nl-BE",
+        {
+            style:
+                "currency",
+
+            currency:
+                "EUR",
+
+            maximumFractionDigits:
+                2
+        }
+    ).format(
+        Number(amount) || 0
+    );
+}
+
+
+
+function isPastAcceptedReservation(
+    reservation
+) {
+
+    const finalDate =
+        getReservationFinalDate(
+            reservation
+        );
+
+
+    return (
+        reservation?.status ===
+            "accepted"
+        &&
+        Boolean(
+            finalDate
+        )
+        &&
+        finalDate <
+            dateToString(
+                new Date()
+            )
+    );
+}
+
+
+
+function isUpcomingAcceptedReservation(
+    reservation
+) {
+
+    const finalDate =
+        getReservationFinalDate(
+            reservation
+        );
+
+
+    return (
+        reservation?.status ===
+            "accepted"
+        &&
+        Boolean(
+            finalDate
+        )
+        &&
+        finalDate >=
+            dateToString(
+                new Date()
+            )
+    );
+}
+
+
+
+function getReservationMonthKey(
+    reservation
+) {
+
+    const finalDate =
+        getReservationFinalDate(
+            reservation
+        );
+
+
+    return finalDate
+        ? finalDate.slice(
+            0,
+            7
+        )
+        : "";
+}
+
+
+
+function getCurrentMonthKey() {
+
+    return dateToString(
+        new Date()
+    ).slice(
+        0,
+        7
+    );
+}
+
+
+
+function getExactReservationDates(
+    reservation
+) {
+
+    const exactDaycare =
+        getExactDaycareDates(
+            reservation
+        );
+
+
+    if (
+        exactDaycare.length
+    ) {
+
+        return [
+            ...exactDaycare
+        ].sort();
+    }
+
+
+    const start =
+        reservation?.booking
+            ?.startDate;
+
+
+    const end =
+        reservation?.booking
+            ?.endDate
+        ||
+        start;
+
+
+    if (
+        !start
+    ) {
+
+        return [];
+    }
+
+
+    if (
+        !end
+        ||
+        end === start
+    ) {
+
+        return [
+            start
+        ];
+    }
+
+
+    const result =
+        [];
+
+
+    let cursor =
+        start;
+
+
+    let guard =
+        0;
+
+
+    while (
+        cursor <= end
+        &&
+        guard < 370
+    ) {
+
+        result.push(
+            cursor
+        );
+
+
+        cursor =
+            addDays(
+                cursor,
+                1
+            );
+
+
+        guard +=
+            1;
+    }
+
+
+    return result;
+}
+
+
+
+function getReservationSortDate(
+    reservation
+) {
+
+    return (
+        getReservationFinalDate(
+            reservation
+        )
+        ||
+        reservation?.booking
+            ?.startDate
+        ||
+        ""
+    );
+}
+
+
+
+/* =========================================================
+   MANAGEMENT STATS
+========================================================= */
+
+function getAdminStatsV5() {
+
+    const currentMonth =
+        getCurrentMonthKey();
+
+
+    const accepted =
+        reservations.filter(
+            reservation =>
+                reservation.status ===
+                "accepted"
+        );
+
+
+    const monthAccepted =
+        accepted.filter(
+            reservation =>
+                getReservationMonthKey(
+                    reservation
+                ) ===
+                currentMonth
+        );
+
+
+    const monthCompleted =
+        monthAccepted.filter(
+            isPastAcceptedReservation
+        );
+
+
+    const monthRevenue =
+        monthAccepted.reduce(
+            (
+                sum,
+                reservation
+            ) =>
+                sum
+                +
+                getReservationAmount(
+                    reservation
+                ),
+            0
+        );
+
+
+    return {
+
+        pending:
+            reservations.filter(
+                reservation =>
+                    reservation.status ===
+                    "pending"
+            ).length,
+
+        upcoming:
+            reservations.filter(
+                isUpcomingAcceptedReservation
+            ).length,
+
+        past:
+            reservations.filter(
+                isPastAcceptedReservation
+            ).length,
+
+        monthCompleted:
+            monthCompleted.length,
+
+        monthRevenue
+    };
+}
+
+
+
+function renderManagementStatsV5() {
+
+    const stats =
+        getAdminStatsV5();
+
+
+    const values = {
+
+        "stat-month-revenue":
+            formatCurrency(
+                stats.monthRevenue
+            ),
+
+        "stat-upcoming-bookings":
+            stats.upcoming,
+
+        "stat-completed-month":
+            stats.monthCompleted,
+
+        "booking-stat-pending":
+            stats.pending,
+
+        "booking-stat-upcoming":
+            stats.upcoming,
+
+        "booking-stat-revenue":
+            formatCurrency(
+                stats.monthRevenue
+            ),
+
+        "booking-stat-past":
+            stats.past
+    };
+
+
+    Object.entries(
+        values
+    )
+        .forEach(
+            (
+                [
+                    id,
+                    value
+                ]
+            ) => {
+
+                const element =
+                    byId(
+                        id
+                    );
+
+
+                if (
+                    element
+                ) {
+
+                    element.textContent =
+                        value;
+                }
+            }
+        );
+}
+
+
+
+/* =========================================================
+   REQUEST FILTERS V5
+========================================================= */
+
+function getVisibleRequests() {
+
+    let result =
+        [
+            ...reservations
+        ];
+
+
+
+    /*
+        Oude, afgewerkte verblijven horen niet meer tussen
+        de actieve online-booking workflow. Die staan onder
+        Historiek.
+    */
+
+    if (
+        requestFilter ===
+        "upcoming"
+    ) {
+
+        result =
+            result.filter(
+                isUpcomingAcceptedReservation
+            );
+
+    } else if (
+        requestFilter ===
+        "all"
+    ) {
+
+        result =
+            result.filter(
+                reservation =>
+                    !isPastAcceptedReservation(
+                        reservation
+                    )
+            );
+
+    } else {
+
+        result =
+            result.filter(
+                reservation =>
+                    reservation.status ===
+                    requestFilter
+            );
+
+
+        if (
+            requestFilter ===
+            "accepted"
+        ) {
+
+            result =
+                result.filter(
+                    isUpcomingAcceptedReservation
+                );
+        }
+    }
+
+
+
+    const search =
+        reservationSearch
+            ?.value
+            .trim()
+            .toLowerCase()
+        ||
+        "";
+
+
+    if (
+        search
+    ) {
+
+        result =
+            result.filter(
+                reservation => {
+
+                    const haystack =
+                        [
+
+                            reservation.customer
+                                ?.name,
+
+                            reservation.customer
+                                ?.email,
+
+                            reservation.customer
+                                ?.phone,
+
+                            reservation.dog
+                                ?.name,
+
+                            reservation.dog
+                                ?.breed,
+
+                            formatBookingType(
+                                reservation
+                            ),
+
+                            formatReservationPeriod(
+                                reservation
+                            )
+
+                        ]
+                            .filter(
+                                Boolean
+                            )
+                            .join(
+                                " "
+                            )
+                            .toLowerCase();
+
+
+                    return haystack.includes(
+                        search
+                    );
+                }
+            );
+    }
+
+
+
+    return result.sort(
+        (
+            a,
+            b
+        ) => {
+
+            const dateA =
+                getReservationSortDate(
+                    a
+                );
+
+
+            const dateB =
+                getReservationSortDate(
+                    b
+                );
+
+
+            if (
+                requestFilter ===
+                "pending"
+            ) {
+
+                return dateA.localeCompare(
+                    dateB
+                );
+            }
+
+
+            return dateA.localeCompare(
+                dateB
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   REQUEST ROW V5
+========================================================= */
+
+function createRequestRow(
+    reservation
+) {
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.type =
+        "button";
+
+
+    button.id =
+        `reservation-${reservation.id}`;
+
+
+    const status =
+        reservation.status
+        ||
+        "pending";
+
+
+    button.className =
+        `admin-request-item status-${status}`;
+
+
+    if (
+        reservation.id ===
+        selectedReservationId
+    ) {
+
+        button.classList.add(
+            "selected"
+        );
+    }
+
+
+
+    const dogName =
+        reservation.dog
+            ?.name
+        ||
+        "Hond";
+
+
+    const customerName =
+        reservation.customer
+            ?.name
+        ||
+        "Onbekende klant";
+
+
+    const type =
+        formatBookingType(
+            reservation
+        );
+
+
+    const period =
+        formatReservationPeriod(
+            reservation
+        );
+
+
+    const amount =
+        getReservationAmount(
+            reservation
+        );
+
+
+    button.innerHTML = `
+        <div class="admin-request-card-main">
+
+            <div class="admin-request-dog-avatar">
+                ${escapeHtml(
+                    dogName
+                        .charAt(0)
+                        .toUpperCase()
+                )}
+            </div>
+
+            <div class="admin-request-card-copy">
+
+                <div class="admin-request-card-title">
+
+                    <strong>
+                        ${escapeHtml(
+                            dogName
+                        )}
+                    </strong>
+
+                    <span class="reservation-status ${status}">
+                        ${escapeHtml(
+                            formatStatus(
+                                status
+                            )
+                        )}
+                    </span>
+
+                </div>
+
+                <span class="admin-request-customer-name">
+                    ${escapeHtml(
+                        customerName
+                    )}
+                </span>
+
+                <div class="admin-request-card-chips">
+
+                    <span class="service">
+                        ${escapeHtml(
+                            type
+                        )}
+                    </span>
+
+                    <span class="date">
+                        ${escapeHtml(
+                            period
+                        )}
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="admin-request-card-side">
+
+                <strong>
+                    ${formatCurrency(
+                        amount
+                    )}
+                </strong>
+
+                <span>
+                    Open →
+                </span>
+
+            </div>
+
+        </div>
+    `;
+
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            showRequestDetail(
+                reservation.id
+            );
+        }
+    );
+
+
+    return button;
+}
+
+
+
+/* =========================================================
+   CLIENTS V5
+========================================================= */
+
+function renderClients() {
+
+    if (
+        !clientsList
+    ) {
+
+        return;
+    }
+
+
+    const query =
+        clientSearch
+            ?.value
+            .trim()
+            .toLowerCase()
+        ||
+        "";
+
+
+    const visible =
+        clients.filter(
+            client => {
+
+                if (
+                    !query
+                ) {
+
+                    return true;
+                }
+
+
+                return [
+
+                    client.name,
+                    client.email,
+                    client.phone,
+                    ...client.pets
+
+                ]
+                    .filter(
+                        Boolean
+                    )
+                    .join(
+                        " "
+                    )
+                    .toLowerCase()
+                    .includes(
+                        query
+                    );
+            }
+        );
+
+
+    clientsList.innerHTML =
+        "";
+
+
+    if (
+        !visible.length
+    ) {
+
+        clientsList.innerHTML = `
+            <div class="admin-empty-state">
+                <strong>
+                    Geen klanten gevonden
+                </strong>
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    visible.forEach(
+        client => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "admin-directory-item admin-client-row";
+
+
+            if (
+                selectedClientIdV5 ===
+                client.id
+            ) {
+
+                button.classList.add(
+                    "selected"
+                );
+            }
+
+
+
+            const past =
+                client.reservations.filter(
+                    isPastAcceptedReservation
+                ).length;
+
+
+            const upcoming =
+                client.reservations.filter(
+                    isUpcomingAcceptedReservation
+                ).length;
+
+
+            button.innerHTML = `
+                <div class="admin-directory-avatar">
+
+                    ${escapeHtml(
+                        getInitials(
+                            client.name
+                        )
+                    )}
+
+                </div>
+
+
+                <div class="admin-directory-main">
+
+                    <strong>
+                        ${escapeHtml(
+                            client.name
+                            ||
+                            client.email
+                            ||
+                            "Onbekende klant"
+                        )}
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(
+                            client.email
+                            ||
+                            "Geen e-mailadres"
+                        )}
+                    </span>
+
+                    <small>
+                        ${escapeHtml(
+                            client.phone
+                            ||
+                            "Geen telefoonnummer"
+                        )}
+                    </small>
+
+                </div>
+
+
+                <div class="admin-directory-meta">
+
+                    <span>
+                        ${client.pets.length}
+                        hond${client.pets.length === 1
+                            ? ""
+                            : "en"
+                        }
+                    </span>
+
+                    <strong>
+                        ${upcoming} komend
+                    </strong>
+
+                    <small>
+                        ${past} afgerond
+                    </small>
+
+                </div>
+
+                <span class="admin-row-chevron">
+                    ›
+                </span>
+            `;
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    showClientDetailV5(
+                        client.id
+                    );
+                }
+            );
+
+
+            clientsList.appendChild(
+                button
+            );
+        }
+    );
+}
+
+
+
+function showClientDetailV5(
+    clientId
+) {
+
+    const client =
+        clients.find(
+            item =>
+                item.id ===
+                clientId
+        );
+
+
+    if (
+        !client
+    ) {
+
+        return;
+    }
+
+
+    selectedClientIdV5 =
+        clientId;
+
+
+    renderClients();
+
+
+    const empty =
+        byId(
+            "client-detail-empty"
+        );
+
+
+    const content =
+        byId(
+            "client-detail-content"
+        );
+
+
+    if (
+        empty
+    ) {
+
+        empty.hidden =
+            true;
+    }
+
+
+    if (
+        content
+    ) {
+
+        content.hidden =
+            false;
+    }
+
+
+
+    const sorted =
+        [
+            ...client.reservations
+        ].sort(
+            (
+                a,
+                b
+            ) =>
+                getReservationSortDate(
+                    b
+                ).localeCompare(
+                    getReservationSortDate(
+                        a
+                    )
+                )
+        );
+
+
+    const accepted =
+        sorted.filter(
+            reservation =>
+                reservation.status ===
+                "accepted"
+        );
+
+
+    const revenue =
+        accepted.reduce(
+            (
+                sum,
+                reservation
+            ) =>
+                sum
+                +
+                getReservationAmount(
+                    reservation
+                ),
+            0
+        );
+
+
+    const values = {
+
+        "client-detail-name":
+            client.name
+            ||
+            client.email
+            ||
+            "Onbekende klant",
+
+        "client-detail-contact":
+            [
+                client.email,
+                client.phone
+            ]
+                .filter(
+                    Boolean
+                )
+                .join(
+                    " · "
+                )
+            ||
+            "Geen contactgegevens",
+
+        "client-detail-total":
+            client.reservations.length,
+
+        "client-detail-upcoming":
+            client.reservations.filter(
+                isUpcomingAcceptedReservation
+            ).length,
+
+        "client-detail-past":
+            client.reservations.filter(
+                isPastAcceptedReservation
+            ).length,
+
+        "client-detail-revenue":
+            formatCurrency(
+                revenue
+            )
+    };
+
+
+    Object.entries(
+        values
+    ).forEach(
+        (
+            [
+                id,
+                value
+            ]
+        ) => {
+
+            const element =
+                byId(
+                    id
+                );
+
+
+            if (
+                element
+            ) {
+
+                element.textContent =
+                    value;
+            }
+        }
+    );
+
+
+
+    const petTags =
+        byId(
+            "client-detail-pets"
+        );
+
+
+    if (
+        petTags
+    ) {
+
+        petTags.innerHTML =
+            client.pets.length
+                ? client.pets
+                    .map(
+                        petName =>
+                            `<span>♢ ${escapeHtml(
+                                petName
+                            )}</span>`
+                    )
+                    .join(
+                        ""
+                    )
+                : `<span>Geen honden gevonden</span>`;
+    }
+
+
+
+    const list =
+        byId(
+            "client-detail-reservations"
+        );
+
+
+    if (
+        list
+    ) {
+
+        list.innerHTML =
+            "";
+
+
+        if (
+            !sorted.length
+        ) {
+
+            list.innerHTML = `
+                <div class="admin-empty-state compact">
+                    <strong>
+                        Nog geen reservaties
+                    </strong>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        sorted.forEach(
+            reservation => {
+
+                list.appendChild(
+                    createEntityReservationRowV5(
+                        reservation,
+                        {
+                            showCalendar:
+                                true
+                        }
+                    )
+                );
+            }
+        );
+    }
+}
+
+
+
+/* =========================================================
+   PETS V5
+========================================================= */
+
+function renderPets() {
+
+    if (
+        !petsList
+    ) {
+
+        return;
+    }
+
+
+    const query =
+        petSearch
+            ?.value
+            .trim()
+            .toLowerCase()
+        ||
+        "";
+
+
+    const visible =
+        pets.filter(
+            pet => {
+
+                if (
+                    !query
+                ) {
+
+                    return true;
+                }
+
+
+                return [
+
+                    pet.name,
+                    pet.breed,
+                    pet.ownerName,
+                    pet.ownerEmail
+
+                ]
+                    .filter(
+                        Boolean
+                    )
+                    .join(
+                        " "
+                    )
+                    .toLowerCase()
+                    .includes(
+                        query
+                    );
+            }
+        );
+
+
+    petsList.innerHTML =
+        "";
+
+
+    if (
+        !visible.length
+    ) {
+
+        petsList.innerHTML = `
+            <div class="admin-empty-state">
+                <strong>
+                    Geen honden gevonden
+                </strong>
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    visible.forEach(
+        pet => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "admin-pet-directory-card admin-pet-profile-button";
+
+
+            if (
+                selectedPetIdV5 ===
+                pet.id
+            ) {
+
+                button.classList.add(
+                    "selected"
+                );
+            }
+
+
+            const upcoming =
+                pet.reservations.filter(
+                    isUpcomingAcceptedReservation
+                );
+
+
+            const nextReservation =
+                [
+                    ...upcoming
+                ].sort(
+                    (
+                        a,
+                        b
+                    ) =>
+                        getReservationSortDate(
+                            a
+                        ).localeCompare(
+                            getReservationSortDate(
+                                b
+                            )
+                        )
+                )[0];
+
+
+            button.innerHTML = `
+                <div class="admin-pet-directory-top">
+
+                    <div class="admin-pet-avatar">
+                        ♢
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            ${escapeHtml(
+                                pet.name
+                            )}
+                        </strong>
+
+                        <span>
+                            ${escapeHtml(
+                                formatDogInfo(
+                                    pet
+                                )
+                            )}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-pet-directory-owner">
+
+                    <span>
+                        Eigenaar
+                    </span>
+
+                    <strong>
+                        ${escapeHtml(
+                            pet.ownerName
+                            ||
+                            pet.ownerEmail
+                            ||
+                            "Onbekend"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="admin-pet-next-date">
+
+                    <span>
+                        Volgende verblijf
+                    </span>
+
+                    <strong>
+                        ${nextReservation
+                            ? escapeHtml(
+                                formatReservationPeriod(
+                                    nextReservation
+                                )
+                            )
+                            : "Geen gepland verblijf"
+                        }
+                    </strong>
+
+                </div>
+
+
+                <div class="admin-pet-directory-footer">
+
+                    <span>
+                        ${pet.reservations.length}
+                        reservatie${pet.reservations.length === 1
+                            ? ""
+                            : "s"
+                        }
+                    </span>
+
+                    <strong>
+                        Open profiel →
+                    </strong>
+
+                </div>
+            `;
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    showPetDetailV5(
+                        pet.id
+                    );
+                }
+            );
+
+
+            petsList.appendChild(
+                button
+            );
+        }
+    );
+}
+
+
+
+function showPetDetailV5(
+    petId
+) {
+
+    const pet =
+        pets.find(
+            item =>
+                item.id ===
+                petId
+        );
+
+
+    if (
+        !pet
+    ) {
+
+        return;
+    }
+
+
+    selectedPetIdV5 =
+        petId;
+
+
+    renderPets();
+
+
+    const empty =
+        byId(
+            "pet-detail-empty"
+        );
+
+
+    const content =
+        byId(
+            "pet-detail-content"
+        );
+
+
+    if (
+        empty
+    ) {
+
+        empty.hidden =
+            true;
+    }
+
+
+    if (
+        content
+    ) {
+
+        content.hidden =
+            false;
+    }
+
+
+
+    const values = {
+
+        "pet-detail-name":
+            pet.name,
+
+        "pet-detail-info":
+            formatDogInfo(
+                pet
+            ),
+
+        "pet-detail-owner":
+            pet.ownerName
+            ||
+            pet.ownerEmail
+            ||
+            "Onbekend",
+
+        "pet-detail-owner-email":
+            pet.ownerEmail
+            ||
+            "Geen e-mailadres"
+    };
+
+
+    Object.entries(
+        values
+    ).forEach(
+        (
+            [
+                id,
+                value
+            ]
+        ) => {
+
+            const element =
+                byId(
+                    id
+                );
+
+
+            if (
+                element
+            ) {
+
+                element.textContent =
+                    value;
+            }
+        }
+    );
+
+
+
+    const list =
+        byId(
+            "pet-detail-reservations"
+        );
+
+
+    if (
+        !list
+    ) {
+
+        return;
+    }
+
+
+    list.innerHTML =
+        "";
+
+
+    const sorted =
+        [
+            ...pet.reservations
+        ].sort(
+            (
+                a,
+                b
+            ) =>
+                getReservationSortDate(
+                    b
+                ).localeCompare(
+                    getReservationSortDate(
+                        a
+                    )
+                )
+        );
+
+
+    if (
+        !sorted.length
+    ) {
+
+        list.innerHTML = `
+            <div class="admin-empty-state compact">
+                <strong>
+                    Nog geen reservaties
+                </strong>
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+    sorted.forEach(
+        reservation => {
+
+            list.appendChild(
+                createEntityReservationRowV5(
+                    reservation,
+                    {
+                        showDateChips:
+                            true,
+
+                        showCalendar:
+                            true
+                    }
+                )
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   SHARED ENTITY RESERVATION ROW
+========================================================= */
+
+function createEntityReservationRowV5(
+    reservation,
+    options = {}
+) {
+
+    const article =
+        document.createElement(
+            "article"
+        );
+
+
+    article.className =
+        "admin-entity-reservation-row";
+
+
+    const status =
+        reservation.status
+        ||
+        "pending";
+
+
+    const dates =
+        getExactReservationDates(
+            reservation
+        );
+
+
+    article.innerHTML = `
+        <div class="admin-entity-reservation-top">
+
+            <div>
+
+                <strong>
+                    ${escapeHtml(
+                        reservation.dog
+                            ?.name
+                        ||
+                        "Hond"
+                    )}
+                </strong>
+
+                <span>
+                    ${escapeHtml(
+                        formatBookingType(
+                            reservation
+                        )
+                    )}
+                    ·
+                    ${escapeHtml(
+                        formatReservationPeriod(
+                            reservation
+                        )
+                    )}
+                </span>
+
+            </div>
+
+            <span class="reservation-status ${status}">
+                ${escapeHtml(
+                    formatStatus(
+                        status
+                    )
+                )}
+            </span>
+
+        </div>
+
+
+        <div class="admin-entity-reservation-bottom">
+
+            <strong>
+                ${formatCurrency(
+                    getReservationAmount(
+                        reservation
+                    )
+                )}
+            </strong>
+
+            <button
+                type="button"
+                class="admin-open-request-button"
+            >
+                Open reservatie
+            </button>
+
+        </div>
+    `;
+
+
+    article
+        .querySelector(
+            ".admin-open-request-button"
+        )
+        ?.addEventListener(
+            "click",
+            async () => {
+
+                await openReservation(
+                    reservation.id
+                );
+            }
+        );
+
+
+
+    if (
+        options.showDateChips
+        &&
+        dates.length
+    ) {
+
+        const dateStrip =
+            document.createElement(
+                "div"
+            );
+
+
+        dateStrip.className =
+            "admin-date-chip-strip";
+
+
+        dates.forEach(
+            date => {
+
+                const chip =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                chip.type =
+                    "button";
+
+
+                chip.className =
+                    "admin-date-chip";
+
+
+                chip.textContent =
+                    formatDate(
+                        date,
+                        {
+                            year:
+                                undefined
+                        }
+                    );
+
+
+                chip.title =
+                    "Open deze dag in kalender";
+
+
+                chip.addEventListener(
+                    "click",
+                    async () => {
+
+                        await openCalendarDateV5(
+                            date
+                        );
+                    }
+                );
+
+
+                dateStrip.appendChild(
+                    chip
+                );
+            }
+        );
+
+
+        article.appendChild(
+            dateStrip
+        );
+
+    } else if (
+        options.showCalendar
+        &&
+        dates[0]
+    ) {
+
+        const calendarButton =
+            document.createElement(
+                "button"
+            );
+
+
+        calendarButton.type =
+            "button";
+
+
+        calendarButton.className =
+            "admin-calendar-jump-button";
+
+
+        calendarButton.textContent =
+            "Open in kalender";
+
+
+        calendarButton.addEventListener(
+            "click",
+            async () => {
+
+                await openCalendarDateV5(
+                    dates[0]
+                );
+            }
+        );
+
+
+        article.appendChild(
+            calendarButton
+        );
+    }
+
+
+    return article;
+}
+
+
+
+/* =========================================================
+   CALENDAR JUMP
+========================================================= */
+
+async function openCalendarDateV5(
+    dateString
+) {
+
+    const date =
+        parseDate(
+            dateString
+        );
+
+
+    if (
+        !date
+    ) {
+
+        return;
+    }
+
+
+    selectedDate =
+        dateString;
+
+
+    displayedMonth =
+        new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            1
+        );
+
+
+    calendarMode =
+        "day";
+
+
+    await loadAvailability();
+
+
+    await showView(
+        "calendar"
+    );
+
+
+    syncAvailabilityControls();
+
+    renderMiniCalendar();
+
+    renderCalendarWorkspace();
+}
+
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function renderHistoryV5() {
+
+    const input =
+        byId(
+            "history-month"
+        );
+
+
+    if (
+        !input
+    ) {
+
+        return;
+    }
+
+
+    if (
+        !input.value
+    ) {
+
+        input.value =
+            getCurrentMonthKey();
+    }
+
+
+    const monthKey =
+        input.value;
+
+
+    const monthReservations =
+        reservations
+            .filter(
+                reservation =>
+                    isPastAcceptedReservation(
+                        reservation
+                    )
+                    &&
+                    getReservationMonthKey(
+                        reservation
+                    ) ===
+                    monthKey
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+                    getReservationSortDate(
+                        b
+                    ).localeCompare(
+                        getReservationSortDate(
+                            a
+                        )
+                    )
+            );
+
+
+    const revenue =
+        monthReservations.reduce(
+            (
+                sum,
+                reservation
+            ) =>
+                sum
+                +
+                getReservationAmount(
+                    reservation
+                ),
+            0
+        );
+
+
+    const clientsSet =
+        new Set(
+            monthReservations
+                .map(
+                    reservation =>
+                        reservation.customer
+                            ?.uid
+                        ||
+                        reservation.customer
+                            ?.email
+                        ||
+                        reservation.customer
+                            ?.name
+                )
+                .filter(
+                    Boolean
+                )
+        );
+
+
+    const values = {
+
+        "history-stat-revenue":
+            formatCurrency(
+                revenue
+            ),
+
+        "history-stat-reservations":
+            monthReservations.length,
+
+        "history-stat-clients":
+            clientsSet.size
+    };
+
+
+    Object.entries(
+        values
+    ).forEach(
+        (
+            [
+                id,
+                value
+            ]
+        ) => {
+
+            const element =
+                byId(
+                    id
+                );
+
+
+            if (
+                element
+            ) {
+
+                element.textContent =
+                    value;
+            }
+        }
+    );
+
+
+
+    const list =
+        byId(
+            "history-list"
+        );
+
+
+    if (
+        !list
+    ) {
+
+        return;
+    }
+
+
+    list.innerHTML =
+        "";
+
+
+    if (
+        !monthReservations.length
+    ) {
+
+        list.innerHTML = `
+            <div class="admin-empty-state">
+                <strong>
+                    Geen afgeronde reservaties in deze maand
+                </strong>
+                <span>
+                    Kies een andere maand om oudere verblijven te bekijken.
+                </span>
+            </div>
+        `;
+
+
+        return;
+    }
+
+
+
+    monthReservations.forEach(
+        reservation => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "admin-history-row";
+
+
+            button.innerHTML = `
+                <div class="admin-history-stay">
+
+                    <div class="admin-history-dog-icon">
+                        ♢
+                    </div>
+
+                    <div>
+                        <strong>
+                            ${escapeHtml(
+                                reservation.dog
+                                    ?.name
+                                ||
+                                "Hond"
+                            )}
+                        </strong>
+                        <span>
+                            ${escapeHtml(
+                                formatBookingType(
+                                    reservation
+                                )
+                            )}
+                            ·
+                            ${escapeHtml(
+                                formatReservationPeriod(
+                                    reservation
+                                )
+                            )}
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="admin-history-client">
+                    <strong>
+                        ${escapeHtml(
+                            reservation.customer
+                                ?.name
+                            ||
+                            "Onbekende klant"
+                        )}
+                    </strong>
+                    <span>
+                        ${escapeHtml(
+                            reservation.customer
+                                ?.email
+                            ||
+                            ""
+                        )}
+                    </span>
+                </div>
+
+                <strong class="admin-history-price">
+                    ${formatCurrency(
+                        getReservationAmount(
+                            reservation
+                        )
+                    )}
+                </strong>
+            `;
+
+
+            button.addEventListener(
+                "click",
+                async () => {
+
+                    await openReservation(
+                        reservation.id
+                    );
+                }
+            );
+
+
+            list.appendChild(
+                button
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   RENDER EVERYTHING V5
+========================================================= */
+
+function renderEverything() {
+
+    renderOverview();
+
+    renderRequestCounters();
+
+    renderRequests();
+
+    renderMiniCalendar();
+
+    renderCalendarWorkspace();
+
+    renderClients();
+
+    renderPets();
+
+    renderManagementStatsV5();
+
+    renderHistoryV5();
+}
+
+
+
+/* =========================================================
+   V5 INITIAL EVENT HOOKS
+========================================================= */
+
+byId(
+    "history-month"
+)
+    ?.addEventListener(
+        "change",
+        renderHistoryV5
+    );
+
