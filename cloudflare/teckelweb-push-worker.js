@@ -740,6 +740,36 @@ async function sendFcmMessage(
 
                                 webpush: {
 
+                                    /*
+                                        Nieuwe reservaties zijn tijdkritisch.
+                                        "high" vraagt de browser/OS om deze
+                                        Web Push zo snel mogelijk af te leveren.
+                                    */
+                                    headers: {
+                                        "Urgency":
+                                            "high",
+
+                                        "TTL":
+                                            "300"
+                                    },
+
+                                    notification: {
+                                        title:
+                                            "Nieuwe reservatie · TeckelWeb",
+
+                                        body:
+                                            `${dogName} · ${customerName} · ${period}`,
+
+                                        tag:
+                                            `teckelweb-booking-${reservation.id || "new"}`,
+
+                                        renotify:
+                                            true,
+
+                                        requireInteraction:
+                                            true
+                                    },
+
                                     fcm_options: {
                                         link:
                                             adminUrl
