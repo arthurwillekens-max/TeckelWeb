@@ -188,6 +188,9 @@ const todayDeparturesList =
 const overviewPendingList =
     byId("overview-pending-list");
 
+const enableNotificationsButton =
+    byId("admin-enable-notifications");
+
 
 
 /* =========================================================
@@ -11851,4 +11854,152 @@ taskTodayButton?.addEventListener(
         renderTasksV9();
     }
 );
+
+
+
+/* =========================================================
+   BROWSER NOTIFICATION PERMISSION
+========================================================= */
+
+function syncNotificationPermissionButtonV9() {
+
+    if (
+        !enableNotificationsButton
+    ) {
+
+        return;
+    }
+
+
+    if (
+        !(
+            "Notification" in window
+        )
+    ) {
+
+        enableNotificationsButton.hidden =
+            true;
+
+        return;
+    }
+
+
+    if (
+        Notification.permission ===
+        "granted"
+    ) {
+
+        enableNotificationsButton.textContent =
+            "🔔 Meldingen aan";
+
+
+        enableNotificationsButton.classList.add(
+            "enabled"
+        );
+
+    } else if (
+        Notification.permission ===
+        "denied"
+    ) {
+
+        enableNotificationsButton.textContent =
+            "🔕 Geblokkeerd";
+
+
+        enableNotificationsButton.classList.remove(
+            "enabled"
+        );
+
+    } else {
+
+        enableNotificationsButton.textContent =
+            "🔔 Meldingen";
+
+
+        enableNotificationsButton.classList.remove(
+            "enabled"
+        );
+    }
+}
+
+
+
+enableNotificationsButton?.addEventListener(
+    "click",
+    async () => {
+
+        if (
+            !(
+                "Notification" in window
+            )
+        ) {
+
+            showToast(
+                "Deze browser ondersteunt geen meldingen.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (
+            Notification.permission ===
+            "granted"
+        ) {
+
+            showToast(
+                "Browsermeldingen staan al aan.",
+                "success"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const permission =
+                await Notification.requestPermission();
+
+
+            syncNotificationPermissionButtonV9();
+
+
+            if (
+                permission ===
+                "granted"
+            ) {
+
+                showToast(
+                    "Browsermeldingen ingeschakeld.",
+                    "success"
+                );
+
+            } else {
+
+                showToast(
+                    "Browsermeldingen zijn niet toegestaan.",
+                    "error"
+                );
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Meldingstoestemming mislukt:",
+                error
+            );
+
+
+            showToast(
+                "Browsermeldingen konden niet worden ingeschakeld.",
+                "error"
+            );
+        }
+    }
+);
+
+
+syncNotificationPermissionButtonV9();
 
