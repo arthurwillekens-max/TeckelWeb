@@ -7,6 +7,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta name="description" content="TeckelWeb beheeromgeving">
+
     <title>
         TeckelWeb | Beheer
     </title>
@@ -27,11 +29,13 @@
 
         <div class="admin-login-card">
 
+
             <div class="admin-login-brand">
 
                 <div class="admin-login-logo">
                     T
                 </div>
+
 
                 <div>
 
@@ -40,12 +44,18 @@
                     </strong>
 
                     <span>
-                        Beheer
+                        Hondenopvang
                     </span>
 
                 </div>
 
             </div>
+
+
+
+            <span class="admin-login-eyebrow">
+                Beheeromgeving
+            </span>
 
 
             <h1>
@@ -54,13 +64,17 @@
 
 
             <p>
-                Meld u aan om reservaties, honden,
-                klanten en beschikbaarheid te beheren.
+
+                Meld je aan om reservaties,
+                planning, klanten en honden
+                te beheren.
+
             </p>
 
 
+
             <button type="button" id="google-login" class="admin-login-button">
-                Inloggen met Google
+                Doorgaan met Google
             </button>
 
 
@@ -73,23 +87,27 @@
 
 
 
+
     <!-- =====================================================
          ADMIN APP
     ====================================================== -->
 
-    <div id="admin-dashboard" class="admin-app" hidden>
+    <div id="admin-dashboard" class="admin-app admin-app-v4" hidden>
 
 
         <!-- =================================================
              SIDEBAR
         ================================================== -->
 
-        <aside class="admin-sidebar">
+        <aside class="admin-sidebar admin-sidebar-v4">
 
 
-            <!-- BRAND -->
+            <!-- =============================================
+                 BRAND
+            ============================================== -->
 
             <div class="admin-sidebar-brand">
+
 
                 <div class="admin-brand-logo">
                     T
@@ -112,35 +130,55 @@
 
 
 
-            <!-- HOOFDNAVIGATIE -->
+            <!-- =============================================
+                 CREATE
+            ============================================== -->
+
+            <div class="admin-sidebar-create-wrap">
+
+                <button type="button" id="admin-new-booking" class="admin-create-button">
+
+                    <span class="admin-create-plus">
+                        +
+                    </span>
+
+                    <span>
+                        Nieuwe reservatie
+                    </span>
+
+                </button>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 NAVIGATIE
+            ============================================== -->
 
             <nav class="admin-sidebar-navigation">
 
 
                 <div class="admin-nav-group">
 
-                    <span class="admin-nav-label">
-                        Beheer
-                    </span>
-
-
                     <button type="button" class="admin-nav-item active" data-admin-view="overview">
 
                         <span class="admin-nav-icon">
-                            ◫
+                            ⌂
                         </span>
 
                         <span>
-                            Overzicht
+                            Home
                         </span>
 
                     </button>
 
 
+
                     <button type="button" class="admin-nav-item" data-admin-view="calendar">
 
                         <span class="admin-nav-icon">
-                            □
+                            ▣
                         </span>
 
                         <span>
@@ -150,14 +188,15 @@
                     </button>
 
 
+
                     <button type="button" class="admin-nav-item" data-admin-view="requests">
 
                         <span class="admin-nav-icon">
-                            ≡
+                            ☰
                         </span>
 
                         <span>
-                            Reservatieaanvragen
+                            Online booking
                         </span>
 
 
@@ -171,7 +210,12 @@
 
 
 
+                <div class="admin-nav-divider"></div>
+
+
+
                 <div class="admin-nav-group">
+
 
                     <span class="admin-nav-label">
                         Klanten
@@ -191,6 +235,7 @@
                     </button>
 
 
+
                     <button type="button" class="admin-nav-item" data-admin-view="pets">
 
                         <span class="admin-nav-icon">
@@ -207,10 +252,15 @@
 
 
 
+                <div class="admin-nav-divider"></div>
+
+
+
                 <div class="admin-nav-group">
 
+
                     <span class="admin-nav-label">
-                        Configuratie
+                        Beheer
                     </span>
 
 
@@ -232,9 +282,12 @@
 
 
 
-            <!-- ACCOUNT -->
+            <!-- =============================================
+                 ACCOUNT
+            ============================================== -->
 
             <div class="admin-sidebar-account">
+
 
                 <div class="admin-account-avatar">
                     A
@@ -265,23 +318,26 @@
 
 
 
+
         <!-- =================================================
-             MAIN
+             MAIN APP
         ================================================== -->
 
-        <main class="admin-main">
+        <main class="admin-main admin-main-v4">
 
 
-            <!-- =================================================
+            <!-- =============================================
                  TOPBAR
-            ================================================== -->
+            ============================================== -->
 
-            <header class="admin-topbar">
+            <header class="admin-topbar admin-topbar-v4">
 
-                <div>
+
+                <div class="admin-topbar-title">
+
 
                     <span id="admin-page-eyebrow" class="admin-page-eyebrow">
-                        TeckelWeb
+                        Home
                     </span>
 
 
@@ -292,17 +348,22 @@
                 </div>
 
 
+
                 <div class="admin-topbar-actions">
 
 
                     <button type="button" id="admin-refresh" class="admin-topbar-secondary">
-                        Vernieuwen
+                        ↻ Vernieuwen
                     </button>
 
 
-                    <button type="button" id="admin-new-booking" class="admin-topbar-primary">
-                        + Nieuwe reservatie
-                    </button>
+                    <div class="admin-topbar-profile">
+
+                        <div class="admin-topbar-profile-avatar">
+                            A
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -311,14 +372,44 @@
 
 
 
+
             <!-- =================================================
-                 VIEW — OVERZICHT
+                 VIEW 1 — HOME
             ================================================== -->
 
             <section class="admin-view active" data-view="overview">
 
 
-                <!-- KPI'S -->
+                <!-- =============================================
+                     PAGE INTRO
+                ============================================== -->
+
+                <div class="admin-view-heading">
+
+                    <div>
+
+                        <h2>
+                            Dagoverzicht
+                        </h2>
+
+                        <p>
+                            Alles wat vandaag aandacht nodig heeft.
+                        </p>
+
+                    </div>
+
+
+                    <button type="button" class="admin-view-heading-action" data-go-view="calendar">
+                        Open kalender
+                    </button>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     KPI'S
+                ============================================== -->
 
                 <div class="admin-kpi-grid">
 
@@ -332,7 +423,7 @@
                             </span>
 
                             <span class="admin-kpi-icon pending">
-                                ≡
+                                !
                             </span>
 
                         </div>
@@ -372,7 +463,7 @@
 
 
                         <small>
-                            Bevestigde verblijven
+                            Bevestigde opvang
                         </small>
 
                     </article>
@@ -400,7 +491,7 @@
 
 
                         <small>
-                            Verwacht vandaag
+                            Vandaag verwacht
                         </small>
 
                     </article>
@@ -428,7 +519,7 @@
 
 
                         <small>
-                            Ophalen vandaag
+                            Vandaag ophalen
                         </small>
 
                     </article>
@@ -437,17 +528,22 @@
 
 
 
-                <!-- VANDAAG -->
+                <!-- =============================================
+                     DASHBOARD CONTENT
+                ============================================== -->
 
                 <div class="admin-dashboard-grid">
 
 
-                    <!-- DAGOPERATIES -->
+                    <!-- =========================================
+                         TODAY OPERATIONS
+                    ========================================== -->
 
                     <section class="admin-panel admin-today-panel">
 
 
                         <div class="admin-panel-header">
+
 
                             <div>
 
@@ -455,15 +551,16 @@
                                     Vandaag
                                 </span>
 
+
                                 <h2 id="overview-today-title">
-                                    Dagoverzicht
+                                    Dagplanning
                                 </h2>
 
                             </div>
 
 
                             <button type="button" class="admin-panel-link" data-go-view="calendar">
-                                Open kalender →
+                                Kalender →
                             </button>
 
                         </div>
@@ -473,9 +570,10 @@
                         <div class="admin-today-columns">
 
 
-                            <!-- AANKOMSTEN -->
+                            <!-- AANKOMST -->
 
                             <div class="admin-today-column">
+
 
                                 <div class="admin-today-column-header">
 
@@ -484,7 +582,7 @@
                                         <span class="admin-operation-dot arrival"></span>
 
                                         <strong>
-                                            Aankomsten
+                                            Aankomst
                                         </strong>
 
                                     </div>
@@ -512,6 +610,7 @@
                             <!-- AANWEZIG -->
 
                             <div class="admin-today-column">
+
 
                                 <div class="admin-today-column-header">
 
@@ -545,9 +644,10 @@
 
 
 
-                            <!-- VERTREKKEN -->
+                            <!-- VERTREK -->
 
                             <div class="admin-today-column">
+
 
                                 <div class="admin-today-column-header">
 
@@ -556,7 +656,7 @@
                                         <span class="admin-operation-dot departure"></span>
 
                                         <strong>
-                                            Vertrekken
+                                            Vertrek
                                         </strong>
 
                                     </div>
@@ -585,7 +685,9 @@
 
 
 
-                    <!-- PENDING -->
+                    <!-- =========================================
+                         PENDING REQUESTS
+                    ========================================== -->
 
                     <aside class="admin-panel admin-pending-preview">
 
@@ -598,6 +700,7 @@
                                     Online booking
                                 </span>
 
+
                                 <h2>
                                     Nieuwe aanvragen
                                 </h2>
@@ -606,7 +709,7 @@
 
 
                             <button type="button" class="admin-panel-link" data-go-view="requests">
-                                Alles bekijken →
+                                Alles →
                             </button>
 
                         </div>
@@ -629,38 +732,58 @@
 
 
 
+
             <!-- =================================================
-                 VIEW — KALENDER
+                 VIEW 2 — KALENDER
             ================================================== -->
 
             <section class="admin-view" data-view="calendar" hidden>
 
 
-                <div class="admin-calendar-toolbar">
+                <!-- =============================================
+                     CALENDAR TOPBAR
+                ============================================== -->
+
+                <div class="admin-calendar-page-header">
 
 
-                    <div class="admin-calendar-view-tabs">
+                    <div>
 
-                        <button type="button" class="active" data-calendar-mode="day">
-                            Dag
-                        </button>
+                        <h2>
+                            Kalender
+                        </h2>
 
-
-                        <button type="button" data-calendar-mode="week">
-                            Week
-                        </button>
-
-
-                        <button type="button" data-calendar-mode="month">
-                            Maand
-                        </button>
+                        <p>
+                            Bekijk dagopvang en overnachtingen.
+                        </p>
 
                     </div>
 
 
-                    <div class="admin-calendar-toolbar-actions">
 
-                        <button type="button" id="admin-calendar-today">
+                    <div class="admin-calendar-page-actions">
+
+
+                        <div class="admin-calendar-view-tabs">
+
+                            <button type="button" class="active" data-calendar-mode="day">
+                                Dag
+                            </button>
+
+
+                            <button type="button" data-calendar-mode="week">
+                                Week
+                            </button>
+
+
+                            <button type="button" data-calendar-mode="month">
+                                Maand
+                            </button>
+
+                        </div>
+
+
+                        <button type="button" id="admin-calendar-today" class="admin-calendar-today-button">
                             Vandaag
                         </button>
 
@@ -670,17 +793,22 @@
 
 
 
+                <!-- =============================================
+                     CALENDAR APP
+                ============================================== -->
+
                 <div class="admin-calendar-workspace">
 
 
                     <!-- =========================================
-                         LINKER MINI-KALENDER
+                         LEFT SIDEBAR
                     ========================================== -->
 
                     <aside class="admin-calendar-sidebar">
 
 
                         <div class="admin-calendar-header">
+
 
                             <button type="button" id="admin-calendar-prev" aria-label="Vorige maand">
                                 ‹
@@ -713,11 +841,13 @@
                         </div>
 
 
+
                         <div id="admin-calendar-grid" class="admin-calendar-grid"></div>
 
 
 
                         <div class="admin-calendar-legend">
+
 
                             <span>
 
@@ -749,13 +879,17 @@
 
 
 
-                        <!-- BESCHIKBAARHEID -->
+                        <!-- =====================================
+                             AVAILABILITY
+                        ====================================== -->
 
                         <div class="admin-availability-control">
 
+
                             <span class="admin-control-label">
-                                Beschikbaarheid
+                                Beschikbaarheid geselecteerde dag
                             </span>
+
 
 
                             <div class="admin-availability-segments">
@@ -772,6 +906,7 @@
                                 </label>
 
 
+
                                 <label>
 
                                     <input type="radio" name="availability-status" value="limited">
@@ -781,6 +916,7 @@
                                     </span>
 
                                 </label>
+
 
 
                                 <label>
@@ -794,6 +930,7 @@
                                 </label>
 
                             </div>
+
 
 
                             <button type="button" id="admin-save-availability" class="admin-save-availability" disabled>
@@ -810,31 +947,31 @@
 
 
                     <!-- =========================================
-                         DAGPLANNING
+                         MAIN SCHEDULE
                     ========================================== -->
 
                     <section class="admin-schedule">
 
 
-                        <!-- HEADER -->
-
                         <div class="admin-schedule-header">
+
 
                             <div>
 
                                 <span class="admin-schedule-label">
-                                    Dagplanning
+                                    Planning
                                 </span>
 
 
                                 <h2 id="admin-selected-date">
-                                    Kies een dag
+                                    Vandaag
                                 </h2>
 
                             </div>
 
 
-                            <div id="admin-day-summary" class="admin-schedule-summary" hidden>
+
+                            <div id="admin-day-summary" class="admin-schedule-summary">
 
                                 <span>
 
@@ -853,7 +990,7 @@
                                         0
                                     </strong>
 
-                                    aanvragen
+                                    nieuw
 
                                 </span>
 
@@ -863,78 +1000,55 @@
 
 
 
-                        <!-- DAGPLANNING -->
-
-                        <div id="admin-day-planning" class="admin-day-planning" hidden>
+                        <div class="admin-schedule-legend">
 
 
-                            <div class="admin-schedule-legend">
+                            <span>
 
-                                <span>
+                                <i class="confirmed"></i>
 
-                                    <i class="confirmed"></i>
+                                Bevestigd
 
-                                    Bevestigd
-
-                                </span>
+                            </span>
 
 
-                                <span>
+                            <span>
 
-                                    <i class="pending"></i>
+                                <i class="pending"></i>
 
-                                    Aanvraag
+                                Nieuwe aanvraag
 
-                                </span>
+                            </span>
 
 
-                                <span>
+                            <span>
 
-                                    <i class="overnight"></i>
+                                <i class="overnight"></i>
 
-                                    Overnachting
+                                Overnachting
 
-                                </span>
+                            </span>
 
-                            </div>
+                        </div>
 
 
 
-                            <!-- VERTICALE DAG -->
+                        <!-- =====================================
+                             DAG AGENDA
+                        ====================================== -->
+
+                        <div id="admin-day-planning" class="admin-day-planning">
+
 
                             <div class="admin-day-agenda">
 
 
-                                <div class="admin-day-hours">
-
-                                    <span>08:00</span>
-                                    <span>09:00</span>
-                                    <span>10:00</span>
-                                    <span>11:00</span>
-                                    <span>12:00</span>
-                                    <span>13:00</span>
-                                    <span>14:00</span>
-                                    <span>15:00</span>
-                                    <span>16:00</span>
-                                    <span>17:00</span>
-                                    <span>18:00</span>
-
-                                </div>
+                                <div class="admin-day-hours"></div>
 
 
                                 <div id="admin-day-bookings" class="admin-day-bookings"></div>
 
                             </div>
-
-                        </div>
-
-
-
-                        <!-- COMPATIBILITEIT -->
-
-                        <div id="admin-day-pending" hidden>
-
-                            <div id="admin-day-pending-list"></div>
 
                         </div>
 
@@ -947,17 +1061,43 @@
 
 
 
+
             <!-- =================================================
-                 VIEW — BOOKING REQUESTS
+                 VIEW 3 — ONLINE BOOKING
             ================================================== -->
 
             <section class="admin-view" data-view="requests" hidden>
 
 
+                <div class="admin-view-heading">
+
+
+                    <div>
+
+                        <h2>
+                            Online booking
+                        </h2>
+
+                        <p>
+                            Bekijk en verwerk binnenkomende aanvragen.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     REQUEST APP
+                ============================================== -->
+
                 <div class="admin-requests-layout">
 
 
-                    <!-- LIJST -->
+                    <!-- =========================================
+                         LEFT REQUESTS
+                    ========================================== -->
 
                     <section class="admin-requests-list-panel">
 
@@ -967,14 +1107,15 @@
 
                             <div class="admin-request-tabs">
 
+
                                 <button type="button" class="active" data-request-filter="pending">
                                     Nieuw
 
                                     <span id="request-tab-pending">
                                         0
                                     </span>
-
                                 </button>
+
 
 
                                 <button type="button" data-request-filter="accepted">
@@ -982,9 +1123,17 @@
                                 </button>
 
 
+
                                 <button type="button" data-request-filter="rejected">
                                     Geweigerd
                                 </button>
+
+
+
+                                <button type="button" data-request-filter="cancelled">
+                                    Geannuleerd
+                                </button>
+
 
 
                                 <button type="button" data-request-filter="all">
@@ -998,9 +1147,27 @@
                             <div class="admin-request-search">
 
                                 <input type="search" id="reservation-search"
-                                    placeholder="Zoek klant, hond of telefoon..." autocomplete="off">
+                                    placeholder="Zoek klant, hond of telefoon...">
 
                             </div>
+
+                        </div>
+
+
+
+                        <!-- =====================================
+                             COLUMN HEADERS
+                        ====================================== -->
+
+                        <div class="admin-request-list-heading">
+
+                            <span>
+                                Reservatie
+                            </span>
+
+                            <span>
+                                Status
+                            </span>
 
                         </div>
 
@@ -1018,15 +1185,22 @@
 
 
 
-                    <!-- DETAILPANEEL -->
+                    <!-- =========================================
+                         RIGHT DETAIL
+                    ========================================== -->
 
-                    <aside id="request-detail-panel" class="admin-request-detail">
+                    <aside class="admin-request-detail">
 
+
+                        <!-- =====================================
+                             EMPTY
+                        ====================================== -->
 
                         <div id="request-detail-empty" class="admin-request-detail-empty">
 
+
                             <div class="admin-request-empty-icon">
-                                ≡
+                                ☰
                             </div>
 
 
@@ -1036,52 +1210,59 @@
 
 
                             <p>
-                                Kies links een reservatie om alle
-                                details van de klant, hond en het
-                                verblijf te bekijken.
+
+                                Klik links op een reservatie om
+                                alle gegevens te bekijken.
+
                             </p>
 
                         </div>
 
 
 
+                        <!-- =====================================
+                             CONTENT
+                        ====================================== -->
+
                         <div id="request-detail-content" hidden>
 
 
-                            <!-- DETAIL HEADER -->
-
                             <div class="admin-request-detail-header">
+
 
                                 <div>
 
                                     <span class="admin-request-detail-label">
-                                        Reservatieaanvraag
+                                        Reservatie
                                     </span>
 
 
                                     <h2 id="request-detail-dog">
-                                        Hond
+                                        —
                                     </h2>
 
 
                                     <p id="request-detail-customer">
-                                        Klant
+                                        —
                                     </p>
 
                                 </div>
 
 
                                 <span id="request-detail-status" class="reservation-status pending">
-                                    In afwachting
+                                    Nieuw
                                 </span>
 
                             </div>
 
 
 
-                            <!-- VERBLIJF -->
+                            <!-- =================================
+                                 VERBLIJF
+                            ================================== -->
 
-                            <div class="admin-request-detail-section">
+                            <section class="admin-request-detail-section">
+
 
                                 <h3>
                                     Verblijf
@@ -1104,10 +1285,11 @@
                                     </div>
 
 
+
                                     <div>
 
                                         <span>
-                                            Periode
+                                            Datum
                                         </span>
 
                                         <strong id="request-detail-period">
@@ -1115,6 +1297,7 @@
                                         </strong>
 
                                     </div>
+
 
 
                                     <div>
@@ -1128,6 +1311,7 @@
                                         </strong>
 
                                     </div>
+
 
 
                                     <div>
@@ -1144,13 +1328,16 @@
 
                                 </div>
 
-                            </div>
+                            </section>
 
 
 
-                            <!-- KLANT -->
+                            <!-- =================================
+                                 KLANT
+                            ================================== -->
 
-                            <div class="admin-request-detail-section">
+                            <section class="admin-request-detail-section">
+
 
                                 <h3>
                                     Klant
@@ -1158,6 +1345,7 @@
 
 
                                 <div class="admin-contact-card">
+
 
                                     <div class="admin-contact-avatar">
                                         K
@@ -1170,9 +1358,11 @@
                                             —
                                         </strong>
 
+
                                         <span id="request-detail-email">
                                             —
                                         </span>
+
 
                                         <span id="request-detail-phone">
                                             —
@@ -1182,13 +1372,16 @@
 
                                 </div>
 
-                            </div>
+                            </section>
 
 
 
-                            <!-- HOND -->
+                            <!-- =================================
+                                 HOND
+                            ================================== -->
 
-                            <div class="admin-request-detail-section">
+                            <section class="admin-request-detail-section">
+
 
                                 <h3>
                                     Hond
@@ -1196,6 +1389,7 @@
 
 
                                 <div class="admin-pet-card">
+
 
                                     <div class="admin-pet-avatar">
                                         ♢
@@ -1208,24 +1402,28 @@
                                             —
                                         </strong>
 
+
                                         <span id="request-pet-info">
-                                            Hond
+                                            —
                                         </span>
 
                                     </div>
 
                                 </div>
 
-                            </div>
+                            </section>
 
 
 
-                            <!-- NOTITIES -->
+                            <!-- =================================
+                                 OPMERKINGEN
+                            ================================== -->
 
-                            <div id="request-notes-section" class="admin-request-detail-section">
+                            <section class="admin-request-detail-section">
+
 
                                 <h3>
-                                    Opmerkingen
+                                    Verzorging & opmerkingen
                                 </h3>
 
 
@@ -1233,17 +1431,20 @@
                                     Geen opmerkingen.
                                 </p>
 
-                            </div>
+                            </section>
 
 
 
-                            <!-- PRIJS -->
+                            <!-- =================================
+                                 PRICE
+                            ================================== -->
 
                             <div class="admin-request-price">
 
                                 <span>
                                     Geschatte prijs
                                 </span>
+
 
                                 <strong id="request-detail-price">
                                     —
@@ -1253,9 +1454,12 @@
 
 
 
-                            <!-- ACTIES -->
+                            <!-- =================================
+                                 ACTIONS
+                            ================================== -->
 
                             <div id="request-detail-actions" class="admin-request-actions">
+
 
                                 <button type="button" id="request-reject" class="admin-request-reject">
                                     Weigeren
@@ -1279,8 +1483,9 @@
 
 
 
+
             <!-- =================================================
-                 VIEW — KLANTEN
+                 VIEW 4 — KLANTEN
             ================================================== -->
 
             <section class="admin-view" data-view="clients" hidden>
@@ -1291,17 +1496,20 @@
 
                     <div class="admin-directory-header">
 
+
                         <div>
 
                             <span class="admin-panel-label">
-                                Relaties
+                                Klantenbestand
                             </span>
+
 
                             <h2>
                                 Klanten
                             </h2>
 
                         </div>
+
 
 
                         <div class="admin-directory-actions">
@@ -1311,6 +1519,25 @@
                         </div>
 
                     </div>
+
+
+
+                    <div class="admin-directory-table-head">
+
+                        <span>
+                            Klant
+                        </span>
+
+                        <span>
+                            Honden
+                        </span>
+
+                        <span>
+                            Reservaties
+                        </span>
+
+                    </div>
+
 
 
                     <div id="clients-list" class="admin-directory-list">
@@ -1332,8 +1559,9 @@
 
 
 
+
             <!-- =================================================
-                 VIEW — HONDEN
+                 VIEW 5 — HONDEN
             ================================================== -->
 
             <section class="admin-view" data-view="pets" hidden>
@@ -1344,11 +1572,13 @@
 
                     <div class="admin-directory-header">
 
+
                         <div>
 
                             <span class="admin-panel-label">
-                                Huisdieren
+                                Hondenbestand
                             </span>
+
 
                             <h2>
                                 Honden
@@ -1357,13 +1587,15 @@
                         </div>
 
 
+
                         <div class="admin-directory-actions">
 
-                            <input type="search" id="pet-search" placeholder="Zoek hond...">
+                            <input type="search" id="pet-search" placeholder="Zoek hond of eigenaar...">
 
                         </div>
 
                     </div>
+
 
 
                     <div id="pets-list" class="admin-pets-grid">
@@ -1385,8 +1617,9 @@
 
 
 
+
             <!-- =================================================
-                 VIEW — INSTELLINGEN
+                 VIEW 6 — SETTINGS
             ================================================== -->
 
             <section class="admin-view" data-view="settings" hidden>
@@ -1395,27 +1628,39 @@
                 <div class="admin-settings-layout">
 
 
-                    <nav class="admin-settings-navigation">
+                    <!-- =========================================
+                         SETTINGS NAVIGATION
+                    ========================================== -->
+
+                    <aside class="admin-settings-navigation">
+
 
                         <button type="button" class="active">
                             Opvang & capaciteit
                         </button>
 
+
                         <button type="button">
                             Diensten & prijzen
                         </button>
+
 
                         <button type="button">
                             Online booking
                         </button>
 
+
                         <button type="button">
                             Meldingen
                         </button>
 
-                    </nav>
+                    </aside>
 
 
+
+                    <!-- =========================================
+                         DYNAMIC CONTENT
+                    ========================================== -->
 
                     <section class="admin-settings-content">
 
@@ -1426,130 +1671,15 @@
                                 Instellingen
                             </span>
 
+
                             <h2>
                                 Opvang & capaciteit
                             </h2>
 
+
                             <p>
-                                Bepaal hoeveel honden u tegelijk
-                                kunt opvangen.
+                                Instellingen worden geladen...
                             </p>
-
-                        </div>
-
-
-
-                        <div class="admin-settings-card">
-
-
-                            <div class="admin-setting-row">
-
-                                <div>
-
-                                    <strong>
-                                        Maximale dagcapaciteit
-                                    </strong>
-
-                                    <span>
-                                        Maximum aantal honden dat tegelijk
-                                        aanwezig mag zijn.
-                                    </span>
-
-                                </div>
-
-
-                                <div class="admin-setting-input">
-
-                                    <input type="number" id="setting-max-capacity" min="1" value="6">
-
-                                    <span>
-                                        honden
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-
-                            <div class="admin-setting-row">
-
-                                <div>
-
-                                    <strong>
-                                        Beperkte beschikbaarheid vanaf
-                                    </strong>
-
-                                    <span>
-                                        Vanaf dit aantal wordt een dag
-                                        als beperkt weergegeven.
-                                    </span>
-
-                                </div>
-
-
-                                <div class="admin-setting-input">
-
-                                    <input type="number" id="setting-limited-capacity" min="1" value="4">
-
-                                    <span>
-                                        honden
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-
-                            <div class="admin-setting-row">
-
-                                <div>
-
-                                    <strong>
-                                        Openingsuur
-                                    </strong>
-
-                                    <span>
-                                        Eerste mogelijke drop-off.
-                                    </span>
-
-                                </div>
-
-
-                                <input type="time" id="setting-opening-time" value="08:00">
-
-                            </div>
-
-
-
-                            <div class="admin-setting-row">
-
-                                <div>
-
-                                    <strong>
-                                        Sluitingsuur
-                                    </strong>
-
-                                    <span>
-                                        Laatste mogelijke pick-up.
-                                    </span>
-
-                                </div>
-
-
-                                <input type="time" id="setting-closing-time" value="18:00">
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="admin-settings-footer">
-
-                            <button type="button" id="save-admin-settings" class="admin-settings-save">
-                                Wijzigingen opslaan
-                            </button>
 
                         </div>
 
@@ -1561,26 +1691,11 @@
 
 
 
-
             <!-- =================================================
-                 LEGACY FILTER ELEMENTEN
-
-                 Deze blijven tijdelijk bestaan zodat we tijdens
-                 de migratie geen oude JS breken.
+                 LEGACY COUNTERS
             ================================================== -->
 
             <div hidden>
-
-                <button class="admin-filter-button active" data-filter="all"></button>
-
-                <button class="admin-filter-button" data-filter="pending"></button>
-
-                <button class="admin-filter-button" data-filter="accepted"></button>
-
-                <button class="admin-filter-button" data-filter="rejected"></button>
-
-                <button class="admin-filter-button" data-filter="cancelled"></button>
-
 
                 <strong id="stat-accepted">
                     0
@@ -1598,14 +1713,16 @@
 
 
 
+
+
     <!-- =====================================================
          JAVASCRIPT
+
+         BELANGRIJK:
+         slechts één centrale admin-controller.
     ====================================================== -->
 
     <script type="module" src="js/admin.js"></script>
-
-
-    <script type="module" src="js/admin-availability.js"></script>
 
 </body>
 

@@ -42,7 +42,7 @@ import {
 const firebaseConfig = {
 
     apiKey:
-        "AIzaSyBIvAp40mYiAi9mB2P7CQG8Lw5xQ8m85hE",
+        "AIzaSyBIvAp40mYi9mB2P7CQG8Lw5xQ8m85hE",
 
     authDomain:
         "teckelweb.firebaseapp.com",

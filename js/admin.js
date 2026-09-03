@@ -1,3 +1,23 @@
+/* =========================================================
+   TECKELWEB ADMIN
+   CENTRALE ADMIN CONTROLLER
+
+   Verantwoordelijk voor:
+   - authenticatie
+   - dashboard
+   - navigatie
+   - kalender
+   - dag / week / maand
+   - availability
+   - reservatieaanvragen
+   - accepteren / weigeren
+   - e-mails
+   - klanten
+   - honden
+   - instellingen
+========================================================= */
+
+
 import {
     loginWithGoogle,
     logout,
@@ -5,14 +25,10 @@ import {
     getReservations,
     updateReservationStatus,
     sendReservationEmail,
-    getClientDirectory,
-    getPetDirectory
+    getAvailabilityForMonth,
+    saveAvailability
 } from "./firebase.js";
 
-
-/* =========================================================
-   TECKELWEB ADMIN
-========================================================= */
 
 
 /* =========================================================
@@ -26,206 +42,157 @@ const ADMIN_UIDS = [
 
 
 /* =========================================================
-   LOGIN ELEMENTEN
+   ALGEMENE HELPERS
+========================================================= */
+
+function byId(id) {
+
+    return document.getElementById(id);
+}
+
+
+function one(selector) {
+
+    return document.querySelector(selector);
+}
+
+
+function all(selector) {
+
+    return Array.from(
+        document.querySelectorAll(selector)
+    );
+}
+
+
+
+/* =========================================================
+   AUTH ELEMENTEN
 ========================================================= */
 
 const loginSection =
-    document.querySelector(
-        ".admin-login"
-    );
+    one(".admin-login");
 
 const loginButton =
-    document.getElementById(
-        "google-login"
-    );
+    byId("google-login");
 
 const adminMessage =
-    document.getElementById(
-        "admin-message"
-    );
+    byId("admin-message");
 
 const adminDashboard =
-    document.getElementById(
-        "admin-dashboard"
-    );
+    byId("admin-dashboard");
 
 const adminUser =
-    document.getElementById(
-        "admin-user"
-    );
+    byId("admin-user");
 
 const logoutButton =
-    document.getElementById(
-        "logout-button"
-    );
+    byId("logout-button");
 
 
 
 /* =========================================================
-   ALGEMENE ADMIN NAVIGATIE
+   TOPBAR
 ========================================================= */
 
-const adminNavButtons =
-    Array.from(
-        document.querySelectorAll(
-            "[data-admin-view]"
-        )
-    );
-
-const adminViews =
-    Array.from(
-        document.querySelectorAll(
-            ".admin-view"
-        )
-    );
-
-const goViewButtons =
-    Array.from(
-        document.querySelectorAll(
-            "[data-go-view]"
-        )
-    );
+const adminPageEyebrow =
+    byId("admin-page-eyebrow");
 
 const adminPageTitle =
-    document.getElementById(
-        "admin-page-title"
-    );
-
-const adminPageEyebrow =
-    document.getElementById(
-        "admin-page-eyebrow"
-    );
+    byId("admin-page-title");
 
 const refreshButton =
-    document.getElementById(
-        "admin-refresh"
-    );
+    byId("admin-refresh");
 
 const newBookingButton =
-    document.getElementById(
-        "admin-new-booking"
-    );
+    byId("admin-new-booking");
 
 
 
 /* =========================================================
-   KPI ELEMENTEN
+   SIDEBAR / VIEWS
+========================================================= */
+
+const navigationButtons =
+    all("[data-admin-view]");
+
+const adminViews =
+    all(".admin-view");
+
+const quickViewButtons =
+    all("[data-go-view]");
+
+
+
+/* =========================================================
+   DASHBOARD
 ========================================================= */
 
 const statPending =
-    document.getElementById(
-        "stat-pending"
-    );
+    byId("stat-pending");
 
 const statToday =
-    document.getElementById(
-        "stat-today"
-    );
+    byId("stat-today");
 
 const statArrivals =
-    document.getElementById(
-        "stat-arrivals"
-    );
+    byId("stat-arrivals");
 
 const statDepartures =
-    document.getElementById(
-        "stat-departures"
-    );
-
-
-/*
-    Legacy hidden counters.
-*/
+    byId("stat-departures");
 
 const statAccepted =
-    document.getElementById(
-        "stat-accepted"
-    );
+    byId("stat-accepted");
 
 const statUpcoming =
-    document.getElementById(
-        "stat-upcoming"
-    );
-
+    byId("stat-upcoming");
 
 const sidebarPendingCount =
-    document.getElementById(
-        "sidebar-pending-count"
-    );
+    byId("sidebar-pending-count");
 
 const requestTabPending =
-    document.getElementById(
-        "request-tab-pending"
-    );
+    byId("request-tab-pending");
 
-
-
-/* =========================================================
-   OVERZICHT VANDAAG
-========================================================= */
 
 const overviewTodayTitle =
-    document.getElementById(
-        "overview-today-title"
-    );
+    byId("overview-today-title");
+
 
 const todayArrivalsCount =
-    document.getElementById(
-        "today-arrivals-count"
-    );
+    byId("today-arrivals-count");
 
 const todayStayingCount =
-    document.getElementById(
-        "today-staying-count"
-    );
+    byId("today-staying-count");
 
 const todayDeparturesCount =
-    document.getElementById(
-        "today-departures-count"
-    );
+    byId("today-departures-count");
+
 
 const todayArrivalsList =
-    document.getElementById(
-        "today-arrivals-list"
-    );
+    byId("today-arrivals-list");
 
 const todayStayingList =
-    document.getElementById(
-        "today-staying-list"
-    );
+    byId("today-staying-list");
 
 const todayDeparturesList =
-    document.getElementById(
-        "today-departures-list"
-    );
+    byId("today-departures-list");
+
 
 const overviewPendingList =
-    document.getElementById(
-        "overview-pending-list"
-    );
+    byId("overview-pending-list");
 
 
 
 /* =========================================================
-   REQUESTS
+   RESERVATIEAANVRAGEN
 ========================================================= */
 
 const reservationsList =
-    document.getElementById(
-        "reservations-list"
-    );
+    byId("reservations-list");
 
 const reservationSearch =
-    document.getElementById(
-        "reservation-search"
-    );
+    byId("reservation-search");
 
 const requestFilterButtons =
-    Array.from(
-        document.querySelectorAll(
-            "[data-request-filter]"
-        )
-    );
+    all("[data-request-filter]");
 
 
 
@@ -234,125 +201,153 @@ const requestFilterButtons =
 ========================================================= */
 
 const requestDetailEmpty =
-    document.getElementById(
-        "request-detail-empty"
-    );
+    byId("request-detail-empty");
 
 const requestDetailContent =
-    document.getElementById(
-        "request-detail-content"
-    );
+    byId("request-detail-content");
 
 const requestDetailDog =
-    document.getElementById(
-        "request-detail-dog"
-    );
+    byId("request-detail-dog");
 
 const requestDetailCustomer =
-    document.getElementById(
-        "request-detail-customer"
-    );
+    byId("request-detail-customer");
 
 const requestDetailStatus =
-    document.getElementById(
-        "request-detail-status"
-    );
+    byId("request-detail-status");
 
 const requestDetailType =
-    document.getElementById(
-        "request-detail-type"
-    );
+    byId("request-detail-type");
 
 const requestDetailPeriod =
-    document.getElementById(
-        "request-detail-period"
-    );
+    byId("request-detail-period");
 
 const requestDetailArrival =
-    document.getElementById(
-        "request-detail-arrival"
-    );
+    byId("request-detail-arrival");
 
 const requestDetailDeparture =
-    document.getElementById(
-        "request-detail-departure"
-    );
+    byId("request-detail-departure");
 
 const requestDetailClientName =
-    document.getElementById(
-        "request-detail-client-name"
-    );
+    byId("request-detail-client-name");
 
 const requestDetailEmail =
-    document.getElementById(
-        "request-detail-email"
-    );
+    byId("request-detail-email");
 
 const requestDetailPhone =
-    document.getElementById(
-        "request-detail-phone"
-    );
+    byId("request-detail-phone");
 
 const requestPetName =
-    document.getElementById(
-        "request-pet-name"
-    );
+    byId("request-pet-name");
 
 const requestPetInfo =
-    document.getElementById(
-        "request-pet-info"
-    );
+    byId("request-pet-info");
 
 const requestDetailNotes =
-    document.getElementById(
-        "request-detail-notes"
-    );
+    byId("request-detail-notes");
 
 const requestDetailPrice =
-    document.getElementById(
-        "request-detail-price"
-    );
+    byId("request-detail-price");
 
 const requestDetailActions =
-    document.getElementById(
-        "request-detail-actions"
-    );
+    byId("request-detail-actions");
 
 const requestAcceptButton =
-    document.getElementById(
-        "request-accept"
-    );
+    byId("request-accept");
 
 const requestRejectButton =
-    document.getElementById(
-        "request-reject"
-    );
+    byId("request-reject");
 
 
 
 /* =========================================================
-   DIRECTORY
+   KLANTEN
 ========================================================= */
 
 const clientsList =
-    document.getElementById(
-        "clients-list"
-    );
-
-const petsList =
-    document.getElementById(
-        "pets-list"
-    );
+    byId("clients-list");
 
 const clientSearch =
-    document.getElementById(
-        "client-search"
-    );
+    byId("client-search");
+
+
+
+/* =========================================================
+   HONDEN
+========================================================= */
+
+const petsList =
+    byId("pets-list");
 
 const petSearch =
-    document.getElementById(
-        "pet-search"
+    byId("pet-search");
+
+
+
+/* =========================================================
+   KALENDER
+========================================================= */
+
+const calendarTitle =
+    byId("admin-calendar-title");
+
+const calendarGrid =
+    byId("admin-calendar-grid");
+
+const calendarPrevious =
+    byId("admin-calendar-prev");
+
+const calendarNext =
+    byId("admin-calendar-next");
+
+const calendarToday =
+    byId("admin-calendar-today");
+
+const calendarModeButtons =
+    all("[data-calendar-mode]");
+
+
+
+/* =========================================================
+   DAGPLANNING
+========================================================= */
+
+const selectedDateTitle =
+    byId("admin-selected-date");
+
+const daySummary =
+    byId("admin-day-summary");
+
+const dayConfirmedCount =
+    byId("admin-day-confirmed-count");
+
+const dayPendingCount =
+    byId("admin-day-pending-count");
+
+const dayPlanning =
+    byId("admin-day-planning");
+
+const dayHours =
+    one(".admin-day-hours");
+
+const dayBookings =
+    byId("admin-day-bookings");
+
+
+
+/* =========================================================
+   AVAILABILITY
+========================================================= */
+
+const availabilityStatusInputs =
+    all(
+        'input[name="availability-status"]'
     );
+
+const saveAvailabilityButton =
+    byId("admin-save-availability");
+
+const availabilityMessage =
+    byId("admin-availability-message");
 
 
 
@@ -360,30 +355,11 @@ const petSearch =
    SETTINGS
 ========================================================= */
 
-const settingMaxCapacity =
-    document.getElementById(
-        "setting-max-capacity"
-    );
+const settingsNavigation =
+    all(".admin-settings-navigation button");
 
-const settingLimitedCapacity =
-    document.getElementById(
-        "setting-limited-capacity"
-    );
-
-const settingOpeningTime =
-    document.getElementById(
-        "setting-opening-time"
-    );
-
-const settingClosingTime =
-    document.getElementById(
-        "setting-closing-time"
-    );
-
-const saveSettingsButton =
-    document.getElementById(
-        "save-admin-settings"
-    );
+const settingsContent =
+    one(".admin-settings-content");
 
 
 
@@ -391,7 +367,11 @@ const saveSettingsButton =
    STATE
 ========================================================= */
 
-let allReservations =
+let currentUser =
+    null;
+
+
+let reservations =
     [];
 
 
@@ -403,11 +383,15 @@ let pets =
     [];
 
 
-let activeAdminView =
+let availability =
+    {};
+
+
+let currentView =
     "overview";
 
 
-let activeRequestFilter =
+let requestFilter =
     "pending";
 
 
@@ -415,25 +399,45 @@ let selectedReservationId =
     null;
 
 
-let directoriesLoaded =
-    false;
+let calendarMode =
+    "day";
+
+
+const today =
+    new Date();
+
+
+let displayedMonth =
+    new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+    );
+
+
+let selectedDate =
+    dateToString(today);
+
 
 
 /* =========================================================
-   VIEW TITELS
+   VIEW CONFIG
 ========================================================= */
 
-const VIEW_TITLES = {
+const VIEW_CONFIG = {
 
     overview: {
+
         eyebrow:
-            "TeckelWeb",
+            "Home",
 
         title:
             "Overzicht"
     },
 
+
     calendar: {
+
         eyebrow:
             "Planning",
 
@@ -441,7 +445,9 @@ const VIEW_TITLES = {
             "Kalender"
     },
 
+
     requests: {
+
         eyebrow:
             "Online booking",
 
@@ -449,25 +455,31 @@ const VIEW_TITLES = {
             "Reservatieaanvragen"
     },
 
+
     clients: {
+
         eyebrow:
-            "Relaties",
+            "Klanten",
 
         title:
             "Klanten"
     },
 
+
     pets: {
+
         eyebrow:
-            "Huisdieren",
+            "Honden",
 
         title:
             "Honden"
     },
 
+
     settings: {
+
         eyebrow:
-            "Configuratie",
+            "Beheer",
 
         title:
             "Instellingen"
@@ -477,14 +489,90 @@ const VIEW_TITLES = {
 
 
 /* =========================================================
-   DATUM HELPERS
+   LOCAL SETTINGS
 ========================================================= */
 
-function makeDateString(
-    date
-) {
+const SETTINGS_KEY =
+    "teckelweb-admin-settings";
+
+
+const DEFAULT_SETTINGS = {
+
+    maxCapacity:
+        6,
+
+    limitedCapacity:
+        4,
+
+    openingTime:
+        "08:00",
+
+    closingTime:
+        "18:00",
+
+    daycarePrice:
+        25,
+
+    overnightPrice:
+        35,
+
+    onlineBooking:
+        true,
+
+    emailNotifications:
+        true
+};
+
+
+
+function getSettings() {
+
+    try {
+
+        const stored =
+            JSON.parse(
+                localStorage.getItem(
+                    SETTINGS_KEY
+                )
+            );
+
+
+        return {
+
+            ...DEFAULT_SETTINGS,
+
+            ...(stored || {})
+        };
+
+
+    } catch {
+
+        return {
+            ...DEFAULT_SETTINGS
+        };
+    }
+}
+
+
+
+function saveSettings(settings) {
+
+    localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify(settings)
+    );
+}
+
+
+
+/* =========================================================
+   DATE HELPERS
+========================================================= */
+
+function dateToString(date) {
 
     return [
+
         date.getFullYear(),
 
         String(
@@ -500,23 +588,42 @@ function makeDateString(
             2,
             "0"
         )
+
     ].join("-");
 }
 
 
 
-function getTodayString() {
+function createDateString(
+    year,
+    month,
+    day
+) {
 
-    return makeDateString(
-        new Date()
-    );
+    return [
+
+        year,
+
+        String(
+            month + 1
+        ).padStart(
+            2,
+            "0"
+        ),
+
+        String(
+            day
+        ).padStart(
+            2,
+            "0"
+        )
+
+    ].join("-");
 }
 
 
 
-function parseDate(
-    dateString
-) {
+function parseDate(dateString) {
 
     if (!dateString) {
 
@@ -543,14 +650,62 @@ function parseDate(
 
 
 
-function formatDate(
-    dateString
+function addDays(
+    dateString,
+    numberOfDays
 ) {
 
     const date =
-        parseDate(
-            dateString
-        );
+        parseDate(dateString);
+
+
+    date.setDate(
+        date.getDate()
+        +
+        numberOfDays
+    );
+
+
+    return dateToString(date);
+}
+
+
+
+function startOfWeek(dateString) {
+
+    const date =
+        parseDate(dateString);
+
+
+    const day =
+        date.getDay();
+
+
+    const difference =
+        day === 0
+            ? -6
+            : 1 - day;
+
+
+    date.setDate(
+        date.getDate()
+        +
+        difference
+    );
+
+
+    return dateToString(date);
+}
+
+
+
+function formatDate(
+    dateString,
+    options = {}
+) {
+
+    const date =
+        parseDate(dateString);
 
 
     if (!date) {
@@ -569,11 +724,11 @@ function formatDate(
                 "short",
 
             year:
-                "numeric"
+                "numeric",
+
+            ...options
         }
-    ).format(
-        date
-    );
+    ).format(date);
 }
 
 
@@ -583,9 +738,7 @@ function formatLongDate(
 ) {
 
     const date =
-        parseDate(
-            dateString
-        );
+        parseDate(dateString);
 
 
     if (!date) {
@@ -594,7 +747,7 @@ function formatLongDate(
     }
 
 
-    const formatted =
+    const result =
         new Intl.DateTimeFormat(
             "nl-BE",
             {
@@ -610,15 +763,94 @@ function formatLongDate(
                 year:
                     "numeric"
             }
-        ).format(
-            date
-        );
+        ).format(date);
 
 
     return (
-        formatted.charAt(0).toUpperCase()
+        result.charAt(0).toUpperCase()
         +
-        formatted.slice(1)
+        result.slice(1)
+    );
+}
+
+
+
+function formatShortDate(
+    dateString
+) {
+
+    return formatDate(
+        dateString,
+        {
+            weekday:
+                "short",
+
+            day:
+                "numeric",
+
+            month:
+                "short",
+
+            year:
+                undefined
+        }
+    );
+}
+
+
+
+/* =========================================================
+   TIME HELPERS
+========================================================= */
+
+function timeToMinutes(time) {
+
+    if (
+        !time
+        ||
+        !String(time).includes(":")
+    ) {
+
+        return null;
+    }
+
+
+    const [
+        hours,
+        minutes
+    ] =
+        String(time)
+            .split(":")
+            .map(Number);
+
+
+    return (
+        hours * 60
+        +
+        minutes
+    );
+}
+
+
+
+function minutesToTime(minutes) {
+
+    const hour =
+        Math.floor(
+            minutes / 60
+        );
+
+
+    const minute =
+        minutes % 60;
+
+
+    return (
+        String(hour).padStart(2, "0")
+        +
+        ":"
+        +
+        String(minute).padStart(2, "0")
     );
 }
 
@@ -628,11 +860,10 @@ function formatLongDate(
    BOOKING HELPERS
 ========================================================= */
 
-function isDaycare(
-    reservation
-) {
+function isDaycare(reservation) {
 
     return (
+
         reservation.booking
             ?.careType ===
         "daycare"
@@ -647,11 +878,10 @@ function isDaycare(
 
 
 
-function isBoarding(
-    reservation
-) {
+function isBoarding(reservation) {
 
     return (
+
         reservation.booking
             ?.careType ===
         "boarding"
@@ -666,40 +896,30 @@ function isBoarding(
 
 
 
-/*
-    Nieuwe daycare-reservaties kunnen
-    losse dagen bevatten:
-
-        3 sept
-        5 sept
-        9 sept
-
-    Die mogen NIET geïnterpreteerd worden
-    als één verblijf van 3 t.e.m. 9 september.
-*/
-
 function getExactDaycareDates(
     reservation
 ) {
 
     if (
-        isDaycare(
-            reservation
-        )
-        &&
-        Array.isArray(
-            reservation.booking
-                ?.dates
-        )
-        &&
-        reservation.booking
-            .dates
-            .length >
-        0
+        !isDaycare(reservation)
     ) {
 
-        return reservation.booking
-            .dates;
+        return [];
+    }
+
+
+    const dates =
+        reservation.booking
+            ?.dates;
+
+
+    if (
+        Array.isArray(dates)
+        &&
+        dates.length
+    ) {
+
+        return dates;
     }
 
 
@@ -713,39 +933,39 @@ function reservationTouchesDate(
     dateString
 ) {
 
-    const exactDates =
+    const daycareDates =
         getExactDaycareDates(
             reservation
         );
 
 
     if (
-        exactDates.length >
-        0
+        daycareDates.length
     ) {
 
-        return exactDates.includes(
+        return daycareDates.includes(
             dateString
         );
     }
 
 
 
-    const start =
+    const startDate =
         reservation.booking
             ?.startDate;
 
 
-    const end =
+    const endDate =
         reservation.booking
             ?.endDate
         ||
-        start;
+        startDate;
 
 
     if (
-        !start ||
-        !end
+        !startDate
+        ||
+        !endDate
     ) {
 
         return false;
@@ -753,9 +973,14 @@ function reservationTouchesDate(
 
 
     return (
-        dateString >= start
+
+        dateString >=
+        startDate
+
         &&
-        dateString <= end
+
+        dateString <=
+        endDate
     );
 }
 
@@ -766,23 +991,17 @@ function reservationArrivesOn(
     dateString
 ) {
 
-    const exactDates =
+    const daycareDates =
         getExactDaycareDates(
             reservation
         );
 
 
     if (
-        exactDates.length >
-        0
+        daycareDates.length
     ) {
 
-        /*
-            Iedere daycare-dag is een
-            nieuwe aankomst.
-        */
-
-        return exactDates.includes(
+        return daycareDates.includes(
             dateString
         );
     }
@@ -802,132 +1021,97 @@ function reservationDepartsOn(
     dateString
 ) {
 
-    const exactDates =
+    const daycareDates =
         getExactDaycareDates(
             reservation
         );
 
 
     if (
-        exactDates.length >
-        0
+        daycareDates.length
     ) {
 
-        /*
-            Daycare vertrekt op
-            iedere geselecteerde dag.
-        */
-
-        return exactDates.includes(
+        return daycareDates.includes(
             dateString
         );
     }
 
 
-    const end =
-        reservation.booking
-            ?.endDate
-        ||
-        reservation.booking
-            ?.startDate;
-
-
     return (
-        end ===
+        (
+            reservation.booking
+                ?.endDate
+
+            ||
+
+            reservation.booking
+                ?.startDate
+        )
+        ===
         dateString
     );
 }
 
 
 
-/* =========================================================
-   PERIOD FORMAT
-========================================================= */
-
-function formatReservationPeriod(
+function getReservationFinalDate(
     reservation
 ) {
 
-    const exactDates =
+    const daycareDates =
         getExactDaycareDates(
             reservation
         );
 
 
     if (
-        exactDates.length >
-        0
+        daycareDates.length
     ) {
 
-        if (
-            exactDates.length ===
-            1
-        ) {
-
-            return formatDate(
-                exactDates[0]
-            );
-        }
-
-
-        if (
-            exactDates.length <=
-            3
-        ) {
-
-            return exactDates
-                .map(
-                    formatDate
-                )
-                .join(", ");
-        }
-
-
-        return `${exactDates.length} losse dagen`;
-    }
-
-
-
-    const start =
-        reservation.booking
-            ?.startDate;
-
-
-    const end =
-        reservation.booking
-            ?.endDate
-        ||
-        start;
-
-
-    if (
-        !start
-    ) {
-
-        return "—";
-    }
-
-
-    if (
-        start ===
-        end
-    ) {
-
-        return formatDate(
-            start
-        );
+        return [
+            ...daycareDates
+        ]
+            .sort()
+            .at(-1);
     }
 
 
     return (
-        `${formatDate(start)} → ${formatDate(end)}`
+
+        reservation.booking
+            ?.endDate
+
+        ||
+
+        reservation.booking
+            ?.startDate
+
+        ||
+
+        null
+    );
+}
+
+
+
+function getReservationsForDate(
+    dateString
+) {
+
+    return reservations.filter(
+        reservation =>
+
+            reservationTouchesDate(
+                reservation,
+                dateString
+            )
     );
 }
 
 
 
 /* =========================================================
-   TYPE FORMAT
+   TYPE / STATUS FORMAT
 ========================================================= */
 
 function formatBookingType(
@@ -935,9 +1119,7 @@ function formatBookingType(
 ) {
 
     if (
-        isDaycare(
-            reservation
-        )
+        isDaycare(reservation)
     ) {
 
         return "Dagopvang";
@@ -945,9 +1127,7 @@ function formatBookingType(
 
 
     if (
-        isBoarding(
-            reservation
-        )
+        isBoarding(reservation)
     ) {
 
         return "Overnachting";
@@ -959,17 +1139,9 @@ function formatBookingType(
 
 
 
-/* =========================================================
-   STATUS FORMAT
-========================================================= */
+function formatStatus(status) {
 
-function getStatusText(
-    status
-) {
-
-    switch (
-    status
-    ) {
+    switch (status) {
 
         case "accepted":
 
@@ -989,17 +1161,430 @@ function getStatusText(
         case "pending":
         default:
 
-            return "In afwachting";
+            return "Nieuw";
     }
 }
 
 
 
 /* =========================================================
-   LOGIN
+   RESERVATIE PERIODE
 ========================================================= */
 
-loginButton.addEventListener(
+function formatReservationPeriod(
+    reservation
+) {
+
+    const daycareDates =
+        getExactDaycareDates(
+            reservation
+        );
+
+
+    if (
+        daycareDates.length
+    ) {
+
+        if (
+            daycareDates.length ===
+            1
+        ) {
+
+            return formatDate(
+                daycareDates[0]
+            );
+        }
+
+
+        if (
+            daycareDates.length <=
+            3
+        ) {
+
+            return daycareDates
+                .map(
+                    date =>
+                        formatDate(
+                            date,
+                            {
+                                year:
+                                    undefined
+                            }
+                        )
+                )
+                .join(", ");
+        }
+
+
+        return (
+            `${daycareDates.length} opvangdagen`
+        );
+    }
+
+
+
+    const startDate =
+        reservation.booking
+            ?.startDate;
+
+
+    const endDate =
+        reservation.booking
+            ?.endDate
+        ||
+        startDate;
+
+
+    if (!startDate) {
+
+        return "—";
+    }
+
+
+    if (
+        startDate ===
+        endDate
+    ) {
+
+        return formatDate(startDate);
+    }
+
+
+    return (
+        `${formatDate(startDate)} – `
+        +
+        `${formatDate(endDate)}`
+    );
+}
+
+
+
+/* =========================================================
+   RESERVATIETIJD VOOR DAG
+========================================================= */
+
+function getReservationTimesForDay(
+    reservation,
+    dateString
+) {
+
+    const settings =
+        getSettings();
+
+
+    const openingTime =
+        settings.openingTime
+        ||
+        "08:00";
+
+
+    const closingTime =
+        settings.closingTime
+        ||
+        "18:00";
+
+
+    const booking =
+        reservation.booking
+        ||
+        {};
+
+
+    const arrivalTime =
+        booking.arrivalTime
+        ||
+        openingTime;
+
+
+    const departureTime =
+        booking.departureTime
+        ||
+        closingTime;
+
+
+
+    /*
+        Daycare:
+        iedere geselecteerde dag heeft
+        aankomst + vertrek.
+    */
+
+    if (
+        isDaycare(reservation)
+    ) {
+
+        return {
+
+            start:
+                arrivalTime,
+
+            end:
+                departureTime
+        };
+    }
+
+
+
+    const startDate =
+        booking.startDate;
+
+
+    const endDate =
+        booking.endDate
+        ||
+        startDate;
+
+
+
+    /*
+        Boarding op aankomstdag.
+    */
+
+    if (
+        dateString ===
+        startDate
+    ) {
+
+        return {
+
+            start:
+                arrivalTime,
+
+            end:
+                closingTime
+        };
+    }
+
+
+
+    /*
+        Boarding op vertrekdag.
+    */
+
+    if (
+        dateString ===
+        endDate
+    ) {
+
+        return {
+
+            start:
+                openingTime,
+
+            end:
+                departureTime
+        };
+    }
+
+
+
+    /*
+        Volledige boarding-tussendag.
+    */
+
+    return {
+
+        start:
+            openingTime,
+
+        end:
+            closingTime
+    };
+}
+
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(
+        value ?? ""
+    )
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+}
+
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(
+    message,
+    type = "default"
+) {
+
+    let toast =
+        byId(
+            "teckelweb-admin-toast"
+        );
+
+
+    if (!toast) {
+
+        toast =
+            document.createElement(
+                "div"
+            );
+
+
+        toast.id =
+            "teckelweb-admin-toast";
+
+
+        toast.style.position =
+            "fixed";
+
+
+        toast.style.right =
+            "24px";
+
+
+        toast.style.bottom =
+            "24px";
+
+
+        toast.style.zIndex =
+            "9999";
+
+
+        toast.style.maxWidth =
+            "360px";
+
+
+        toast.style.padding =
+            "13px 17px";
+
+
+        toast.style.borderRadius =
+            "10px";
+
+
+        toast.style.fontSize =
+            "13px";
+
+
+        toast.style.fontWeight =
+            "650";
+
+
+        toast.style.boxShadow =
+            "0 10px 35px rgba(0,0,0,.16)";
+
+
+        toast.style.transition =
+            "opacity .2s ease";
+
+
+        document.body.appendChild(
+            toast
+        );
+    }
+
+
+
+    if (
+        type ===
+        "error"
+    ) {
+
+        toast.style.background =
+            "#fff1ee";
+
+
+        toast.style.color =
+            "#8e3f33";
+
+
+        toast.style.border =
+            "1px solid #e9c1ba";
+
+    } else if (
+        type ===
+        "success"
+    ) {
+
+        toast.style.background =
+            "#fff3e8";
+
+
+        toast.style.color =
+            "#a84a15";
+
+
+        toast.style.border =
+            "1px solid #ffd0b3";
+
+    } else {
+
+        toast.style.background =
+            "#252525";
+
+
+        toast.style.color =
+            "white";
+
+
+        toast.style.border =
+            "1px solid #252525";
+    }
+
+
+
+    toast.textContent =
+        message;
+
+
+    toast.style.opacity =
+        "1";
+
+
+    clearTimeout(
+        toast._timer
+    );
+
+
+    toast._timer =
+        setTimeout(
+            () => {
+
+                toast.style.opacity =
+                    "0";
+            },
+
+            2800
+        );
+}
+
+
+
+/* =========================================================
+   AUTH — LOGIN
+========================================================= */
+
+loginButton?.addEventListener(
     "click",
     async () => {
 
@@ -1023,7 +1608,7 @@ loginButton.addEventListener(
         } catch (error) {
 
             console.error(
-                "Admin login mislukt:",
+                "Login mislukt:",
                 error
             );
 
@@ -1058,10 +1643,10 @@ loginButton.addEventListener(
 
 
 /* =========================================================
-   LOGOUT
+   AUTH — LOGOUT
 ========================================================= */
 
-logoutButton.addEventListener(
+logoutButton?.addEventListener(
     "click",
     async () => {
 
@@ -1089,20 +1674,33 @@ logoutButton.addEventListener(
 watchAuthState(
     async user => {
 
+        currentUser =
+            user;
+
+
+
         /*
             Niet ingelogd.
         */
 
-        if (
-            !user
-        ) {
+        if (!user) {
 
-            loginSection.hidden =
-                false;
+            if (
+                loginSection
+            ) {
+
+                loginSection.hidden =
+                    false;
+            }
 
 
-            adminDashboard.hidden =
-                true;
+            if (
+                adminDashboard
+            ) {
+
+                adminDashboard.hidden =
+                    true;
+            }
 
 
             return;
@@ -1111,7 +1709,7 @@ watchAuthState(
 
 
         /*
-            Ingelogd maar geen admin.
+            Geen admin.
         */
 
         if (
@@ -1120,16 +1718,26 @@ watchAuthState(
             )
         ) {
 
-            loginSection.hidden =
-                false;
+            if (
+                loginSection
+            ) {
+
+                loginSection.hidden =
+                    false;
+            }
 
 
-            adminDashboard.hidden =
-                true;
+            if (
+                adminDashboard
+            ) {
+
+                adminDashboard.hidden =
+                    true;
+            }
 
 
             adminMessage.textContent =
-                "Dit Google-account heeft geen toegang tot TeckelWeb beheer.";
+                "Dit account heeft geen beheerrechten.";
 
 
             try {
@@ -1138,7 +1746,7 @@ watchAuthState(
 
             } catch {
 
-                // niets doen
+                // niets
             }
 
 
@@ -1151,10 +1759,6 @@ watchAuthState(
             Geldige admin.
         */
 
-        adminMessage.textContent =
-            "";
-
-
         loginSection.hidden =
             true;
 
@@ -1164,34 +1768,170 @@ watchAuthState(
 
 
         adminUser.textContent =
-            user.email
-            ||
             user.displayName
+            ||
+            user.email
             ||
             "Beheerder";
 
 
-        await loadAdminData();
-
-
-        showAdminView(
-            activeAdminView
-        );
+        await initialiseAdmin();
     }
 );
 
 
 
 /* =========================================================
-   ADMIN VIEW NAVIGATIE
+   ADMIN INITIALISEREN
 ========================================================= */
 
-async function showAdminView(
+async function initialiseAdmin() {
+
+    selectedDate =
+        dateToString(
+            new Date()
+        );
+
+
+    displayedMonth =
+        new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            1
+        );
+
+
+    try {
+
+        await Promise.all(
+            [
+                loadReservations(),
+                loadAvailability()
+            ]
+        );
+
+
+        deriveDirectories();
+
+
+        renderEverything();
+
+
+        await showView(
+            currentView
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Admin initialisatie mislukt:",
+            error
+        );
+
+
+        showToast(
+            "De beheeromgeving kon niet volledig worden geladen.",
+            "error"
+        );
+    }
+}
+
+
+
+/* =========================================================
+   DATA LADEN — RESERVATIES
+========================================================= */
+
+async function loadReservations() {
+
+    reservations =
+        await getReservations();
+
+
+
+    reservations.sort(
+        (
+            a,
+            b
+        ) => {
+
+            const timestampA =
+                a.createdAt
+                    ?.toMillis?.()
+                ||
+                0;
+
+
+            const timestampB =
+                b.createdAt
+                    ?.toMillis?.()
+                ||
+                0;
+
+
+            return (
+                timestampB -
+                timestampA
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   DATA LADEN — AVAILABILITY
+========================================================= */
+
+async function loadAvailability() {
+
+    availability =
+        await getAvailabilityForMonth(
+
+            displayedMonth
+                .getFullYear(),
+
+            displayedMonth
+                .getMonth()
+        );
+}
+
+
+
+/* =========================================================
+   ALLES RENDEREN
+========================================================= */
+
+function renderEverything() {
+
+    renderOverview();
+
+    renderRequestCounters();
+
+    renderRequests();
+
+    renderMiniCalendar();
+
+    renderCalendarWorkspace();
+
+    renderClients();
+
+    renderPets();
+}
+
+
+
+/* =========================================================
+   NAVIGATIE
+========================================================= */
+
+async function showView(
     viewName
 ) {
 
     if (
-        !VIEW_TITLES[
+        !VIEW_CONFIG[
         viewName
         ]
     ) {
@@ -1201,7 +1941,7 @@ async function showAdminView(
     }
 
 
-    activeAdminView =
+    currentView =
         viewName;
 
 
@@ -1228,11 +1968,12 @@ async function showAdminView(
 
 
 
-    adminNavButtons.forEach(
+    navigationButtons.forEach(
         button => {
 
             button.classList.toggle(
                 "active",
+
                 button.dataset
                     .adminView ===
                 viewName
@@ -1243,45 +1984,57 @@ async function showAdminView(
 
 
     adminPageEyebrow.textContent =
-        VIEW_TITLES[
+        VIEW_CONFIG[
             viewName
         ].eyebrow;
 
 
     adminPageTitle.textContent =
-        VIEW_TITLES[
+        VIEW_CONFIG[
             viewName
         ].title;
 
 
 
     /*
-        Klanten en honden laden we pas
-        wanneer ze echt nodig zijn.
+        Kalender opnieuw tekenen zodra
+        view zichtbaar wordt.
+
+        Dit voorkomt dat de agenda
+        een breedte van 0 krijgt wanneer
+        hij gerenderd werd terwijl hidden.
     */
 
     if (
         viewName ===
-        "clients"
-        ||
-        viewName ===
-        "pets"
+        "calendar"
     ) {
 
-        await ensureDirectoriesLoaded();
+        requestAnimationFrame(
+            () => {
+
+                renderMiniCalendar();
+
+                renderCalendarWorkspace();
+            }
+        );
     }
 }
 
 
 
-adminNavButtons.forEach(
+/* =========================================================
+   SIDEBAR BUTTONS
+========================================================= */
+
+navigationButtons.forEach(
     button => {
 
         button.addEventListener(
             "click",
             async () => {
 
-                await showAdminView(
+                await showView(
                     button.dataset
                         .adminView
                 );
@@ -1292,14 +2045,14 @@ adminNavButtons.forEach(
 
 
 
-goViewButtons.forEach(
+quickViewButtons.forEach(
     button => {
 
         button.addEventListener(
             "click",
             async () => {
 
-                await showAdminView(
+                await showView(
                     button.dataset
                         .goView
                 );
@@ -1314,7 +2067,7 @@ goViewButtons.forEach(
    REFRESH
 ========================================================= */
 
-refreshButton.addEventListener(
+refreshButton?.addEventListener(
     "click",
     async () => {
 
@@ -1327,28 +2080,41 @@ refreshButton.addEventListener(
 
 
         refreshButton.textContent =
-            "Vernieuwen...";
+            "Laden...";
 
 
         try {
 
-            directoriesLoaded =
-                false;
+            await Promise.all(
+                [
+                    loadReservations(),
+                    loadAvailability()
+                ]
+            );
 
 
-            await loadAdminData();
+            deriveDirectories();
+
+            renderEverything();
 
 
-            if (
-                activeAdminView ===
-                "clients"
-                ||
-                activeAdminView ===
-                "pets"
-            ) {
+            showToast(
+                "Gegevens vernieuwd.",
+                "success"
+            );
 
-                await ensureDirectoriesLoaded();
-            }
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            showToast(
+                "Vernieuwen is mislukt.",
+                "error"
+            );
 
 
         } finally {
@@ -1369,16 +2135,16 @@ refreshButton.addEventListener(
    NIEUWE RESERVATIE
 ========================================================= */
 
-newBookingButton.addEventListener(
+newBookingButton?.addEventListener(
     "click",
     () => {
 
         /*
-            Voorlopig opent dit de publieke
-            bookingpagina.
+            Later bouwen we hier de echte
+            MoeGo-achtige admin-create drawer.
 
-            Later bouwen we eventueel een
-            aparte handmatige admin booking.
+            Voorlopig openen we de
+            online booking flow.
         */
 
         window.open(
@@ -1391,172 +2157,34 @@ newBookingButton.addEventListener(
 
 
 /* =========================================================
-   DATA LADEN
-========================================================= */
-
-async function loadAdminData() {
-
-    try {
-
-        allReservations =
-            await getReservations();
-
-
-
-        /*
-            Nieuwste eerst.
-        */
-
-        allReservations.sort(
-            (
-                a,
-                b
-            ) => {
-
-                const timeA =
-                    a.createdAt
-                        ?.toMillis?.()
-                    ||
-                    0;
-
-
-                const timeB =
-                    b.createdAt
-                        ?.toMillis?.()
-                    ||
-                    0;
-
-
-                return (
-                    timeB -
-                    timeA
-                );
-            }
-        );
-
-
-
-        renderOverview();
-
-        renderRequests();
-
-        updatePendingCounters();
-
-
-
-        /*
-            Kalendermodule laten weten
-            dat nieuwe reservatiedata
-            beschikbaar is.
-        */
-
-        window.dispatchEvent(
-            new CustomEvent(
-                "teckelweb:reservations-updated",
-                {
-                    detail: {
-
-                        reservations:
-                            allReservations
-                    }
-                }
-            )
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Admin data laden mislukt:",
-            error
-        );
-
-
-        reservationsList.innerHTML = `
-            <div class="admin-empty-state">
-
-                <strong>
-                    Reservaties konden niet geladen worden.
-                </strong>
-
-            </div>
-        `;
-    }
-}
-
-
-
-/* =========================================================
-   PENDING COUNTERS
-========================================================= */
-
-function updatePendingCounters() {
-
-    const pending =
-        allReservations.filter(
-            reservation =>
-                reservation.status ===
-                "pending"
-        ).length;
-
-
-
-    if (
-        sidebarPendingCount
-    ) {
-
-        sidebarPendingCount.textContent =
-            pending;
-
-
-        sidebarPendingCount.hidden =
-            pending ===
-            0;
-    }
-
-
-
-    if (
-        requestTabPending
-    ) {
-
-        requestTabPending.textContent =
-            pending;
-    }
-}
-
-
-
-/* =========================================================
-   OVERVIEW
+   DASHBOARD
 ========================================================= */
 
 function renderOverview() {
 
     const today =
-        getTodayString();
+        dateToString(
+            new Date()
+        );
 
+
+    const pending =
+        reservations.filter(
+            reservation =>
+                reservation.status ===
+                "pending"
+        );
 
 
     const accepted =
-        allReservations.filter(
+        reservations.filter(
             reservation =>
                 reservation.status ===
                 "accepted"
         );
 
 
-
-    const pending =
-        allReservations.filter(
-            reservation =>
-                reservation.status ===
-                "pending"
-        );
-
-
-
-    const todayReservations =
+    const dogsToday =
         accepted.filter(
             reservation =>
                 reservationTouchesDate(
@@ -1564,7 +2192,6 @@ function renderOverview() {
                     today
                 )
         );
-
 
 
     const arrivals =
@@ -1575,7 +2202,6 @@ function renderOverview() {
                     today
                 )
         );
-
 
 
     const departures =
@@ -1589,16 +2215,12 @@ function renderOverview() {
 
 
 
-    /*
-        KPI's
-    */
-
     statPending.textContent =
         pending.length;
 
 
     statToday.textContent =
-        todayReservations.length;
+        dogsToday.length;
 
 
     statArrivals.textContent =
@@ -1609,10 +2231,6 @@ function renderOverview() {
         departures.length;
 
 
-
-    /*
-        Legacy counters.
-    */
 
     if (
         statAccepted
@@ -1632,26 +2250,22 @@ function renderOverview() {
             accepted.filter(
                 reservation => {
 
-                    const end =
-                        getReservationLastDate(
+                    const finalDate =
+                        getReservationFinalDate(
                             reservation
                         );
 
 
                     return (
-                        end
+                        finalDate
                         &&
-                        end >= today
+                        finalDate >= today
                     );
                 }
             ).length;
     }
 
 
-
-    /*
-        Titel.
-    */
 
     overviewTodayTitle.textContent =
         formatLongDate(
@@ -1660,16 +2274,12 @@ function renderOverview() {
 
 
 
-    /*
-        Counters vandaag.
-    */
-
     todayArrivalsCount.textContent =
         arrivals.length;
 
 
     todayStayingCount.textContent =
-        todayReservations.length;
+        dogsToday.length;
 
 
     todayDeparturesCount.textContent =
@@ -1677,29 +2287,28 @@ function renderOverview() {
 
 
 
-    renderOperationList(
+    renderTodayList(
         todayArrivalsList,
         arrivals,
         "arrival"
     );
 
 
-    renderOperationList(
+    renderTodayList(
         todayStayingList,
-        todayReservations,
-        "staying"
+        dogsToday,
+        "stay"
     );
 
 
-    renderOperationList(
+    renderTodayList(
         todayDeparturesList,
         departures,
         "departure"
     );
 
 
-
-    renderOverviewPending(
+    renderPendingPreview(
         pending
     );
 }
@@ -1707,84 +2316,47 @@ function renderOverview() {
 
 
 /* =========================================================
-   LAATSTE DATUM VAN RESERVATIE
+   DASHBOARD OPERATIONS
 ========================================================= */
 
-function getReservationLastDate(
-    reservation
+function renderTodayList(
+    container,
+    list,
+    type
 ) {
 
-    const exactDates =
-        getExactDaycareDates(
-            reservation
-        );
+    if (!container) {
 
-
-    if (
-        exactDates.length >
-        0
-    ) {
-
-        return [
-            ...exactDates
-        ].sort().at(
-            -1
-        );
+        return;
     }
 
-
-    return (
-        reservation.booking
-            ?.endDate
-
-        ||
-
-        reservation.booking
-            ?.startDate
-
-        ||
-
-        null
-    );
-}
-
-
-
-/* =========================================================
-   DAGOPERATIES
-========================================================= */
-
-function renderOperationList(
-    container,
-    reservations,
-    mode
-) {
 
     container.innerHTML =
         "";
 
 
     if (
-        reservations.length ===
+        list.length ===
         0
     ) {
 
-        const labels = {
+        const emptyText = {
 
             arrival:
                 "Geen aankomsten.",
 
-            staying:
+            stay:
                 "Geen honden aanwezig.",
 
             departure:
                 "Geen vertrekken."
-        };
+
+        }[type];
 
 
         container.innerHTML = `
             <div class="admin-empty-small">
-                ${labels[mode]}
+                ${emptyText}
             </div>
         `;
 
@@ -1795,30 +2367,23 @@ function renderOperationList(
 
 
     const sorted =
-        [
-            ...reservations
-        ].sort(
+        [...list].sort(
             (
                 a,
                 b
             ) => {
 
-                const timeA =
+                return (
                     getOperationTime(
                         a,
-                        mode
-                    );
-
-
-                const timeB =
-                    getOperationTime(
-                        b,
-                        mode
-                    );
-
-
-                return timeA.localeCompare(
-                    timeB
+                        type
+                    )
+                        .localeCompare(
+                            getOperationTime(
+                                b,
+                                type
+                            )
+                        )
                 );
             }
         );
@@ -1828,71 +2393,59 @@ function renderOperationList(
     sorted.forEach(
         reservation => {
 
-            const item =
+            const button =
                 document.createElement(
                     "button"
                 );
 
 
-            item.type =
+            button.type =
                 "button";
 
 
-            item.className =
+            button.className =
                 "admin-operation-item";
 
 
-            const dog =
-                escapeHtml(
-                    reservation.dog
-                        ?.name
-                    ||
-                    "Hond"
-                );
-
-
-            const customer =
-                escapeHtml(
-                    reservation.customer
-                        ?.name
-                    ||
-                    "Onbekende klant"
-                );
-
-
-            const time =
-                escapeHtml(
-                    getOperationTime(
-                        reservation,
-                        mode
-                    )
-                );
-
-
-            item.innerHTML = `
+            button.innerHTML = `
                 <div class="admin-operation-main">
 
                     <strong>
-                        ${dog}
+                        ${escapeHtml(
+                reservation.dog
+                    ?.name
+                ||
+                "Hond"
+            )}
                     </strong>
 
                     <span>
-                        ${customer}
+                        ${escapeHtml(
+                reservation.customer
+                    ?.name
+                ||
+                "Onbekende klant"
+            )}
                     </span>
 
                 </div>
 
                 <span class="admin-operation-time">
-                    ${time}
+                    ${escapeHtml(
+                getOperationTime(
+                    reservation,
+                    type
+                )
+            )}
                 </span>
             `;
 
 
-            item.addEventListener(
+            button.addEventListener(
                 "click",
                 async () => {
 
-                    await openReservationFromAnywhere(
+                    await openReservation(
                         reservation.id
                     );
                 }
@@ -1900,7 +2453,7 @@ function renderOperationList(
 
 
             container.appendChild(
-                item
+                button
             );
         }
     );
@@ -1909,16 +2462,16 @@ function renderOperationList(
 
 
 /* =========================================================
-   OPERATIETIJD
+   OPERATION TIME
 ========================================================= */
 
 function getOperationTime(
     reservation,
-    mode
+    type
 ) {
 
     if (
-        mode ===
+        type ===
         "arrival"
     ) {
 
@@ -1932,7 +2485,7 @@ function getOperationTime(
 
 
     if (
-        mode ===
+        type ===
         "departure"
     ) {
 
@@ -1946,32 +2499,34 @@ function getOperationTime(
 
 
     if (
-        isDaycare(
-            reservation
-        )
+        isDaycare(reservation)
     ) {
 
         return (
-            `${reservation.booking?.arrivalTime || "08:00"}`
-            +
-            " – "
-            +
-            `${reservation.booking?.departureTime || "18:00"}`
+            `${reservation.booking
+                ?.arrivalTime
+            ||
+            "08:00"
+            } – ${reservation.booking
+                ?.departureTime
+            ||
+            "18:00"
+            }`
         );
     }
 
 
-    return "Verblijf";
+    return "Overnachting";
 }
 
 
 
 /* =========================================================
-   OVERVIEW PENDING
+   PENDING PREVIEW
 ========================================================= */
 
-function renderOverviewPending(
-    reservations
+function renderPendingPreview(
+    pending
 ) {
 
     overviewPendingList.innerHTML =
@@ -1979,7 +2534,7 @@ function renderOverviewPending(
 
 
     if (
-        reservations.length ===
+        pending.length ===
         0
     ) {
 
@@ -1995,10 +2550,10 @@ function renderOverviewPending(
 
 
 
-    reservations
+    pending
         .slice(
             0,
-            5
+            6
         )
         .forEach(
             reservation => {
@@ -2022,7 +2577,8 @@ function renderOverviewPending(
 
                         <strong>
                             ${escapeHtml(
-                    reservation.dog?.name
+                    reservation.dog
+                        ?.name
                     ||
                     "Hond"
                 )}
@@ -2030,7 +2586,8 @@ function renderOverviewPending(
 
                         <span>
                             ${escapeHtml(
-                    reservation.customer?.name
+                    reservation.customer
+                        ?.name
                     ||
                     "Onbekende klant"
                 )}
@@ -2052,7 +2609,7 @@ function renderOverviewPending(
                     "click",
                     async () => {
 
-                        await openReservationFromAnywhere(
+                        await openReservation(
                             reservation.id
                         );
                     }
@@ -2069,7 +2626,37 @@ function renderOverviewPending(
 
 
 /* =========================================================
-   REQUEST FILTER
+   REQUEST COUNTERS
+========================================================= */
+
+function renderRequestCounters() {
+
+    const pending =
+        reservations.filter(
+            reservation =>
+                reservation.status ===
+                "pending"
+        ).length;
+
+
+
+    sidebarPendingCount.textContent =
+        pending;
+
+
+    sidebarPendingCount.hidden =
+        pending ===
+        0;
+
+
+    requestTabPending.textContent =
+        pending;
+}
+
+
+
+/* =========================================================
+   REQUEST FILTERS
 ========================================================= */
 
 requestFilterButtons.forEach(
@@ -2079,18 +2666,17 @@ requestFilterButtons.forEach(
             "click",
             () => {
 
-                activeRequestFilter =
+                requestFilter =
                     button.dataset
                         .requestFilter;
 
 
                 requestFilterButtons.forEach(
-                    otherButton => {
+                    other => {
 
-                        otherButton.classList.toggle(
+                        other.classList.toggle(
                             "active",
-                            otherButton ===
-                            button
+                            other === button
                         );
                     }
                 );
@@ -2104,7 +2690,7 @@ requestFilterButtons.forEach(
 
 
 
-reservationSearch.addEventListener(
+reservationSearch?.addEventListener(
     "input",
     renderRequests
 );
@@ -2112,20 +2698,18 @@ reservationSearch.addEventListener(
 
 
 /* =========================================================
-   REQUEST FILTER DATA
+   REQUESTS FILTEREN
 ========================================================= */
 
-function getFilteredReservations() {
+function getVisibleRequests() {
 
     let result =
-        [
-            ...allReservations
-        ];
+        [...reservations];
 
 
 
     if (
-        activeRequestFilter !==
+        requestFilter !==
         "all"
     ) {
 
@@ -2133,7 +2717,7 @@ function getFilteredReservations() {
             result.filter(
                 reservation =>
                     reservation.status ===
-                    activeRequestFilter
+                    requestFilter
             );
     }
 
@@ -2141,15 +2725,15 @@ function getFilteredReservations() {
 
     const search =
         reservationSearch
-            .value
+            ?.value
             .trim()
-            .toLowerCase();
+            .toLowerCase()
+        ||
+        "";
 
 
 
-    if (
-        search
-    ) {
+    if (search) {
 
         result =
             result.filter(
@@ -2157,6 +2741,7 @@ function getFilteredReservations() {
 
                     const haystack =
                         [
+
                             reservation.customer
                                 ?.name,
 
@@ -2170,14 +2755,15 @@ function getFilteredReservations() {
                                 ?.name,
 
                             reservation.dog
-                                ?.breed
+                                ?.breed,
+
+                            formatBookingType(
+                                reservation
+                            )
+
                         ]
-                            .filter(
-                                Boolean
-                            )
-                            .join(
-                                " "
-                            )
+                            .filter(Boolean)
+                            .join(" ")
                             .toLowerCase();
 
 
@@ -2195,14 +2781,19 @@ function getFilteredReservations() {
 
 
 /* =========================================================
-   REQUEST LIST
+   REQUESTS RENDEREN
 ========================================================= */
 
 function renderRequests() {
 
-    const reservations =
-        getFilteredReservations();
+    if (!reservationsList) {
 
+        return;
+    }
+
+
+    const visible =
+        getVisibleRequests();
 
 
     reservationsList.innerHTML =
@@ -2211,7 +2802,7 @@ function renderRequests() {
 
 
     if (
-        reservations.length ===
+        visible.length ===
         0
     ) {
 
@@ -2223,11 +2814,14 @@ function renderRequests() {
                 </strong>
 
                 <span>
-                    Pas de filter of zoekopdracht aan.
+                    Er zijn geen resultaten voor deze filter.
                 </span>
 
             </div>
         `;
+
+
+        clearRequestDetail();
 
 
         return;
@@ -2235,67 +2829,43 @@ function renderRequests() {
 
 
 
-    reservations.forEach(
+    visible.forEach(
         reservation => {
 
-            const card =
-                createRequestCard(
-                    reservation
-                );
-
-
             reservationsList.appendChild(
-                card
+                createRequestRow(
+                    reservation
+                )
             );
         }
     );
-
-
-
-    /*
-        Als geselecteerde reservatie niet meer
-        in huidige filter zit, detail sluiten.
-    */
-
-    if (
-        selectedReservationId
-        &&
-        !reservations.some(
-            reservation =>
-                reservation.id ===
-                selectedReservationId
-        )
-    ) {
-
-        clearRequestDetail();
-    }
 }
 
 
 
 /* =========================================================
-   REQUEST CARD
+   REQUEST ROW
 ========================================================= */
 
-function createRequestCard(
+function createRequestRow(
     reservation
 ) {
 
-    const card =
+    const button =
         document.createElement(
             "button"
         );
 
 
-    card.type =
+    button.type =
         "button";
 
 
-    card.id =
+    button.id =
         `reservation-${reservation.id}`;
 
 
-    card.className =
+    button.className =
         "admin-request-item";
 
 
@@ -2304,45 +2874,11 @@ function createRequestCard(
         selectedReservationId
     ) {
 
-        card.classList.add(
+        button.classList.add(
             "selected"
         );
     }
 
-
-
-    const dog =
-        escapeHtml(
-            reservation.dog
-                ?.name
-            ||
-            "Hond"
-        );
-
-
-    const customer =
-        escapeHtml(
-            reservation.customer
-                ?.name
-            ||
-            "Onbekende klant"
-        );
-
-
-    const period =
-        escapeHtml(
-            formatReservationPeriod(
-                reservation
-            )
-        );
-
-
-    const type =
-        escapeHtml(
-            formatBookingType(
-                reservation
-            )
-        );
 
 
     const status =
@@ -2351,25 +2887,35 @@ function createRequestCard(
         "pending";
 
 
-
-    card.innerHTML = `
+    button.innerHTML = `
         <div class="admin-request-item-top">
 
             <div class="admin-request-item-title">
 
                 <strong>
-                    ${dog}
+                    ${escapeHtml(
+        reservation.dog
+            ?.name
+        ||
+        "Hond"
+    )}
                 </strong>
 
                 <span>
-                    ${customer}
+                    ${escapeHtml(
+        reservation.customer
+            ?.name
+        ||
+        "Onbekende klant"
+    )}
                 </span>
 
             </div>
 
+
             <span class="reservation-status ${status}">
                 ${escapeHtml(
-        getStatusText(
+        formatStatus(
             status
         )
     )}
@@ -2381,19 +2927,26 @@ function createRequestCard(
         <div class="admin-request-item-meta">
 
             <span>
-                ${type}
+                ${escapeHtml(
+        formatBookingType(
+            reservation
+        )
+    )}
             </span>
 
             <span>
-                ${period}
+                ${escapeHtml(
+        formatReservationPeriod(
+            reservation
+        )
+    )}
             </span>
 
         </div>
     `;
 
 
-
-    card.addEventListener(
+    button.addEventListener(
         "click",
         () => {
 
@@ -2404,7 +2957,7 @@ function createRequestCard(
     );
 
 
-    return card;
+    return button;
 }
 
 
@@ -2418,16 +2971,14 @@ function showRequestDetail(
 ) {
 
     const reservation =
-        allReservations.find(
+        reservations.find(
             item =>
                 item.id ===
                 reservationId
         );
 
 
-    if (
-        !reservation
-    ) {
+    if (!reservation) {
 
         clearRequestDetail();
 
@@ -2435,17 +2986,24 @@ function showRequestDetail(
     }
 
 
-
     selectedReservationId =
         reservationId;
 
 
 
-    /*
-        Linker lijst selected state vernieuwen.
-    */
+    all(
+        ".admin-request-item"
+    )
+        .forEach(
+            item => {
 
-    renderRequests();
+                item.classList.toggle(
+                    "selected",
+                    item.id ===
+                    `reservation-${reservationId}`
+                );
+            }
+        );
 
 
 
@@ -2456,6 +3014,12 @@ function showRequestDetail(
     requestDetailContent.hidden =
         false;
 
+
+
+    const status =
+        reservation.status
+        ||
+        "pending";
 
 
     const dogName =
@@ -2472,12 +3036,6 @@ function showRequestDetail(
         "Onbekende klant";
 
 
-    const status =
-        reservation.status
-        ||
-        "pending";
-
-
 
     requestDetailDog.textContent =
         dogName;
@@ -2492,9 +3050,7 @@ function showRequestDetail(
 
 
     requestDetailStatus.textContent =
-        getStatusText(
-            status
-        );
+        formatStatus(status);
 
 
     requestDetailType.textContent =
@@ -2546,7 +3102,7 @@ function showRequestDetail(
 
 
     requestPetInfo.textContent =
-        formatPetInfo(
+        formatDogInfo(
             reservation.dog
         );
 
@@ -2558,21 +3114,10 @@ function showRequestDetail(
 
 
     requestDetailPrice.textContent =
-        reservation.price
-        ||
-        (
-            reservation.estimatedPrice !==
-                undefined
-                ? `€${reservation.estimatedPrice}`
-                : "—"
+        getReservationPrice(
+            reservation
         );
 
-
-
-    /*
-        Alleen pending aanvragen
-        mogen nog geaccepteerd/geweigerd worden.
-    */
 
     requestDetailActions.hidden =
         status !==
@@ -2582,7 +3127,7 @@ function showRequestDetail(
 
 
 /* =========================================================
-   DETAIL LEEGMAKEN
+   REQUEST DETAIL CLEAR
 ========================================================= */
 
 function clearRequestDetail() {
@@ -2591,21 +3136,31 @@ function clearRequestDetail() {
         null;
 
 
-    requestDetailEmpty.hidden =
-        false;
+    if (
+        requestDetailEmpty
+    ) {
+
+        requestDetailEmpty.hidden =
+            false;
+    }
 
 
-    requestDetailContent.hidden =
-        true;
+    if (
+        requestDetailContent
+    ) {
+
+        requestDetailContent.hidden =
+            true;
+    }
 }
 
 
 
 /* =========================================================
-   PET INFO
+   DOG INFO
 ========================================================= */
 
-function formatPetInfo(
+function formatDogInfo(
     dog = {}
 ) {
 
@@ -2669,14 +3224,49 @@ function formatPetInfo(
 
 
 /* =========================================================
-   RESERVATIE NOTITIES SAMENVOEGEN
+   PRICE
+========================================================= */
+
+function getReservationPrice(
+    reservation
+) {
+
+    if (
+        reservation.price
+    ) {
+
+        return reservation.price;
+    }
+
+
+    if (
+        reservation.estimatedPrice !==
+        undefined
+        &&
+        reservation.estimatedPrice !==
+        null
+    ) {
+
+        return (
+            `€${reservation.estimatedPrice}`
+        );
+    }
+
+
+    return "—";
+}
+
+
+
+/* =========================================================
+   NOTES
 ========================================================= */
 
 function buildReservationNotes(
     reservation
 ) {
 
-    const blocks =
+    const notes =
         [];
 
 
@@ -2685,7 +3275,7 @@ function buildReservationNotes(
         reservation.notes
     ) {
 
-        blocks.push(
+        notes.push(
             reservation.notes
         );
     }
@@ -2697,53 +3287,8 @@ function buildReservationNotes(
             ?.notes
     ) {
 
-        blocks.push(
+        notes.push(
             `Hond: ${reservation.dog.notes}`
-        );
-    }
-
-
-
-    const addons =
-        reservation.booking
-            ?.addons;
-
-
-    if (
-        Array.isArray(
-            addons
-        )
-        &&
-        addons.length >
-        0
-    ) {
-
-        const names = {
-
-            "extra-walk":
-                "Extra wandeling",
-
-            "photo-update":
-                "Foto-update",
-
-            "individual-play":
-                "Individueel speelmoment"
-        };
-
-
-        blocks.push(
-            "Extra's: "
-            +
-            addons
-                .map(
-                    addon =>
-                        names[addon]
-                        ||
-                        addon
-                )
-                .join(
-                    ", "
-                )
         );
     }
 
@@ -2758,7 +3303,7 @@ function buildReservationNotes(
         feeding
     ) {
 
-        const feedingParts =
+        const parts =
             [];
 
 
@@ -2766,7 +3311,7 @@ function buildReservationNotes(
             feeding.frequency
         ) {
 
-            feedingParts.push(
+            parts.push(
                 `${feeding.frequency}× per dag`
             );
         }
@@ -2777,7 +3322,7 @@ function buildReservationNotes(
             "owner"
         ) {
 
-            feedingParts.push(
+            parts.push(
                 "eigen voeding"
             );
         }
@@ -2788,8 +3333,8 @@ function buildReservationNotes(
             "facility"
         ) {
 
-            feedingParts.push(
-                "voeding opvang"
+            parts.push(
+                "voeding van opvang"
             );
         }
 
@@ -2798,23 +3343,20 @@ function buildReservationNotes(
             feeding.notes
         ) {
 
-            feedingParts.push(
+            parts.push(
                 feeding.notes
             );
         }
 
 
         if (
-            feedingParts.length >
-            0
+            parts.length
         ) {
 
-            blocks.push(
+            notes.push(
                 "Voeding: "
                 +
-                feedingParts.join(
-                    " · "
-                )
+                parts.join(" · ")
             );
         }
     }
@@ -2831,23 +3373,61 @@ function buildReservationNotes(
             ?.needed
     ) {
 
-        blocks.push(
+        notes.push(
             "Medicatie: "
             +
             (
                 medication.notes
                 ||
-                "Medicatie nodig"
+                "medicatie nodig"
             )
         );
     }
 
 
 
+    const addons =
+        reservation.booking
+            ?.addons;
+
+
+    if (
+        Array.isArray(addons)
+        &&
+        addons.length
+    ) {
+
+        const addonNames = {
+
+            "extra-walk":
+                "Extra wandeling",
+
+            "photo-update":
+                "Foto-update",
+
+            "individual-play":
+                "Individueel speelmoment"
+        };
+
+
+        notes.push(
+            "Extra's: "
+            +
+            addons
+                .map(
+                    addon =>
+                        addonNames[addon]
+                        ||
+                        addon
+                )
+                .join(", ")
+        );
+    }
+
+
+
     return (
-        blocks.join(
-            "\n\n"
-        )
+        notes.join("\n\n")
         ||
         "Geen opmerkingen."
     );
@@ -2856,14 +3436,14 @@ function buildReservationNotes(
 
 
 /* =========================================================
-   REQUEST ACCEPTEREN
+   ACCEPT REQUEST
 ========================================================= */
 
-requestAcceptButton.addEventListener(
+requestAcceptButton?.addEventListener(
     "click",
     async () => {
 
-        await changeSelectedReservationStatus(
+        await updateSelectedRequest(
             "accepted"
         );
     }
@@ -2872,28 +3452,24 @@ requestAcceptButton.addEventListener(
 
 
 /* =========================================================
-   REQUEST WEIGEREN
+   REJECT REQUEST
 ========================================================= */
 
-requestRejectButton.addEventListener(
+requestRejectButton?.addEventListener(
     "click",
     async () => {
 
-        const confirmed =
-            window.confirm(
-                "Wilt u deze reservatieaanvraag weigeren?"
-            );
-
-
         if (
-            !confirmed
+            !window.confirm(
+                "Weet je zeker dat je deze aanvraag wilt weigeren?"
+            )
         ) {
 
             return;
         }
 
 
-        await changeSelectedReservationStatus(
+        await updateSelectedRequest(
             "rejected"
         );
     }
@@ -2902,10 +3478,10 @@ requestRejectButton.addEventListener(
 
 
 /* =========================================================
-   STATUS AANPASSEN
+   REQUEST STATUS UPDATE
 ========================================================= */
 
-async function changeSelectedReservationStatus(
+async function updateSelectedRequest(
     newStatus
 ) {
 
@@ -2915,7 +3491,6 @@ async function changeSelectedReservationStatus(
 
         return;
     }
-
 
 
     const reservationId =
@@ -2932,27 +3507,7 @@ async function changeSelectedReservationStatus(
 
 
 
-    if (
-        newStatus ===
-        "accepted"
-    ) {
-
-        requestAcceptButton.textContent =
-            "Accepteren...";
-
-    } else {
-
-        requestRejectButton.textContent =
-            "Weigeren...";
-    }
-
-
-
     try {
-
-        /*
-            1. Status opslaan.
-        */
 
         await updateReservationStatus(
             reservationId,
@@ -2962,10 +3517,10 @@ async function changeSelectedReservationStatus(
 
 
         /*
-            2. Mail versturen.
+            E-mail versturen.
 
-            Mailfout mag statuswijziging
-            niet terugdraaien.
+            Mailfout blokkeert de
+            statuswijziging niet.
         */
 
         try {
@@ -2975,51 +3530,88 @@ async function changeSelectedReservationStatus(
             );
 
 
-        } catch (emailError) {
+        } catch (mailError) {
 
             console.error(
-                "Status gewijzigd maar e-mail mislukt:",
-                emailError
+                "Mail mislukt:",
+                mailError
+            );
+
+
+            showToast(
+                "Status aangepast, maar de e-mail kon niet worden verstuurd.",
+                "error"
             );
         }
 
 
 
-        /*
-            3. Alles opnieuw laden.
-        */
-
-        selectedReservationId =
-            reservationId;
+        await loadReservations();
 
 
-        directoriesLoaded =
-            false;
+        deriveDirectories();
 
 
-        await loadAdminData();
+        renderEverything();
 
 
 
-        /*
-            Reservatie opnieuw tonen.
-        */
+        const updated =
+            reservations.find(
+                reservation =>
+                    reservation.id ===
+                    reservationId
+            );
 
-        showRequestDetail(
-            reservationId
+
+        if (updated) {
+
+            requestFilter =
+                "all";
+
+
+            requestFilterButtons.forEach(
+                button => {
+
+                    button.classList.toggle(
+                        "active",
+                        button.dataset
+                            .requestFilter ===
+                        "all"
+                    );
+                }
+            );
+
+
+            renderRequests();
+
+            showRequestDetail(
+                reservationId
+            );
+        }
+
+
+
+        showToast(
+            newStatus ===
+                "accepted"
+                ? "Reservatie goedgekeurd."
+                : "Reservatie geweigerd.",
+            "success"
         );
 
 
     } catch (error) {
 
         console.error(
-            "Status wijzigen mislukt:",
+            "Status aanpassen mislukt:",
             error
         );
 
 
-        alert(
-            "De reservatiestatus kon niet gewijzigd worden."
+        showToast(
+            "De reservatie kon niet worden aangepast.",
+            "error"
         );
 
 
@@ -3031,50 +3623,35 @@ async function changeSelectedReservationStatus(
 
         requestRejectButton.disabled =
             false;
-
-
-        requestAcceptButton.textContent =
-            "Accepteren";
-
-
-        requestRejectButton.textContent =
-            "Weigeren";
     }
 }
 
 
 
 /* =========================================================
-   RESERVATIE VANUIT ANDERE VIEW OPENEN
+   RESERVATIE VANUIT DASHBOARD / CALENDAR OPENEN
 ========================================================= */
 
-async function openReservationFromAnywhere(
+async function openReservation(
     reservationId
 ) {
 
-    /*
-        Zorg dat "Alles" actief is als
-        een niet-pending reservatie wordt geopend.
-    */
-
     const reservation =
-        allReservations.find(
+        reservations.find(
             item =>
                 item.id ===
                 reservationId
         );
 
 
-    if (
-        !reservation
-    ) {
+    if (!reservation) {
 
         return;
     }
 
 
 
-    activeRequestFilter =
+    requestFilter =
         reservation.status ===
             "pending"
             ? "pending"
@@ -3087,16 +3664,17 @@ async function openReservationFromAnywhere(
 
             button.classList.toggle(
                 "active",
+
                 button.dataset
                     .requestFilter ===
-                activeRequestFilter
+                requestFilter
             );
         }
     );
 
 
 
-    await showAdminView(
+    await showView(
         "requests"
     );
 
@@ -3110,133 +3688,345 @@ async function openReservationFromAnywhere(
 
 
 
-    const card =
-        document.getElementById(
-            `reservation-${reservationId}`
-        );
+    requestAnimationFrame(
+        () => {
+
+            const row =
+                byId(
+                    `reservation-${reservationId}`
+                );
 
 
-    if (
-        card
-    ) {
+            row?.scrollIntoView(
+                {
+                    behavior:
+                        "smooth",
 
-        card.scrollIntoView(
-            {
-                behavior:
-                    "smooth",
-
-                block:
-                    "center"
-            }
-        );
-    }
+                    block:
+                        "center"
+                }
+            );
+        }
+    );
 }
 
 
 
-/*
-    Kalendermodule kan later dit event
-    gebruiken om een reservatie te openen.
-*/
-
-window.addEventListener(
-    "teckelweb:open-reservation",
-    async event => {
-
-        const reservationId =
-            event.detail
-                ?.reservationId;
-
-
-        if (
-            reservationId
-        ) {
-
-            await openReservationFromAnywhere(
-                reservationId
-            );
-        }
-    }
-);
-
-
-
 /* =========================================================
-   CLIENT DIRECTORY LADEN
+   DIRECTORY BOUWEN
 ========================================================= */
 
-async function ensureDirectoriesLoaded() {
+function deriveDirectories() {
 
-    if (
-        directoriesLoaded
-    ) {
+    const clientMap =
+        new Map();
 
-        renderClients();
 
-        renderPets();
-
-        return;
-    }
+    const petMap =
+        new Map();
 
 
 
-    try {
+    reservations.forEach(
+        reservation => {
 
-        /*
-            Voorlopig komen klanten en honden
-            uit de reservatiegeschiedenis.
-        */
+            const customer =
+                reservation.customer
+                ||
+                {};
 
-        [
-            clients,
-            pets
-        ] =
-            await Promise.all(
-                [
-                    getClientDirectory(),
-                    getPetDirectory()
-                ]
+
+            const dog =
+                reservation.dog
+                ||
+                {};
+
+
+            const ownerKey =
+                customer.uid
+                ||
+                customer.email
+                ||
+                customer.name
+                ||
+                "unknown";
+
+
+
+            /* -----------------------------------------
+               CLIENT
+            ----------------------------------------- */
+
+            if (
+                ownerKey !==
+                "unknown"
+            ) {
+
+                if (
+                    !clientMap.has(
+                        ownerKey
+                    )
+                ) {
+
+                    clientMap.set(
+                        ownerKey,
+                        {
+
+                            id:
+                                ownerKey,
+
+                            name:
+                                customer.name
+                                ||
+                                "",
+
+                            email:
+                                customer.email
+                                ||
+                                "",
+
+                            phone:
+                                customer.phone
+                                ||
+                                "",
+
+                            pets:
+                                new Set(),
+
+                            reservations:
+                                []
+                        }
+                    );
+                }
+
+
+
+                const client =
+                    clientMap.get(
+                        ownerKey
+                    );
+
+
+                if (
+                    customer.name
+                ) {
+
+                    client.name =
+                        customer.name;
+                }
+
+
+                if (
+                    customer.email
+                ) {
+
+                    client.email =
+                        customer.email;
+                }
+
+
+                if (
+                    customer.phone
+                ) {
+
+                    client.phone =
+                        customer.phone;
+                }
+
+
+                if (
+                    dog.name
+                ) {
+
+                    client.pets.add(
+                        dog.name
+                    );
+                }
+
+
+                client.reservations.push(
+                    reservation
+                );
+            }
+
+
+
+            /* -----------------------------------------
+               PET
+            ----------------------------------------- */
+
+            if (
+                dog.name
+            ) {
+
+                const petKey =
+                    `${ownerKey}|${dog.name.trim().toLowerCase()}`;
+
+
+                if (
+                    !petMap.has(
+                        petKey
+                    )
+                ) {
+
+                    petMap.set(
+                        petKey,
+                        {
+
+                            id:
+                                petKey,
+
+                            name:
+                                dog.name,
+
+                            breed:
+                                dog.breed
+                                ||
+                                "",
+
+                            age:
+                                dog.age
+                                ??
+                                null,
+
+                            weight:
+                                dog.weight
+                                ??
+                                null,
+
+                            notes:
+                                dog.notes
+                                ||
+                                "",
+
+                            ownerName:
+                                customer.name
+                                ||
+                                "",
+
+                            ownerEmail:
+                                customer.email
+                                ||
+                                "",
+
+                            reservations:
+                                []
+                        }
+                    );
+                }
+
+
+
+                const pet =
+                    petMap.get(
+                        petKey
+                    );
+
+
+                if (
+                    dog.breed
+                ) {
+
+                    pet.breed =
+                        dog.breed;
+                }
+
+
+                if (
+                    dog.age !==
+                    undefined
+                    &&
+                    dog.age !==
+                    null
+                ) {
+
+                    pet.age =
+                        dog.age;
+                }
+
+
+                if (
+                    dog.weight !==
+                    undefined
+                    &&
+                    dog.weight !==
+                    null
+                ) {
+
+                    pet.weight =
+                        dog.weight;
+                }
+
+
+                if (
+                    dog.notes
+                ) {
+
+                    pet.notes =
+                        dog.notes;
+                }
+
+
+                pet.reservations.push(
+                    reservation
+                );
+            }
+        }
+    );
+
+
+
+    clients =
+        Array.from(
+            clientMap.values()
+        )
+            .map(
+                client => ({
+
+                    ...client,
+
+                    pets:
+                        Array.from(
+                            client.pets
+                        )
+                })
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+
+                    (
+                        a.name
+                        ||
+                        a.email
+                    )
+                        .localeCompare(
+                            b.name
+                            ||
+                            b.email,
+                            "nl"
+                        )
             );
 
 
-        directoriesLoaded =
-            true;
 
+    pets =
+        Array.from(
+            petMap.values()
+        )
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
 
-        renderClients();
-
-        renderPets();
-
-
-    } catch (error) {
-
-        console.error(
-            "Directory laden mislukt:",
-            error
-        );
-
-
-        clientsList.innerHTML = `
-            <div class="admin-empty-state">
-
-                <strong>
-                    Klanten konden niet geladen worden.
-                </strong>
-
-            </div>
-        `;
-
-
-        petsList.innerHTML = `
-            <div class="admin-empty-state">
-
-                <strong>
-                    Honden konden niet geladen worden.
-                </strong>
-
-            </div>
-        `;
-    }
+                    a.name.localeCompare(
+                        b.name,
+                        "nl"
+                    )
+            );
 }
 
 
@@ -3245,7 +4035,7 @@ async function ensureDirectoriesLoaded() {
    CLIENT SEARCH
 ========================================================= */
 
-clientSearch.addEventListener(
+clientSearch?.addEventListener(
     "input",
     renderClients
 );
@@ -3253,59 +4043,49 @@ clientSearch.addEventListener(
 
 
 /* =========================================================
-   CLIENTS RENDEREN
+   CLIENTS
 ========================================================= */
 
 function renderClients() {
 
-    if (
-        !directoriesLoaded
-    ) {
+    if (!clientsList) {
 
         return;
     }
 
 
-
-    const search =
+    const query =
         clientSearch
-            .value
+            ?.value
             .trim()
-            .toLowerCase();
+            .toLowerCase()
+        ||
+        "";
 
 
 
-    const filtered =
+    const visible =
         clients.filter(
             client => {
 
-                if (
-                    !search
-                ) {
+                if (!query) {
 
                     return true;
                 }
 
 
-                const haystack =
-                    [
-                        client.name,
-                        client.email,
-                        client.phone,
-                        ...client.pets
-                    ]
-                        .filter(
-                            Boolean
-                        )
-                        .join(
-                            " "
-                        )
-                        .toLowerCase();
+                return [
 
+                    client.name,
+                    client.email,
+                    client.phone,
+                    ...client.pets
 
-                return haystack.includes(
-                    search
-                );
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(query);
             }
         );
 
@@ -3317,8 +4097,7 @@ function renderClients() {
 
 
     if (
-        filtered.length ===
-        0
+        !visible.length
     ) {
 
         clientsList.innerHTML = `
@@ -3337,30 +4116,28 @@ function renderClients() {
 
 
 
-    filtered.forEach(
+    visible.forEach(
         client => {
 
-            const item =
+            const article =
                 document.createElement(
                     "article"
                 );
 
 
-            item.className =
+            article.className =
                 "admin-directory-item";
 
 
-
-            const initials =
-                makeInitials(
-                    client.name
-                );
-
-
-
-            item.innerHTML = `
+            article.innerHTML = `
                 <div class="admin-directory-avatar">
-                    ${escapeHtml(initials)}
+
+                    ${escapeHtml(
+                getInitials(
+                    client.name
+                )
+            )}
+
                 </div>
 
 
@@ -3380,7 +4157,7 @@ function renderClients() {
                         ${escapeHtml(
                 client.email
                 ||
-                "Geen e-mail"
+                "Geen e-mailadres"
             )}
                     </span>
 
@@ -3398,13 +4175,21 @@ function renderClients() {
                 <div class="admin-directory-meta">
 
                     <span>
-                        ${client.pets.length}
-                        hond${client.pets.length === 1 ? "" : "en"}
+                        ${client.pets.length
+                }
+                        hond${client.pets.length === 1
+                    ? ""
+                    : "en"
+                }
                     </span>
 
                     <strong>
-                        ${client.reservations.length}
-                        reservatie${client.reservations.length === 1 ? "" : "s"}
+                        ${client.reservations.length
+                }
+                        reservatie${client.reservations.length === 1
+                    ? ""
+                    : "s"
+                }
                     </strong>
 
                 </div>
@@ -3412,7 +4197,7 @@ function renderClients() {
 
 
             clientsList.appendChild(
-                item
+                article
             );
         }
     );
@@ -3424,7 +4209,7 @@ function renderClients() {
    PET SEARCH
 ========================================================= */
 
-petSearch.addEventListener(
+petSearch?.addEventListener(
     "input",
     renderPets
 );
@@ -3432,59 +4217,49 @@ petSearch.addEventListener(
 
 
 /* =========================================================
-   PETS RENDEREN
+   PETS
 ========================================================= */
 
 function renderPets() {
 
-    if (
-        !directoriesLoaded
-    ) {
+    if (!petsList) {
 
         return;
     }
 
 
-
-    const search =
+    const query =
         petSearch
-            .value
+            ?.value
             .trim()
-            .toLowerCase();
+            .toLowerCase()
+        ||
+        "";
 
 
 
-    const filtered =
+    const visible =
         pets.filter(
             pet => {
 
-                if (
-                    !search
-                ) {
+                if (!query) {
 
                     return true;
                 }
 
 
-                const haystack =
-                    [
-                        pet.name,
-                        pet.breed,
-                        pet.owner?.name,
-                        pet.owner?.email
-                    ]
-                        .filter(
-                            Boolean
-                        )
-                        .join(
-                            " "
-                        )
-                        .toLowerCase();
+                return [
 
+                    pet.name,
+                    pet.breed,
+                    pet.ownerName,
+                    pet.ownerEmail
 
-                return haystack.includes(
-                    search
-                );
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(query);
             }
         );
 
@@ -3496,8 +4271,7 @@ function renderPets() {
 
 
     if (
-        filtered.length ===
-        0
+        !visible.length
     ) {
 
         petsList.innerHTML = `
@@ -3516,39 +4290,38 @@ function renderPets() {
 
 
 
-    filtered.forEach(
+    visible.forEach(
         pet => {
 
-            const item =
+            const article =
                 document.createElement(
                     "article"
                 );
 
 
-            item.className =
+            article.className =
                 "admin-pet-directory-card";
 
 
-            item.innerHTML = `
+            article.innerHTML = `
                 <div class="admin-pet-directory-top">
 
                     <div class="admin-pet-avatar">
                         ♢
                     </div>
 
+
                     <div>
 
                         <strong>
                             ${escapeHtml(
                 pet.name
-                ||
-                "Hond"
             )}
                         </strong>
 
                         <span>
                             ${escapeHtml(
-                formatPetInfo(
+                formatDogInfo(
                     pet
                 )
             )}
@@ -3567,9 +4340,9 @@ function renderPets() {
 
                     <strong>
                         ${escapeHtml(
-                pet.owner?.name
+                pet.ownerName
                 ||
-                pet.owner?.email
+                pet.ownerEmail
                 ||
                 "Onbekend"
             )}
@@ -3580,17 +4353,19 @@ function renderPets() {
 
                 <div class="admin-pet-directory-footer">
 
-                    <span>
-                        ${pet.reservations.length}
-                        reservatie${pet.reservations.length === 1 ? "" : "s"}
-                    </span>
+                    ${pet.reservations.length
+                }
+                    reservatie${pet.reservations.length === 1
+                    ? ""
+                    : "s"
+                }
 
                 </div>
             `;
 
 
             petsList.appendChild(
-                item
+                article
             );
         }
     );
@@ -3602,13 +4377,9 @@ function renderPets() {
    INITIALS
 ========================================================= */
 
-function makeInitials(
-    name
-) {
+function getInitials(name) {
 
-    if (
-        !name
-    ) {
+    if (!name) {
 
         return "K";
     }
@@ -3616,22 +4387,16 @@ function makeInitials(
 
     return name
         .trim()
-        .split(
-            /\s+/
-        )
-        .slice(
-            0,
-            2
-        )
+        .split(/\s+/)
+        .slice(0, 2)
         .map(
             part =>
-                part.charAt(
-                    0
-                ).toUpperCase()
+                part[0]
+                    ?.toUpperCase()
+                ||
+                ""
         )
-        .join(
-            ""
-        )
+        .join("")
         ||
         "K";
 }
@@ -3639,233 +4404,2031 @@ function makeInitials(
 
 
 /* =========================================================
-   SETTINGS
+   CALENDAR — AVAILABILITY STATUS
 ========================================================= */
 
+function getAvailabilityStatus(
+    dateString
+) {
 
-/*
-    Nog tijdelijk lokaal.
-
-    Zodra we automatische capaciteit bouwen,
-    verhuizen we dit naar een beveiligd
-    Firestore settings-document.
-*/
-
-const SETTINGS_STORAGE_KEY =
-    "teckelweb-admin-settings";
-
-
-
-function loadLocalSettings() {
-
-    let stored =
-        null;
+    return (
+        availability[
+            dateString
+        ]?.status
+        ||
+        "available"
+    );
+}
 
 
-    try {
 
-        stored =
-            JSON.parse(
-                localStorage.getItem(
-                    SETTINGS_STORAGE_KEY
-                )
-            );
+/* =========================================================
+   MINI CALENDAR
+========================================================= */
 
-    } catch {
-
-        stored =
-            null;
-    }
-
-
+function renderMiniCalendar() {
 
     if (
-        !stored
+        !calendarGrid
+        ||
+        !calendarTitle
     ) {
 
         return;
     }
 
 
+    const year =
+        displayedMonth.getFullYear();
 
-    if (
-        stored.maxCapacity
+
+    const month =
+        displayedMonth.getMonth();
+
+
+
+    let monthTitle =
+        new Intl.DateTimeFormat(
+            "nl-BE",
+            {
+                month:
+                    "long",
+
+                year:
+                    "numeric"
+            }
+        ).format(
+            displayedMonth
+        );
+
+
+    monthTitle =
+        monthTitle.charAt(0).toUpperCase()
+        +
+        monthTitle.slice(1);
+
+
+    calendarTitle.textContent =
+        monthTitle;
+
+
+    calendarGrid.innerHTML =
+        "";
+
+
+
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        ).getDay();
+
+
+    const emptyCells =
+        (
+            firstDay + 6
+        )
+        %
+        7;
+
+
+
+    for (
+        let i = 0;
+        i < emptyCells;
+        i++
     ) {
 
-        settingMaxCapacity.value =
-            stored.maxCapacity;
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+
+        empty.className =
+            "admin-calendar-empty";
+
+
+        calendarGrid.appendChild(
+            empty
+        );
     }
 
 
-    if (
-        stored.limitedCapacity
+
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
     ) {
 
-        settingLimitedCapacity.value =
-            stored.limitedCapacity;
-    }
+        const dateString =
+            createDateString(
+                year,
+                month,
+                day
+            );
 
 
-    if (
-        stored.openingTime
-    ) {
-
-        settingOpeningTime.value =
-            stored.openingTime;
-    }
+        const status =
+            getAvailabilityStatus(
+                dateString
+            );
 
 
-    if (
-        stored.closingTime
-    ) {
+        const dayReservations =
+            getReservationsForDate(
+                dateString
+            );
 
-        settingClosingTime.value =
-            stored.closingTime;
+
+        const acceptedCount =
+            dayReservations.filter(
+                reservation =>
+                    reservation.status ===
+                    "accepted"
+            ).length;
+
+
+        const pendingCount =
+            dayReservations.filter(
+                reservation =>
+                    reservation.status ===
+                    "pending"
+            ).length;
+
+
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.type =
+            "button";
+
+
+        button.className =
+            `admin-calendar-day ${status}`;
+
+
+        if (
+            dateString ===
+            selectedDate
+        ) {
+
+            button.classList.add(
+                "selected"
+            );
+        }
+
+
+        if (
+            dateString ===
+            dateToString(
+                new Date()
+            )
+        ) {
+
+            button.classList.add(
+                "today"
+            );
+        }
+
+
+
+        button.innerHTML = `
+            <span class="admin-calendar-day-number">
+                ${day}
+            </span>
+        `;
+
+
+
+        if (
+            acceptedCount
+        ) {
+
+            const badge =
+                document.createElement(
+                    "span"
+                );
+
+
+            badge.className =
+                "admin-calendar-booking-count";
+
+
+            badge.textContent =
+                acceptedCount;
+
+
+            button.appendChild(
+                badge
+            );
+        }
+
+
+
+        if (
+            pendingCount
+        ) {
+
+            const badge =
+                document.createElement(
+                    "span"
+                );
+
+
+            badge.className =
+                "admin-calendar-pending-count";
+
+
+            badge.textContent =
+                pendingCount;
+
+
+            button.appendChild(
+                badge
+            );
+        }
+
+
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                selectCalendarDate(
+                    dateString
+                );
+            }
+        );
+
+
+        calendarGrid.appendChild(
+            button
+        );
     }
 }
 
 
 
-saveSettingsButton.addEventListener(
+/* =========================================================
+   DATE SELECT
+========================================================= */
+
+function selectCalendarDate(
+    dateString
+) {
+
+    selectedDate =
+        dateString;
+
+
+    syncAvailabilityControls();
+
+
+    renderMiniCalendar();
+
+    renderCalendarWorkspace();
+}
+
+
+
+/* =========================================================
+   PREVIOUS MONTH
+========================================================= */
+
+calendarPrevious?.addEventListener(
     "click",
-    () => {
+    async () => {
 
-        const maxCapacity =
-            Number(
-                settingMaxCapacity
-                    .value
+        displayedMonth =
+            new Date(
+                displayedMonth.getFullYear(),
+                displayedMonth.getMonth() - 1,
+                1
             );
 
 
-        const limitedCapacity =
-            Number(
-                settingLimitedCapacity
-                    .value
-            );
+        await loadAvailability();
 
 
-        const openingTime =
-            settingOpeningTime
-                .value;
-
-
-        const closingTime =
-            settingClosingTime
-                .value;
-
+        renderMiniCalendar();
 
 
         if (
-            !Number.isFinite(
-                maxCapacity
-            )
-            ||
-            maxCapacity <
+            calendarMode ===
+            "month"
+        ) {
+
+            renderCalendarWorkspace();
+        }
+    }
+);
+
+
+
+/* =========================================================
+   NEXT MONTH
+========================================================= */
+
+calendarNext?.addEventListener(
+    "click",
+    async () => {
+
+        displayedMonth =
+            new Date(
+                displayedMonth.getFullYear(),
+                displayedMonth.getMonth() + 1,
+                1
+            );
+
+
+        await loadAvailability();
+
+
+        renderMiniCalendar();
+
+
+        if (
+            calendarMode ===
+            "month"
+        ) {
+
+            renderCalendarWorkspace();
+        }
+    }
+);
+
+
+
+/* =========================================================
+   TODAY
+========================================================= */
+
+calendarToday?.addEventListener(
+    "click",
+    async () => {
+
+        const date =
+            new Date();
+
+
+        selectedDate =
+            dateToString(
+                date
+            );
+
+
+        displayedMonth =
+            new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                1
+            );
+
+
+        calendarMode =
+            "day";
+
+
+        updateCalendarModeButtons();
+
+
+        await loadAvailability();
+
+
+        renderMiniCalendar();
+
+        syncAvailabilityControls();
+
+        renderCalendarWorkspace();
+    }
+);
+
+
+
+/* =========================================================
+   CALENDAR MODES
+========================================================= */
+
+calendarModeButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                calendarMode =
+                    button.dataset
+                        .calendarMode;
+
+
+                updateCalendarModeButtons();
+
+                renderCalendarWorkspace();
+            }
+        );
+    }
+);
+
+
+
+function updateCalendarModeButtons() {
+
+    calendarModeButtons.forEach(
+        button => {
+
+            button.classList.toggle(
+                "active",
+
+                button.dataset
+                    .calendarMode ===
+                calendarMode
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   CALENDAR WORKSPACE
+========================================================= */
+
+function renderCalendarWorkspace() {
+
+    updateCalendarModeButtons();
+
+
+    if (
+        calendarMode ===
+        "week"
+    ) {
+
+        renderWeekView();
+
+        return;
+    }
+
+
+    if (
+        calendarMode ===
+        "month"
+    ) {
+
+        renderMonthView();
+
+        return;
+    }
+
+
+    renderDayView();
+}
+
+
+
+/* =========================================================
+   DAY VIEW
+========================================================= */
+
+function renderDayView() {
+
+    selectedDateTitle.textContent =
+        formatLongDate(
+            selectedDate
+        );
+
+
+    dayPlanning.hidden =
+        false;
+
+
+    daySummary.hidden =
+        false;
+
+
+    if (
+        dayHours
+    ) {
+
+        dayHours.hidden =
+            false;
+    }
+
+
+
+    const dayReservations =
+        getReservationsForDate(
+            selectedDate
+        )
+            .filter(
+                reservation =>
+
+                    reservation.status ===
+                    "accepted"
+
+                    ||
+
+                    reservation.status ===
+                    "pending"
+            );
+
+
+
+    const confirmed =
+        dayReservations.filter(
+            reservation =>
+                reservation.status ===
+                "accepted"
+        );
+
+
+    const pending =
+        dayReservations.filter(
+            reservation =>
+                reservation.status ===
+                "pending"
+        );
+
+
+
+    dayConfirmedCount.textContent =
+        confirmed.length;
+
+
+    dayPendingCount.textContent =
+        pending.length;
+
+
+    renderDayHourAxis();
+
+
+    renderDayBookings(
+        dayReservations
+    );
+}
+
+
+
+/* =========================================================
+   DAY HOURS
+========================================================= */
+
+function renderDayHourAxis() {
+
+    if (!dayHours) {
+
+        return;
+    }
+
+
+    const settings =
+        getSettings();
+
+
+    const opening =
+        timeToMinutes(
+            settings.openingTime
+        )
+        ??
+        480;
+
+
+    const closing =
+        timeToMinutes(
+            settings.closingTime
+        )
+        ??
+        1080;
+
+
+    dayHours.innerHTML =
+        "";
+
+
+    let current =
+        opening;
+
+
+    while (
+        current <=
+        closing
+    ) {
+
+        const span =
+            document.createElement(
+                "span"
+            );
+
+
+        span.textContent =
+            minutesToTime(
+                current
+            );
+
+
+        dayHours.appendChild(
+            span
+        );
+
+
+        current +=
+            60;
+    }
+
+
+
+    if (
+        (
+            closing -
+            opening
+        )
+        %
+        60 !==
+        0
+    ) {
+
+        const span =
+            document.createElement(
+                "span"
+            );
+
+
+        span.textContent =
+            minutesToTime(
+                closing
+            );
+
+
+        dayHours.appendChild(
+            span
+        );
+    }
+}
+
+
+
+/* =========================================================
+   DAY BOOKING ITEMS
+========================================================= */
+
+function prepareDayItems(
+    dayReservations
+) {
+
+    const settings =
+        getSettings();
+
+
+    const opening =
+        timeToMinutes(
+            settings.openingTime
+        )
+        ??
+        480;
+
+
+    const closing =
+        timeToMinutes(
+            settings.closingTime
+        )
+        ??
+        1080;
+
+
+
+    return dayReservations
+        .map(
+            reservation => {
+
+                const times =
+                    getReservationTimesForDay(
+                        reservation,
+                        selectedDate
+                    );
+
+
+                let start =
+                    timeToMinutes(
+                        times.start
+                    )
+                    ??
+                    opening;
+
+
+                let end =
+                    timeToMinutes(
+                        times.end
+                    )
+                    ??
+                    closing;
+
+
+                start =
+                    Math.max(
+                        opening,
+                        start
+                    );
+
+
+                end =
+                    Math.min(
+                        closing,
+                        end
+                    );
+
+
+                if (
+                    end <= start
+                ) {
+
+                    end =
+                        Math.min(
+                            closing,
+                            start + 30
+                        );
+                }
+
+
+                return {
+
+                    reservation,
+                    times,
+                    start,
+                    end,
+                    lane:
+                        0,
+
+                    laneCount:
+                        1
+                };
+            }
+        )
+        .sort(
+            (
+                a,
+                b
+            ) => {
+
+                if (
+                    a.start !==
+                    b.start
+                ) {
+
+                    return (
+                        a.start -
+                        b.start
+                    );
+                }
+
+
+                return (
+                    b.end -
+                    a.end
+                );
+            }
+        );
+}
+
+
+
+/* =========================================================
+   OVERLAP LANES
+========================================================= */
+
+function assignOverlapLanes(
+    items
+) {
+
+    let cluster =
+        [];
+
+
+    let clusterEnd =
+        -Infinity;
+
+
+
+    function finishCluster() {
+
+        if (
+            !cluster.length
+        ) {
+
+            return;
+        }
+
+
+        assignClusterLanes(
+            cluster
+        );
+
+
+        cluster =
+            [];
+
+
+        clusterEnd =
+            -Infinity;
+    }
+
+
+
+    items.forEach(
+        item => {
+
+            if (
+                cluster.length
+                &&
+                item.start >=
+                clusterEnd
+            ) {
+
+                finishCluster();
+            }
+
+
+            cluster.push(
+                item
+            );
+
+
+            clusterEnd =
+                Math.max(
+                    clusterEnd,
+                    item.end
+                );
+        }
+    );
+
+
+    finishCluster();
+
+
+    return items;
+}
+
+
+
+function assignClusterLanes(
+    cluster
+) {
+
+    const laneEnds =
+        [];
+
+
+    cluster.forEach(
+        item => {
+
+            let lane =
+                laneEnds.findIndex(
+                    end =>
+                        end <=
+                        item.start
+                );
+
+
+            if (
+                lane ===
+                -1
+            ) {
+
+                lane =
+                    laneEnds.length;
+
+
+                laneEnds.push(
+                    item.end
+                );
+
+            } else {
+
+                laneEnds[
+                    lane
+                ] =
+                    item.end;
+            }
+
+
+            item.lane =
+                lane;
+        }
+    );
+
+
+    const laneCount =
+        Math.max(
+            laneEnds.length,
             1
-        ) {
+        );
 
-            alert(
-                "Geef een geldige maximale capaciteit in."
+
+    cluster.forEach(
+        item => {
+
+            item.laneCount =
+                laneCount;
+        }
+    );
+}
+
+
+
+/* =========================================================
+   DAY BOOKING RENDER
+========================================================= */
+
+function renderDayBookings(
+    dayReservations
+) {
+
+    if (!dayBookings) {
+
+        return;
+    }
+
+
+    const settings =
+        getSettings();
+
+
+    const opening =
+        timeToMinutes(
+            settings.openingTime
+        )
+        ??
+        480;
+
+
+    const closing =
+        timeToMinutes(
+            settings.closingTime
+        )
+        ??
+        1080;
+
+
+    const totalMinutes =
+        Math.max(
+            closing -
+            opening,
+            60
+        );
+
+
+    const hourCount =
+        totalMinutes /
+        60;
+
+
+    const canvasHeight =
+        Math.max(
+            650,
+            hourCount * 82
+        );
+
+
+
+    dayBookings.innerHTML =
+        "";
+
+
+    dayBookings.removeAttribute(
+        "style"
+    );
+
+
+    dayBookings.style.position =
+        "relative";
+
+
+    dayBookings.style.height =
+        `${canvasHeight}px`;
+
+
+    dayBookings.style.minHeight =
+        `${canvasHeight}px`;
+
+
+
+    /*
+        Horizontale uurlijnen.
+    */
+
+    const hourHeight =
+        canvasHeight /
+        hourCount;
+
+
+    dayBookings.style.backgroundImage =
+        `repeating-linear-gradient(
+            to bottom,
+            transparent,
+            transparent ${hourHeight - 1}px,
+            #ececec ${hourHeight - 1}px,
+            #ececec ${hourHeight}px
+        )`;
+
+
+
+    if (
+        !dayReservations.length
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
             );
 
 
-            return;
-        }
+        empty.className =
+            "admin-agenda-empty";
+
+
+        empty.style.position =
+            "absolute";
+
+
+        empty.style.top =
+            "28px";
+
+
+        empty.style.left =
+            "25px";
+
+
+        empty.style.right =
+            "25px";
+
+
+        empty.innerHTML = `
+            <strong>
+                Geen reservaties
+            </strong>
+
+            <span>
+                Er staan nog geen honden gepland voor deze dag.
+            </span>
+        `;
+
+
+        dayBookings.appendChild(
+            empty
+        );
+
+
+        return;
+    }
 
 
 
-        if (
-            !Number.isFinite(
-                limitedCapacity
-            )
-            ||
-            limitedCapacity <
-            1
-            ||
-            limitedCapacity >
-            maxCapacity
-        ) {
-
-            alert(
-                "De grens voor beperkte beschikbaarheid moet tussen 1 en de maximale capaciteit liggen."
-            );
-
-
-            return;
-        }
-
-
-
-        if (
-            !openingTime
-            ||
-            !closingTime
-            ||
-            closingTime <=
-            openingTime
-        ) {
-
-            alert(
-                "Controleer het openings- en sluitingsuur."
-            );
-
-
-            return;
-        }
-
-
-
-        const settings = {
-
-            maxCapacity:
-                maxCapacity,
-
-            limitedCapacity:
-                limitedCapacity,
-
-            openingTime:
-                openingTime,
-
-            closingTime:
-                closingTime
-        };
-
-
-
-        localStorage.setItem(
-            SETTINGS_STORAGE_KEY,
-            JSON.stringify(
-                settings
+    const items =
+        assignOverlapLanes(
+            prepareDayItems(
+                dayReservations
             )
         );
 
 
 
-        const originalText =
-            saveSettingsButton
-                .textContent;
+    items.forEach(
+        item => {
+
+            const top =
+                (
+                    (
+                        item.start -
+                        opening
+                    )
+                    /
+                    totalMinutes
+                )
+                *
+                100;
 
 
-        saveSettingsButton.textContent =
-            "Opgeslagen ✓";
+            const height =
+                (
+                    (
+                        item.end -
+                        item.start
+                    )
+                    /
+                    totalMinutes
+                )
+                *
+                100;
 
 
-        saveSettingsButton.disabled =
+            const columnWidth =
+                100 /
+                item.laneCount;
+
+
+            const left =
+                columnWidth *
+                item.lane;
+
+
+
+            const card =
+                document.createElement(
+                    "button"
+                );
+
+
+            card.type =
+                "button";
+
+
+            const reservation =
+                item.reservation;
+
+
+            card.className =
+                [
+                    "admin-agenda-booking",
+
+                    reservation.status ===
+                        "pending"
+                        ? "pending"
+                        : "confirmed",
+
+                    isBoarding(
+                        reservation
+                    )
+                        ? "overnight"
+                        : "daycare"
+
+                ].join(" ");
+
+
+
+            card.style.position =
+                "absolute";
+
+
+            card.style.top =
+                `calc(${top}% + 4px)`;
+
+
+            card.style.height =
+                `calc(${Math.max(height, 4)}% - 8px)`;
+
+
+            card.style.left =
+                `calc(${left}% + 6px)`;
+
+
+            card.style.width =
+                `calc(${columnWidth}% - 12px)`;
+
+
+            card.style.minHeight =
+                "48px";
+
+
+            card.style.zIndex =
+                "2";
+
+
+
+            card.innerHTML = `
+                <div class="admin-agenda-booking-header">
+
+                    <strong>
+                        ${escapeHtml(
+                reservation.dog
+                    ?.name
+                ||
+                "Hond"
+            )}
+                    </strong>
+
+                    <span>
+                        ${reservation.status ===
+                    "pending"
+                    ? "Nieuw"
+                    : "Bevestigd"
+                }
+                    </span>
+
+                </div>
+
+
+                <div class="admin-agenda-booking-client">
+
+                    ${escapeHtml(
+                    reservation.customer
+                        ?.name
+                    ||
+                    "Onbekende klant"
+                )}
+
+                </div>
+
+
+                <div class="admin-agenda-booking-time">
+
+                    ${escapeHtml(
+                    item.times.start
+                )}
+
+                    –
+
+                    ${escapeHtml(
+                    item.times.end
+                )}
+
+                </div>
+
+
+                <div class="admin-agenda-booking-service">
+
+                    ${escapeHtml(
+                    formatBookingType(
+                        reservation
+                    )
+                )}
+
+                </div>
+            `;
+
+
+            card.addEventListener(
+                "click",
+                async () => {
+
+                    await openReservation(
+                        reservation.id
+                    );
+                }
+            );
+
+
+            dayBookings.appendChild(
+                card
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   WEEK VIEW
+========================================================= */
+
+function renderWeekView() {
+
+    const weekStart =
+        startOfWeek(
+            selectedDate
+        );
+
+
+    const weekDays =
+        [];
+
+
+    for (
+        let i = 0;
+        i < 7;
+        i++
+    ) {
+
+        weekDays.push(
+            addDays(
+                weekStart,
+                i
+            )
+        );
+    }
+
+
+
+    selectedDateTitle.textContent =
+        `${formatShortDate(
+            weekDays[0]
+        )} – ${formatShortDate(
+            weekDays[6]
+        )}`;
+
+
+    daySummary.hidden =
+        true;
+
+
+    dayPlanning.hidden =
+        false;
+
+
+    if (
+        dayHours
+    ) {
+
+        dayHours.hidden =
+            true;
+    }
+
+
+    dayBookings.innerHTML =
+        "";
+
+
+    dayBookings.removeAttribute(
+        "style"
+    );
+
+
+    dayBookings.style.display =
+        "grid";
+
+
+    dayBookings.style.gridTemplateColumns =
+        "repeat(7, minmax(150px, 1fr))";
+
+
+    dayBookings.style.gap =
+        "10px";
+
+
+    dayBookings.style.height =
+        "auto";
+
+
+    dayBookings.style.overflowX =
+        "auto";
+
+
+
+    weekDays.forEach(
+        dateString => {
+
+            const column =
+                document.createElement(
+                    "section"
+                );
+
+
+            column.className =
+                "admin-week-column";
+
+
+            const dateReservations =
+                getReservationsForDate(
+                    dateString
+                )
+                    .filter(
+                        reservation =>
+
+                            reservation.status ===
+                            "accepted"
+
+                            ||
+
+                            reservation.status ===
+                            "pending"
+                    )
+                    .sort(
+                        (
+                            a,
+                            b
+                        ) =>
+
+                            getReservationTimesForDay(
+                                a,
+                                dateString
+                            )
+                                .start
+                                .localeCompare(
+                                    getReservationTimesForDay(
+                                        b,
+                                        dateString
+                                    ).start
+                                )
+                    );
+
+
+
+            column.innerHTML = `
+                <div class="admin-week-column-header">
+
+                    <strong>
+                        ${escapeHtml(
+                formatShortDate(
+                    dateString
+                )
+            )}
+                    </strong>
+
+                    <span>
+                        ${dateReservations.length
+                }
+                    </span>
+
+                </div>
+            `;
+
+
+
+            if (
+                !dateReservations.length
+            ) {
+
+                const empty =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                empty.className =
+                    "admin-week-empty";
+
+
+                empty.textContent =
+                    "Geen reservaties";
+
+
+                column.appendChild(
+                    empty
+                );
+            }
+
+
+
+            dateReservations.forEach(
+                reservation => {
+
+                    const times =
+                        getReservationTimesForDay(
+                            reservation,
+                            dateString
+                        );
+
+
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    button.type =
+                        "button";
+
+
+                    button.className =
+                        `admin-week-booking ${reservation.status}`;
+
+
+                    button.innerHTML = `
+                        <strong>
+                            ${escapeHtml(
+                        reservation.dog
+                            ?.name
+                        ||
+                        "Hond"
+                    )}
+                        </strong>
+
+                        <span>
+                            ${escapeHtml(
+                        times.start
+                    )}
+                            –
+                            ${escapeHtml(
+                        times.end
+                    )}
+                        </span>
+
+                        <small>
+                            ${escapeHtml(
+                        reservation.customer
+                            ?.name
+                        ||
+                        ""
+                    )}
+                        </small>
+                    `;
+
+
+                    button.addEventListener(
+                        "click",
+                        async () => {
+
+                            await openReservation(
+                                reservation.id
+                            );
+                        }
+                    );
+
+
+                    column.appendChild(
+                        button
+                    );
+                }
+            );
+
+
+
+            column.addEventListener(
+                "dblclick",
+                () => {
+
+                    selectedDate =
+                        dateString;
+
+
+                    calendarMode =
+                        "day";
+
+
+                    updateCalendarModeButtons();
+
+                    renderMiniCalendar();
+
+                    renderDayView();
+                }
+            );
+
+
+            dayBookings.appendChild(
+                column
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   MONTH VIEW
+========================================================= */
+
+function renderMonthView() {
+
+    const year =
+        displayedMonth
+            .getFullYear();
+
+
+    const month =
+        displayedMonth
+            .getMonth();
+
+
+
+    let title =
+        new Intl.DateTimeFormat(
+            "nl-BE",
+            {
+                month:
+                    "long",
+
+                year:
+                    "numeric"
+            }
+        ).format(
+            displayedMonth
+        );
+
+
+    title =
+        title.charAt(0).toUpperCase()
+        +
+        title.slice(1);
+
+
+    selectedDateTitle.textContent =
+        title;
+
+
+    daySummary.hidden =
+        true;
+
+
+    dayPlanning.hidden =
+        false;
+
+
+    if (
+        dayHours
+    ) {
+
+        dayHours.hidden =
+            true;
+    }
+
+
+
+    dayBookings.innerHTML =
+        "";
+
+
+    dayBookings.removeAttribute(
+        "style"
+    );
+
+
+    dayBookings.style.display =
+        "grid";
+
+
+    dayBookings.style.gridTemplateColumns =
+        "repeat(7, minmax(110px, 1fr))";
+
+
+    dayBookings.style.gap =
+        "8px";
+
+
+    dayBookings.style.height =
+        "auto";
+
+
+    dayBookings.style.overflowX =
+        "auto";
+
+
+
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        ).getDay();
+
+
+    const emptyCount =
+        (
+            firstDay + 6
+        )
+        %
+        7;
+
+
+
+    for (
+        let i = 0;
+        i < emptyCount;
+        i++
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+
+        empty.className =
+            "admin-month-empty";
+
+
+        dayBookings.appendChild(
+            empty
+        );
+    }
+
+
+
+    const days =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+
+    for (
+        let day = 1;
+        day <= days;
+        day++
+    ) {
+
+        const dateString =
+            createDateString(
+                year,
+                month,
+                day
+            );
+
+
+        const dateReservations =
+            getReservationsForDate(
+                dateString
+            );
+
+
+        const accepted =
+            dateReservations.filter(
+                reservation =>
+                    reservation.status ===
+                    "accepted"
+            );
+
+
+        const pending =
+            dateReservations.filter(
+                reservation =>
+                    reservation.status ===
+                    "pending"
+            );
+
+
+        const status =
+            getAvailabilityStatus(
+                dateString
+            );
+
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.type =
+            "button";
+
+
+        button.className =
+            `admin-month-day ${status}`;
+
+
+        button.innerHTML = `
+            <div class="admin-month-day-number">
+                ${day}
+            </div>
+
+
+            <div class="admin-month-day-info">
+
+                ${accepted.length
+                ? `
+                            <span class="confirmed">
+                                ${accepted.length} bevestigd
+                            </span>
+                        `
+                : ""
+            }
+
+                ${pending.length
+                ? `
+                            <span class="pending">
+                                ${pending.length} nieuw
+                            </span>
+                        `
+                : ""
+            }
+
+            </div>
+        `;
+
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                selectedDate =
+                    dateString;
+
+
+                calendarMode =
+                    "day";
+
+
+                updateCalendarModeButtons();
+
+                renderMiniCalendar();
+
+                syncAvailabilityControls();
+
+                renderDayView();
+            }
+        );
+
+
+        dayBookings.appendChild(
+            button
+        );
+    }
+}
+
+
+
+/* =========================================================
+   AVAILABILITY CONTROLS SYNC
+========================================================= */
+
+function syncAvailabilityControls() {
+
+    const status =
+        getAvailabilityStatus(
+            selectedDate
+        );
+
+
+    availabilityStatusInputs.forEach(
+        input => {
+
+            input.checked =
+                input.value ===
+                status;
+        }
+    );
+
+
+    if (
+        saveAvailabilityButton
+    ) {
+
+        saveAvailabilityButton.disabled =
+            false;
+    }
+
+
+    if (
+        availabilityMessage
+    ) {
+
+        availabilityMessage.textContent =
+            "";
+    }
+}
+
+
+
+/* =========================================================
+   AVAILABILITY SAVE
+========================================================= */
+
+saveAvailabilityButton?.addEventListener(
+    "click",
+    async () => {
+
+        const selected =
+            availabilityStatusInputs.find(
+                input =>
+                    input.checked
+            );
+
+
+        if (!selected) {
+
+            showToast(
+                "Kies eerst een beschikbaarheidsstatus.",
+                "error"
+            );
+
+
+            return;
+        }
+
+
+
+        saveAvailabilityButton.disabled =
             true;
 
 
-        window.setTimeout(
+        const oldText =
+            saveAvailabilityButton.textContent;
+
+
+        saveAvailabilityButton.textContent =
+            "Opslaan...";
+
+
+
+        try {
+
+            await saveAvailability(
+                selectedDate,
+                selected.value
+            );
+
+
+
+            if (
+                selected.value ===
+                "available"
+            ) {
+
+                delete availability[
+                    selectedDate
+                ];
+
+            } else {
+
+                availability[
+                    selectedDate
+                ] = {
+
+                    date:
+                        selectedDate,
+
+                    status:
+                        selected.value
+                };
+            }
+
+
+
+            renderMiniCalendar();
+
+            renderCalendarWorkspace();
+
+
+            availabilityMessage.textContent =
+                "Opgeslagen";
+
+
+            showToast(
+                "Beschikbaarheid aangepast.",
+                "success"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Availability fout:",
+                error
+            );
+
+
+            availabilityMessage.textContent =
+                "Opslaan mislukt";
+
+
+            showToast(
+                "Beschikbaarheid kon niet worden opgeslagen.",
+                "error"
+            );
+
+
+        } finally {
+
+            saveAvailabilityButton.disabled =
+                false;
+
+
+            saveAvailabilityButton.textContent =
+                oldText;
+        }
+    }
+);
+
+
+
+/* =========================================================
+   SETTINGS TABS
+========================================================= */
+
+settingsNavigation.forEach(
+    (
+        button,
+        index
+    ) => {
+
+        button.addEventListener(
+            "click",
             () => {
 
-                saveSettingsButton.textContent =
-                    originalText;
+                settingsNavigation.forEach(
+                    other => {
+
+                        other.classList.remove(
+                            "active"
+                        );
+                    }
+                );
 
 
-                saveSettingsButton.disabled =
-                    false;
-            },
+                button.classList.add(
+                    "active"
+                );
 
-            1400
+
+                renderSettingsSection(
+                    index
+                );
+            }
         );
     }
 );
@@ -3873,44 +6436,711 @@ saveSettingsButton.addEventListener(
 
 
 /* =========================================================
-   HTML ESCAPE
+   SETTINGS RENDER
 ========================================================= */
 
-function escapeHtml(
-    value
+function renderSettingsSection(
+    index = 0
 ) {
 
-    return String(
-        value
-        ??
-        ""
+    if (!settingsContent) {
+
+        return;
+    }
+
+
+    const settings =
+        getSettings();
+
+
+
+    /* ---------------------------------------------------------
+       CAPACITY
+    --------------------------------------------------------- */
+
+    if (
+        index ===
+        0
+    ) {
+
+        settingsContent.innerHTML = `
+            <div class="admin-settings-heading">
+
+                <span class="admin-panel-label">
+                    Instellingen
+                </span>
+
+                <h2>
+                    Opvang & capaciteit
+                </h2>
+
+                <p>
+                    Stel de algemene capaciteit en openingsuren in.
+                </p>
+
+            </div>
+
+
+            <div class="admin-settings-card">
+
+                <div class="admin-setting-row">
+
+                    <div>
+
+                        <strong>
+                            Maximale dagcapaciteit
+                        </strong>
+
+                        <span>
+                            Maximum aantal honden tegelijk.
+                        </span>
+
+                    </div>
+
+
+                    <div class="admin-setting-input">
+
+                        <input
+                            type="number"
+                            id="setting-max-capacity"
+                            min="1"
+                            value="${settings.maxCapacity}"
+                        >
+
+                        <span>
+                            honden
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-setting-row">
+
+                    <div>
+
+                        <strong>
+                            Beperkte beschikbaarheid vanaf
+                        </strong>
+
+                        <span>
+                            Vanaf dit aantal is er nog weinig plaats.
+                        </span>
+
+                    </div>
+
+
+                    <div class="admin-setting-input">
+
+                        <input
+                            type="number"
+                            id="setting-limited-capacity"
+                            min="1"
+                            value="${settings.limitedCapacity}"
+                        >
+
+                        <span>
+                            honden
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-setting-row">
+
+                    <div>
+
+                        <strong>
+                            Openingsuur
+                        </strong>
+
+                        <span>
+                            Eerste mogelijke aankomst.
+                        </span>
+
+                    </div>
+
+
+                    <input
+                        type="time"
+                        id="setting-opening-time"
+                        value="${settings.openingTime}"
+                    >
+
+                </div>
+
+
+                <div class="admin-setting-row">
+
+                    <div>
+
+                        <strong>
+                            Sluitingsuur
+                        </strong>
+
+                        <span>
+                            Laatste mogelijke ophaling.
+                        </span>
+
+                    </div>
+
+
+                    <input
+                        type="time"
+                        id="setting-closing-time"
+                        value="${settings.closingTime}"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-settings-footer">
+
+                <button
+                    type="button"
+                    class="admin-settings-save"
+                    id="dynamic-save-settings"
+                >
+                    Opslaan
+                </button>
+
+            </div>
+        `;
+
+
+
+        byId(
+            "dynamic-save-settings"
+        )
+            ?.addEventListener(
+                "click",
+                saveCapacitySettings
+            );
+
+
+        return;
+    }
+
+
+
+    /* ---------------------------------------------------------
+       SERVICES
+    --------------------------------------------------------- */
+
+    if (
+        index ===
+        1
+    ) {
+
+        settingsContent.innerHTML = `
+            <div class="admin-settings-heading">
+
+                <span class="admin-panel-label">
+                    Diensten
+                </span>
+
+                <h2>
+                    Diensten & prijzen
+                </h2>
+
+                <p>
+                    Basisprijzen voor de hondenopvang.
+                </p>
+
+            </div>
+
+
+            <div class="admin-settings-card">
+
+                <div class="admin-setting-row">
+
+                    <div>
+
+                        <strong>
+                            Dagopvang
+                        </strong>
+
+                        <span>
+                            Basisprijs per opvangdag.
+                        </span>
+
+                    </div>
+
+
+                    <div class="admin-setting-input">
+
+                        <input
+                            type="number"
+                            id="setting-daycare-price"
+                            value="${settings.daycarePrice}"
+                            min="0"
+                        >
+
+                        <span>
+                            € / dag
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-setting-row">
+
+                    <div>
+
+                        <strong>
+                            Overnachting
+                        </strong>
+
+                        <span>
+                            Basisprijs per nacht.
+                        </span>
+
+                    </div>
+
+
+                    <div class="admin-setting-input">
+
+                        <input
+                            type="number"
+                            id="setting-overnight-price"
+                            value="${settings.overnightPrice}"
+                            min="0"
+                        >
+
+                        <span>
+                            € / nacht
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-settings-footer">
+
+                <button
+                    type="button"
+                    id="dynamic-save-settings"
+                    class="admin-settings-save"
+                >
+                    Opslaan
+                </button>
+
+            </div>
+        `;
+
+
+        byId(
+            "dynamic-save-settings"
+        )
+            ?.addEventListener(
+                "click",
+                savePriceSettings
+            );
+
+
+        return;
+    }
+
+
+
+    /* ---------------------------------------------------------
+       ONLINE BOOKING
+    --------------------------------------------------------- */
+
+    if (
+        index ===
+        2
+    ) {
+
+        settingsContent.innerHTML = `
+            <div class="admin-settings-heading">
+
+                <span class="admin-panel-label">
+                    Online booking
+                </span>
+
+                <h2>
+                    Online reserveren
+                </h2>
+
+                <p>
+                    Bepaal of klanten online aanvragen kunnen indienen.
+                </p>
+
+            </div>
+
+
+            <div class="admin-settings-card">
+
+                <div class="admin-setting-row">
+
+                    <div>
+
+                        <strong>
+                            Online reservaties
+                        </strong>
+
+                        <span>
+                            Klanten kunnen via de website een aanvraag indienen.
+                        </span>
+
+                    </div>
+
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="setting-online-booking"
+                            ${settings.onlineBooking
+                ? "checked"
+                : ""
+            }
+                        >
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-settings-footer">
+
+                <button
+                    type="button"
+                    id="dynamic-save-settings"
+                    class="admin-settings-save"
+                >
+                    Opslaan
+                </button>
+
+            </div>
+        `;
+
+
+        byId(
+            "dynamic-save-settings"
+        )
+            ?.addEventListener(
+                "click",
+                saveOnlineBookingSettings
+            );
+
+
+        return;
+    }
+
+
+
+    /* ---------------------------------------------------------
+       NOTIFICATIONS
+    --------------------------------------------------------- */
+
+    settingsContent.innerHTML = `
+        <div class="admin-settings-heading">
+
+            <span class="admin-panel-label">
+                Meldingen
+            </span>
+
+            <h2>
+                Meldingen
+            </h2>
+
+            <p>
+                Beheer e-mailmeldingen rond reservaties.
+            </p>
+
+        </div>
+
+
+        <div class="admin-settings-card">
+
+            <div class="admin-setting-row">
+
+                <div>
+
+                    <strong>
+                        Reservatie-e-mails
+                    </strong>
+
+                    <span>
+                        Verstuur e-mails bij statuswijzigingen.
+                    </span>
+
+                </div>
+
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        id="setting-email-notifications"
+                        ${settings.emailNotifications
+            ? "checked"
+            : ""
+        }
+                    >
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-settings-footer">
+
+            <button
+                type="button"
+                id="dynamic-save-settings"
+                class="admin-settings-save"
+            >
+                Opslaan
+            </button>
+
+        </div>
+    `;
+
+
+    byId(
+        "dynamic-save-settings"
     )
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
+        ?.addEventListener(
+            "click",
+            saveNotificationSettings
         );
 }
 
 
 
 /* =========================================================
-   START
+   SETTINGS SAVE — CAPACITY
 ========================================================= */
 
-loadLocalSettings();
+function saveCapacitySettings() {
+
+    const settings =
+        getSettings();
+
+
+    const maxCapacity =
+        Number(
+            byId(
+                "setting-max-capacity"
+            )?.value
+        );
+
+
+    const limitedCapacity =
+        Number(
+            byId(
+                "setting-limited-capacity"
+            )?.value
+        );
+
+
+    const openingTime =
+        byId(
+            "setting-opening-time"
+        )?.value;
+
+
+    const closingTime =
+        byId(
+            "setting-closing-time"
+        )?.value;
+
+
+
+    if (
+        maxCapacity < 1
+        ||
+        limitedCapacity < 1
+        ||
+        limitedCapacity >
+        maxCapacity
+    ) {
+
+        showToast(
+            "Controleer de capaciteit.",
+            "error"
+        );
+
+
+        return;
+    }
+
+
+
+    if (
+        !openingTime
+        ||
+        !closingTime
+        ||
+        closingTime <=
+        openingTime
+    ) {
+
+        showToast(
+            "Controleer de openingsuren.",
+            "error"
+        );
+
+
+        return;
+    }
+
+
+
+    saveSettings(
+        {
+
+            ...settings,
+
+            maxCapacity,
+            limitedCapacity,
+            openingTime,
+            closingTime
+        }
+    );
+
+
+    renderCalendarWorkspace();
+
+
+    showToast(
+        "Instellingen opgeslagen.",
+        "success"
+    );
+}
+
+
+
+/* =========================================================
+   SETTINGS SAVE — PRICES
+========================================================= */
+
+function savePriceSettings() {
+
+    const settings =
+        getSettings();
+
+
+    const daycarePrice =
+        Number(
+            byId(
+                "setting-daycare-price"
+            )?.value
+        );
+
+
+    const overnightPrice =
+        Number(
+            byId(
+                "setting-overnight-price"
+            )?.value
+        );
+
+
+    saveSettings(
+        {
+
+            ...settings,
+
+            daycarePrice,
+            overnightPrice
+        }
+    );
+
+
+    showToast(
+        "Prijzen opgeslagen.",
+        "success"
+    );
+}
+
+
+
+/* =========================================================
+   SETTINGS SAVE — ONLINE
+========================================================= */
+
+function saveOnlineBookingSettings() {
+
+    const settings =
+        getSettings();
+
+
+    saveSettings(
+        {
+
+            ...settings,
+
+            onlineBooking:
+                Boolean(
+                    byId(
+                        "setting-online-booking"
+                    )?.checked
+                )
+        }
+    );
+
+
+    showToast(
+        "Online booking-instellingen opgeslagen.",
+        "success"
+    );
+}
+
+
+
+/* =========================================================
+   SETTINGS SAVE — NOTIFICATIONS
+========================================================= */
+
+function saveNotificationSettings() {
+
+    const settings =
+        getSettings();
+
+
+    saveSettings(
+        {
+
+            ...settings,
+
+            emailNotifications:
+                Boolean(
+                    byId(
+                        "setting-email-notifications"
+                    )?.checked
+                )
+        }
+    );
+
+
+    showToast(
+        "Meldingsinstellingen opgeslagen.",
+        "success"
+    );
+}
+
+
+
+/* =========================================================
+   INIT SETTINGS
+========================================================= */
+
+renderSettingsSection(0);
