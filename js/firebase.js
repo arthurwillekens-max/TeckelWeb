@@ -593,7 +593,11 @@ export async function getCustomerReservations(
     );
 
 
-    return reservations;
+    return reservations.filter(
+        reservation =>
+            reservation.isDeleted !==
+            true
+    );
 }
 
 
@@ -705,6 +709,190 @@ export async function updateReservationStatus(
                 newStatus,
 
             statusUpdatedAt:
+                serverTimestamp()
+        }
+    );
+}
+
+
+
+/* =========================================================
+   ADMIN — VERBLIJF AFRONDEN
+========================================================= */
+
+export async function confirmReservationCompleted(
+    reservationId,
+    serviceDate = ""
+) {
+
+    if (
+        !reservationId
+    ) {
+
+        throw new Error(
+            "Geen reservatie opgegeven."
+        );
+    }
+
+
+    const reservationRef =
+        doc(
+            db,
+            "reservations",
+            reservationId
+        );
+
+
+    await updateDoc(
+        reservationRef,
+        {
+
+            completionStatus:
+                "completed",
+
+            completedDate:
+                serviceDate
+                ||
+                "",
+
+            completedAt:
+                serverTimestamp(),
+
+            isDeleted:
+                false
+        }
+    );
+}
+
+
+
+/* =========================================================
+   ADMIN — AFRONDING TERUGDRAAIEN
+========================================================= */
+
+export async function reopenCompletedReservation(
+    reservationId
+) {
+
+    if (
+        !reservationId
+    ) {
+
+        throw new Error(
+            "Geen reservatie opgegeven."
+        );
+    }
+
+
+    const reservationRef =
+        doc(
+            db,
+            "reservations",
+            reservationId
+        );
+
+
+    await updateDoc(
+        reservationRef,
+        {
+
+            completionStatus:
+                "pending",
+
+            completedDate:
+                "",
+
+            completedAt:
+                null
+        }
+    );
+}
+
+
+
+/* =========================================================
+   ADMIN — SOFT DELETE / PRULLENBAK
+========================================================= */
+
+export async function softDeleteReservation(
+    reservationId
+) {
+
+    if (
+        !reservationId
+    ) {
+
+        throw new Error(
+            "Geen reservatie opgegeven."
+        );
+    }
+
+
+    const reservationRef =
+        doc(
+            db,
+            "reservations",
+            reservationId
+        );
+
+
+    await updateDoc(
+        reservationRef,
+        {
+
+            isDeleted:
+                true,
+
+            deletedAt:
+                serverTimestamp(),
+
+            deletedDate:
+                new Date()
+                    .toISOString()
+                    .slice(
+                        0,
+                        10
+                    )
+        }
+    );
+}
+
+
+
+/* =========================================================
+   ADMIN — HERSTEL UIT PRULLENBAK
+========================================================= */
+
+export async function restoreReservation(
+    reservationId
+) {
+
+    if (
+        !reservationId
+    ) {
+
+        throw new Error(
+            "Geen reservatie opgegeven."
+        );
+    }
+
+
+    const reservationRef =
+        doc(
+            db,
+            "reservations",
+            reservationId
+        );
+
+
+    await updateDoc(
+        reservationRef,
+        {
+
+            isDeleted:
+                false,
+
+            restoredAt:
                 serverTimestamp()
         }
     );
