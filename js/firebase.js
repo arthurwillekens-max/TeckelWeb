@@ -255,6 +255,37 @@ export async function saveReservation(
 
 
 
+    const rawPhone =
+        String(
+            reservation?.customer
+                ?.phone
+            ||
+            ""
+        )
+            .trim()
+            .replace(
+                /[\s().-]/g,
+                ""
+            )
+            .replace(
+                /^00/,
+                "+"
+            );
+
+
+    if (
+        !/^\+?[0-9]{8,15}$/.test(
+            rawPhone
+        )
+    ) {
+
+        throw new Error(
+            "Ongeldig telefoonnummer."
+        );
+    }
+
+
+
     const normalizedEmail =
         user.email
             .trim()
@@ -286,7 +317,10 @@ export async function saveReservation(
                 user.uid,
 
             email:
-                normalizedEmail
+                normalizedEmail,
+
+            phone:
+                rawPhone
         },
 
 
