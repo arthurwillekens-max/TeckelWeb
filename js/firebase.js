@@ -20,7 +20,8 @@ import {
     updateDoc,
     setDoc,
     deleteDoc,
-    serverTimestamp
+    serverTimestamp,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
@@ -438,6 +439,97 @@ export async function getReservations() {
 
                 ...document.data()
             };
+        }
+    );
+}
+
+
+/* =========================================================
+   ADMIN — RESERVATIES REALTIME VOLGEN
+========================================================= */
+
+export function watchReservations(
+    callback,
+    errorCallback = null
+) {
+
+    const reservationsQuery =
+        query(
+
+            collection(
+                db,
+                "reservations"
+            ),
+
+            orderBy(
+                "createdAt",
+                "desc"
+            )
+        );
+
+
+    return onSnapshot(
+        reservationsQuery,
+
+        snapshot => {
+
+            const items =
+                snapshot.docs.map(
+                    document => ({
+
+                        id:
+                            document.id,
+
+                        ...document.data()
+                    })
+                );
+
+
+            const changes =
+                snapshot.docChanges().map(
+                    change => ({
+
+                        type:
+                            change.type,
+
+                        reservation: {
+
+                            id:
+                                change.doc.id,
+
+                            ...change.doc.data()
+                        }
+                    })
+                );
+
+
+            callback(
+                {
+                    reservations:
+                        items,
+
+                    changes
+                }
+            );
+        },
+
+        error => {
+
+            console.error(
+                "Realtime reservaties volgen mislukt:",
+                error
+            );
+
+
+            if (
+                typeof errorCallback ===
+                "function"
+            ) {
+
+                errorCallback(
+                    error
+                );
+            }
         }
     );
 }
@@ -928,6 +1020,76 @@ export async function restoreReservation(
 
             restoredAt:
                 serverTimestamp()
+        }
+    );
+}
+
+
+
+/* =========================================================
+   ADMIN — ZORGTAKEN AFVINKEN
+========================================================= */
+
+export async function setReservationTaskCompleted(
+    reservationId,
+    dateString,
+    taskKey,
+    completed
+) {
+
+    if (
+        !reservationId
+        ||
+        !dateString
+        ||
+        !taskKey
+    ) {
+
+        throw new Error(
+            "Onvolledige taakgegevens."
+        );
+    }
+
+
+    const safeTaskKey =
+        String(
+            taskKey
+        )
+            .replace(
+                /[^a-zA-Z0-9_-]/g,
+                "_"
+            );
+
+
+    const reservationRef =
+        doc(
+            db,
+            "reservations",
+            reservationId
+        );
+
+
+    const completionPath =
+        `taskCompletions.${dateString}.${safeTaskKey}`;
+
+
+    const completionTimePath =
+        `taskCompletedAt.${dateString}.${safeTaskKey}`;
+
+
+    await updateDoc(
+        reservationRef,
+        {
+
+            [completionPath]:
+                Boolean(
+                    completed
+                ),
+
+            [completionTimePath]:
+                completed
+                    ? serverTimestamp()
+                    : null
         }
     );
 }
