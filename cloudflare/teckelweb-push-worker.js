@@ -707,6 +707,22 @@ async function sendFcmMessage(
         );
 
 
+    const notificationIcon =
+        new URL(
+            "icons/teckelweb-notification.png",
+            adminUrl
+        )
+            .toString();
+
+
+    const notificationBadge =
+        new URL(
+            "icons/teckelweb-badge.png",
+            adminUrl
+        )
+            .toString();
+
+
     const response =
         await fetch(
             `https://fcm.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/messages:send`,
@@ -759,6 +775,12 @@ async function sendFcmMessage(
 
                                         body:
                                             `${dogName} · ${customerName} · ${period}`,
+
+                                        icon:
+                                            notificationIcon,
+
+                                        badge:
+                                            notificationBadge,
 
                                         tag:
                                             `teckelweb-booking-${reservation.id || "new"}`,
