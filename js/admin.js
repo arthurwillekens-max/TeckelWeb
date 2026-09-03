@@ -10576,6 +10576,73 @@ setAdminSidebarCollapsed(
 
 
 /* =========================================================
+   DEEP LINKS V10
+========================================================= */
+
+async function openDeepLinkedAdminViewV10() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const reservationId =
+        params.get(
+            "reservation"
+        );
+
+
+    const requestedView =
+        params.get(
+            "view"
+        );
+
+
+    if (
+        reservationId
+        &&
+        reservations.some(
+            reservation =>
+                reservation.id ===
+                reservationId
+        )
+    ) {
+
+        await openReservation(
+            reservationId
+        );
+
+
+        return;
+    }
+
+
+    if (
+        requestedView
+        &&
+        VIEW_CONFIG[
+            requestedView
+        ]
+    ) {
+
+        await showView(
+            requestedView
+        );
+
+
+        return;
+    }
+
+
+    await showView(
+        currentView
+    );
+}
+
+
+
+/* =========================================================
    =========================================================
    TECKELWEB ADMIN V9
    REALTIME BOOKING ALERTS + DAILY CARE TASKS
