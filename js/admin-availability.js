@@ -1,7 +1,8 @@
 import {
     watchAuthState,
     getAvailabilityForMonth,
-    saveAvailability
+    saveAvailability,
+    getReservations
 } from "./firebase.js";
 
 
@@ -57,6 +58,47 @@ const message =
 
 
 
+/* -----------------------------------------
+   DAGPLANNING
+----------------------------------------- */
+
+const daySummary =
+    document.getElementById(
+        "admin-day-summary"
+    );
+
+const confirmedCount =
+    document.getElementById(
+        "admin-day-confirmed-count"
+    );
+
+const pendingCount =
+    document.getElementById(
+        "admin-day-pending-count"
+    );
+
+const dayPlanning =
+    document.getElementById(
+        "admin-day-planning"
+    );
+
+const dayBookings =
+    document.getElementById(
+        "admin-day-bookings"
+    );
+
+const dayPending =
+    document.getElementById(
+        "admin-day-pending"
+    );
+
+const dayPendingList =
+    document.getElementById(
+        "admin-day-pending-list"
+    );
+
+
+
 /* =========================================
    STATE
 ========================================= */
@@ -75,6 +117,10 @@ let displayedMonth =
 
 let availabilityData =
     {};
+
+
+let reservations =
+    [];
 
 
 let selectedDate =
@@ -177,7 +223,7 @@ function formatSelectedDate(
 
 
 /* =========================================
-   STATUS
+   BESCHIKBAARHEIDSSTATUS
 ========================================= */
 
 function getStatusForDate(
@@ -196,7 +242,388 @@ function getStatusForDate(
 
 
 /* =========================================
-   DATA LADEN
+   RESERVATIE VALT OP DEZE DAG?
+========================================= */
+
+function reservationTouchesDate(
+    reservation,
+    dateString
+) {
+
+    const startDate =
+        reservation.booking
+            ?.startDate;
+
+
+    const endDate =
+        reservation.booking
+            ?.endDate
+        ||
+        startDate;
+
+
+    if (
+        !startDate ||
+        !endDate
+    ) {
+
+        return false;
+    }
+
+
+    return (
+        dateString >= startDate
+        &&
+        dateString <= endDate
+    );
+}
+
+
+
+/* =========================================
+   RESERVATIES VOOR EEN DAG
+========================================= */
+
+function getReservationsForDate(
+    dateString
+) {
+
+    return reservations.filter(
+        reservation =>
+            reservationTouchesDate(
+                reservation,
+                dateString
+            )
+    );
+}
+
+
+
+/* =========================================
+   BEVESTIGDE HONDEN OP DAG
+========================================= */
+
+function getConfirmedCountForDate(
+    dateString
+) {
+
+    return getReservationsForDate(
+        dateString
+    ).filter(
+        reservation =>
+            reservation.status ===
+            "accepted"
+    ).length;
+}
+
+
+
+/* =========================================
+   TIJD HELPERS
+========================================= */
+
+function timeToMinutes(
+    time
+) {
+
+    if (
+        !time ||
+        !time.includes(":")
+    ) {
+
+        return null;
+    }
+
+
+    const [
+        hours,
+        minutes
+    ] =
+        time
+            .split(":")
+            .map(Number);
+
+
+    return (
+        hours * 60
+        +
+        minutes
+    );
+}
+
+
+
+/* =========================================
+   TIJDEN VAN RESERVATIE OP SPECIFIEKE DAG
+========================================= */
+
+function getReservationTimesForDay(
+    reservation,
+    dateString
+) {
+
+    const booking =
+        reservation.booking
+        || {};
+
+
+    const startDate =
+        booking.startDate;
+
+
+    const endDate =
+        booking.endDate
+        ||
+        startDate;
+
+
+
+    /*
+        Reservatie van één dag.
+    */
+
+    if (
+        startDate ===
+        endDate
+    ) {
+
+        return {
+            start:
+                booking.arrivalTime
+                ||
+                "08:00",
+
+            end:
+                booking.departureTime
+                ||
+                "18:00"
+        };
+    }
+
+
+
+    /*
+        Eerste dag van meerdaagse reservatie.
+    */
+
+    if (
+        dateString ===
+        startDate
+    ) {
+
+        return {
+            start:
+                booking.arrivalTime
+                ||
+                "08:00",
+
+            end:
+                "18:00"
+        };
+    }
+
+
+
+    /*
+        Laatste dag.
+    */
+
+    if (
+        dateString ===
+        endDate
+    ) {
+
+        return {
+            start:
+                "08:00",
+
+            end:
+                booking.departureTime
+                ||
+                "18:00"
+        };
+    }
+
+
+
+    /*
+        Tussendag van een meerdaagse reservatie.
+    */
+
+    return {
+        start:
+            "08:00",
+
+        end:
+            "18:00"
+    };
+}
+
+
+
+/* =========================================
+   TIJDLIJN POSITIE BEREKENEN
+========================================= */
+
+function getTimelinePosition(
+    startTime,
+    endTime
+) {
+
+    const timelineStart =
+        8 * 60;
+
+    const timelineEnd =
+        18 * 60;
+
+    const timelineDuration =
+        timelineEnd -
+        timelineStart;
+
+
+    let start =
+        timeToMinutes(
+            startTime
+        );
+
+
+    let end =
+        timeToMinutes(
+            endTime
+        );
+
+
+    start =
+        Math.max(
+            timelineStart,
+            start ?? timelineStart
+        );
+
+
+    end =
+        Math.min(
+            timelineEnd,
+            end ?? timelineEnd
+        );
+
+
+    if (
+        end < start
+    ) {
+
+        end =
+            start;
+    }
+
+
+    const left =
+        (
+            (
+                start -
+                timelineStart
+            )
+            /
+            timelineDuration
+        )
+        *
+        100;
+
+
+    const width =
+        (
+            (
+                end -
+                start
+            )
+            /
+            timelineDuration
+        )
+        *
+        100;
+
+
+    return {
+        left:
+            left,
+
+        width:
+            Math.max(
+                width,
+                1
+            )
+    };
+}
+
+
+
+/* =========================================
+   TYPE OPVANG
+========================================= */
+
+function formatBookingType(
+    type
+) {
+
+    if (
+        type ===
+        "daycare"
+    ) {
+
+        return "Dagopvang";
+    }
+
+
+    if (
+        type ===
+        "overnight"
+    ) {
+
+        return "Overnachting";
+    }
+
+
+    return "Opvang";
+}
+
+
+
+/* =========================================
+   HTML VEILIG TONEN
+========================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+}
+
+
+
+/* =========================================
+   BESCHIKBAARHEID LADEN
 ========================================= */
 
 async function loadAvailability() {
@@ -215,6 +642,16 @@ async function loadAvailability() {
 
 
         renderCalendar();
+
+
+        if (
+            selectedDate
+        ) {
+
+            renderDayPlanning(
+                selectedDate
+            );
+        }
 
 
         message.textContent =
@@ -237,7 +674,43 @@ async function loadAvailability() {
 
 
 /* =========================================
-   KALENDER
+   RESERVATIES VOOR PLANNING LADEN
+========================================= */
+
+async function loadReservationsForPlanning() {
+
+    try {
+
+        reservations =
+            await getReservations();
+
+
+        renderCalendar();
+
+
+        if (
+            selectedDate
+        ) {
+
+            renderDayPlanning(
+                selectedDate
+            );
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Reservaties voor planning laden mislukt:",
+            error
+        );
+    }
+}
+
+
+
+/* =========================================
+   KALENDER RENDEREN
 ========================================= */
 
 function renderCalendar() {
@@ -290,7 +763,7 @@ function renderCalendar() {
 
 
     /* -------------------------------------
-       LEGE DAGEN VOOR DAG 1
+       LEGE VAKKEN VOOR DAG 1
     ------------------------------------- */
 
     const firstDay =
@@ -362,6 +835,12 @@ function renderCalendar() {
             );
 
 
+        const confirmed =
+            getConfirmedCountForDate(
+                dateString
+            );
+
+
         const button =
             document.createElement(
                 "button"
@@ -376,13 +855,71 @@ function renderCalendar() {
             `admin-calendar-day ${status}`;
 
 
-        button.textContent =
-            day;
-
-
         button.dataset.date =
             dateString;
 
+
+
+        /* ---------------------------------
+           DAGNUMMER
+        --------------------------------- */
+
+        const dayNumber =
+            document.createElement(
+                "span"
+            );
+
+
+        dayNumber.className =
+            "admin-calendar-day-number";
+
+
+        dayNumber.textContent =
+            day;
+
+
+        button.appendChild(
+            dayNumber
+        );
+
+
+
+        /* ---------------------------------
+           AANTAL BEVESTIGDE HONDEN
+        --------------------------------- */
+
+        if (
+            confirmed > 0
+        ) {
+
+            const bookingCount =
+                document.createElement(
+                    "span"
+                );
+
+
+            bookingCount.className =
+                "admin-calendar-booking-count";
+
+
+            bookingCount.textContent =
+                confirmed;
+
+
+            bookingCount.title =
+                `${confirmed} bevestigde hond${confirmed === 1 ? "" : "en"}`;
+
+
+            button.appendChild(
+                bookingCount
+            );
+        }
+
+
+
+        /* ---------------------------------
+           GESELECTEERDE DAG
+        --------------------------------- */
 
         if (
             selectedDate ===
@@ -393,6 +930,7 @@ function renderCalendar() {
                 "selected"
             );
         }
+
 
 
         button.addEventListener(
@@ -444,7 +982,9 @@ function selectDate(
         );
 
 
-    if (radio) {
+    if (
+        radio
+    ) {
 
         radio.checked =
             true;
@@ -460,12 +1000,481 @@ function selectDate(
 
 
     renderCalendar();
+
+
+    renderDayPlanning(
+        dateString
+    );
 }
 
 
 
 /* =========================================
-   MAAND NAVIGATIE
+   DAGPLANNING TONEN
+========================================= */
+
+function renderDayPlanning(
+    dateString
+) {
+
+    const allForDay =
+        getReservationsForDate(
+            dateString
+        );
+
+
+    const accepted =
+        allForDay.filter(
+            reservation =>
+                reservation.status ===
+                "accepted"
+        );
+
+
+    const pending =
+        allForDay.filter(
+            reservation =>
+                reservation.status ===
+                "pending"
+        );
+
+
+
+    /* -------------------------------------
+       COUNTERS
+    ------------------------------------- */
+
+    confirmedCount.textContent =
+        accepted.length;
+
+
+    pendingCount.textContent =
+        pending.length;
+
+
+    daySummary.hidden =
+        false;
+
+
+    dayPlanning.hidden =
+        false;
+
+
+
+    /* =====================================
+       BEVESTIGDE RESERVATIES
+    ===================================== */
+
+    dayBookings.innerHTML =
+        "";
+
+
+    if (
+        accepted.length ===
+        0
+    ) {
+
+        dayBookings.innerHTML = `
+            <div class="admin-day-empty">
+
+                <strong>
+                    Geen honden gepland
+                </strong>
+
+                <span>
+                    Er zijn nog geen bevestigde reservaties voor deze dag.
+                </span>
+
+            </div>
+        `;
+
+    } else {
+
+        accepted
+            .sort(
+                (a, b) => {
+
+                    const timeA =
+                        getReservationTimesForDay(
+                            a,
+                            dateString
+                        ).start;
+
+
+                    const timeB =
+                        getReservationTimesForDay(
+                            b,
+                            dateString
+                        ).start;
+
+
+                    return (
+                        timeA.localeCompare(
+                            timeB
+                        )
+                    );
+                }
+            )
+            .forEach(
+                reservation => {
+
+                    createDayBooking(
+                        reservation,
+                        dateString
+                    );
+                }
+            );
+    }
+
+
+
+    /* =====================================
+       PENDING RESERVATIES
+    ===================================== */
+
+    if (
+        pending.length ===
+        0
+    ) {
+
+        dayPending.hidden =
+            true;
+
+
+        dayPendingList.innerHTML =
+            "";
+
+    } else {
+
+        dayPending.hidden =
+            false;
+
+
+        dayPendingList.innerHTML =
+            "";
+
+
+        pending
+            .sort(
+                (a, b) => {
+
+                    const timeA =
+                        getReservationTimesForDay(
+                            a,
+                            dateString
+                        ).start;
+
+
+                    const timeB =
+                        getReservationTimesForDay(
+                            b,
+                            dateString
+                        ).start;
+
+
+                    return (
+                        timeA.localeCompare(
+                            timeB
+                        )
+                    );
+                }
+            )
+            .forEach(
+                reservation => {
+
+                    createPendingBooking(
+                        reservation,
+                        dateString
+                    );
+                }
+            );
+    }
+}
+
+
+
+/* =========================================
+   BEVESTIGDE RESERVATIEKAART
+========================================= */
+
+function createDayBooking(
+    reservation,
+    dateString
+) {
+
+    const times =
+        getReservationTimesForDay(
+            reservation,
+            dateString
+        );
+
+
+    const position =
+        getTimelinePosition(
+            times.start,
+            times.end
+        );
+
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "admin-day-booking";
+
+
+    const bookingType =
+        formatBookingType(
+            reservation.booking
+                ?.type
+        );
+
+
+    card.innerHTML = `
+        <div class="admin-day-booking-header">
+
+            <div class="admin-day-booking-name">
+
+                <strong>
+                    ${escapeHtml(
+        reservation.dog?.name
+        || "Hond"
+    )}
+                </strong>
+
+                <span>
+                    ${escapeHtml(
+        reservation.customer?.name
+        || "Onbekende klant"
+    )}
+                </span>
+
+            </div>
+
+
+            <span class="admin-day-booking-type">
+                ${escapeHtml(
+        bookingType
+    )}
+            </span>
+
+        </div>
+
+
+        <div class="admin-day-booking-meta">
+
+            <span>
+                ${escapeHtml(
+        times.start
+    )}
+                –
+                ${escapeHtml(
+        times.end
+    )}
+            </span>
+
+
+            ${reservation.customer?.phone
+            ? `
+                        <span>
+                            ${escapeHtml(
+                reservation.customer.phone
+            )}
+                        </span>
+                    `
+            : ""
+        }
+
+        </div>
+
+
+        <div class="admin-day-track">
+
+            <div
+                class="admin-day-track-bar"
+                style="
+                    left: ${position.left}%;
+                    width: ${position.width}%;
+                "
+            ></div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="admin-day-view-reservation"
+        >
+            Bekijk reservatie
+        </button>
+    `;
+
+
+    const viewButton =
+        card.querySelector(
+            ".admin-day-view-reservation"
+        );
+
+
+    viewButton.addEventListener(
+        "click",
+        () => {
+
+            scrollToReservation(
+                reservation.id
+            );
+        }
+    );
+
+
+    dayBookings.appendChild(
+        card
+    );
+}
+
+
+
+/* =========================================
+   PENDING RESERVATIEKAART
+========================================= */
+
+function createPendingBooking(
+    reservation,
+    dateString
+) {
+
+    const times =
+        getReservationTimesForDay(
+            reservation,
+            dateString
+        );
+
+
+    const card =
+        document.createElement(
+            "button"
+        );
+
+
+    card.type =
+        "button";
+
+
+    card.className =
+        "admin-day-pending-card";
+
+
+    card.innerHTML = `
+        <span class="admin-day-pending-main">
+
+            <strong>
+                ${escapeHtml(
+        reservation.dog?.name
+        || "Hond"
+    )}
+            </strong>
+
+            <small>
+                ${escapeHtml(
+        reservation.customer?.name
+        || "Onbekende klant"
+    )}
+            </small>
+
+        </span>
+
+
+        <span class="admin-day-pending-time">
+
+            ${escapeHtml(
+        times.start
+    )}
+
+            –
+
+            ${escapeHtml(
+        times.end
+    )}
+
+        </span>
+    `;
+
+
+    card.addEventListener(
+        "click",
+        () => {
+
+            scrollToReservation(
+                reservation.id
+            );
+        }
+    );
+
+
+    dayPendingList.appendChild(
+        card
+    );
+}
+
+
+
+/* =========================================
+   NAAR RESERVATIE SCROLLEN
+========================================= */
+
+function scrollToReservation(
+    reservationId
+) {
+
+    const reservationElement =
+        document.getElementById(
+            `reservation-${reservationId}`
+        );
+
+
+    if (
+        !reservationElement
+    ) {
+
+        return;
+    }
+
+
+    reservationElement.scrollIntoView(
+        {
+            behavior:
+                "smooth",
+
+            block:
+                "center"
+        }
+    );
+
+
+    reservationElement.classList.add(
+        "reservation-highlight"
+    );
+
+
+    window.setTimeout(
+        () => {
+
+            reservationElement.classList.remove(
+                "reservation-highlight"
+            );
+        },
+
+        1800
+    );
+}
+
+
+
+/* =========================================
+   VORIGE MAAND
 ========================================= */
 
 previousMonthButton.addEventListener(
@@ -488,6 +1497,18 @@ previousMonthButton.addEventListener(
             "Kies een dag";
 
 
+        daySummary.hidden =
+            true;
+
+
+        dayPlanning.hidden =
+            true;
+
+
+        dayPending.hidden =
+            true;
+
+
         saveButton.disabled =
             true;
 
@@ -497,6 +1518,10 @@ previousMonthButton.addEventListener(
 );
 
 
+
+/* =========================================
+   VOLGENDE MAAND
+========================================= */
 
 nextMonthButton.addEventListener(
     "click",
@@ -518,6 +1543,18 @@ nextMonthButton.addEventListener(
             "Kies een dag";
 
 
+        daySummary.hidden =
+            true;
+
+
+        dayPlanning.hidden =
+            true;
+
+
+        dayPending.hidden =
+            true;
+
+
         saveButton.disabled =
             true;
 
@@ -529,14 +1566,16 @@ nextMonthButton.addEventListener(
 
 
 /* =========================================
-   OPSLAAN
+   BESCHIKBAARHEID OPSLAAN
 ========================================= */
 
 saveButton.addEventListener(
     "click",
     async () => {
 
-        if (!selectedDate) {
+        if (
+            !selectedDate
+        ) {
 
             return;
         }
@@ -548,7 +1587,9 @@ saveButton.addEventListener(
             );
 
 
-        if (!selectedStatus) {
+        if (
+            !selectedStatus
+        ) {
 
             message.textContent =
                 "Kies eerst een status.";
@@ -583,7 +1624,7 @@ saveButton.addEventListener(
 
 
             /*
-                Lokale data meteen bijwerken.
+                Available wordt niet in Firestore opgeslagen.
             */
 
             if (
@@ -641,7 +1682,52 @@ saveButton.addEventListener(
 
 
 /* =========================================
-   STARTEN NA ADMINLOGIN
+   RESERVATIES VERANDERD
+========================================= */
+
+window.addEventListener(
+    "teckelweb:reservations-updated",
+    event => {
+
+        if (
+            !Array.isArray(
+                event.detail
+                    ?.reservations
+            )
+        ) {
+
+            return;
+        }
+
+
+        reservations =
+            event.detail
+                .reservations;
+
+
+        /*
+            Kalender opnieuw tekenen zodat
+            aantal honden per dag direct verandert.
+        */
+
+        renderCalendar();
+
+
+        if (
+            selectedDate
+        ) {
+
+            renderDayPlanning(
+                selectedDate
+            );
+        }
+    }
+);
+
+
+
+/* =========================================
+   START NA LOGIN
 ========================================= */
 
 watchAuthState(
@@ -658,6 +1744,16 @@ watchAuthState(
         }
 
 
-        await loadAvailability();
+        /*
+            Availability en reservaties
+            tegelijk ophalen.
+        */
+
+        await Promise.all(
+            [
+                loadAvailability(),
+                loadReservationsForPlanning()
+            ]
+        );
     }
 );
